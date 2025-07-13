@@ -33,123 +33,140 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
-            align-items: center;
-            padding: 2rem;
-            text-align: center;
-            position: relative; /* İçerik için pozisyonlama */
-        }
-        .welcome-content {
-            max-width: 500px;
-            z-index: 10; /* İçeriğin logonun altında kalmaması için */
-        }
-        .welcome-content h1 {
-            color: #2d3748; /* Koyu gri */
-            margin-bottom: 1rem;
-            line-height: 1.2;
-        }
-        .welcome-content p {
-            color: #4a5568; /* Orta gri */
-            margin-bottom: 2.5rem;
-        }
-        .form-container {
-            width: 100%;
-            max-width: 450px;
-            padding: 2rem;
-            background-color: #ffffff;
-            border-radius: 0.75rem;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            text-align: left;
-            margin-top: 2rem; /* Başlıktan biraz boşluk */
-        }
-        .form-container h2 {
-            font-size: 1.875rem; /* text-3xl */
-            font-weight: 700; /* font-bold */
-            color: #2d3748;
-            margin-bottom: 1.5rem;
-            text-align: center;
-        }
-        .form-group {
-            margin-bottom: 1rem;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-            color: #4a5568;
-        }
-        .form-group input,
-        .form-group textarea {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid #cbd5e0; /* Gri kenarlık */
-            border-radius: 0.5rem;
-            font-size: 1rem;
-            color: #2d3748;
-        }
-        .form-group textarea {
-            resize: vertical; /* Dikey yeniden boyutlandırmaya izin ver */
-            min-height: 80px;
-        }
-        .action-button {
-            display: block;
-            width: 100%;
-            padding: 0.85rem 0; /* İç boşluk */
-            background-color: #00008B; /* Lacivert */
-            color: white;
-            font-size: 1.125rem; /* text-lg */
-            font-weight: 600; /* font-semibold */
-            border-radius: 0.5rem; /* Köşe yuvarlaklığı */
-            text-decoration: none;
-            text-align: center;
-            transition: background-color 0.3s ease;
-            cursor: pointer;
-            border: none; /* Buton varsayılan kenarlığını kaldırır */
-            margin-top: 1.5rem;
-        }
-        .action-button:hover {
-            background-color: #0000CD; /* Koyu lacivert */
-        }
-        .right-half {
-            flex: 1; /* Kalan alanı kapla */
-            background-color: #f0f4f8; /* Açık mavi arka plan */
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            align-items: flex-start;
+            padding-left: 3rem;
+            box-sizing: border-box;
+            z-index: 10;
             position: relative;
-            overflow: hidden;
         }
-        .right-half img {
+        .form-content {
             max-width: 100%;
-            height: auto;
-            object-fit: cover;
+            text-align: left;
+            padding-top: 2cm; /* Toplamda 2 cm aşağı öteleme */
         }
-        /* Responsive Ayarlar */
+        .form-content h1 {
+            font-weight: 700;
+            color: #1a202c;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+        }
+        .form-content label {
+            font-weight: 400;
+            color: #4a5568;
+            margin-bottom: 0.25rem;
+            display: block;
+        }
+        .form-content input,
+        .form-content textarea {
+            border: 1px solid #cbd5e0;
+            padding: 0.75rem 1rem;
+            width: 100%;
+            border-radius: 0.5rem;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .form-content input:focus,
+        .form-content textarea:focus {
+            outline: none;
+            border-color: #00008B; /* Pers Mavisi Odak */
+            box-shadow: 0 0 0 3px rgba(0, 0, 139, 0.3); /* Pers Mavisi Gölge */
+        }
+        .form-content textarea {
+            resize: none;
+            overflow-y: auto;
+        }
+
+        .form-content button {
+            background-color: #00008B; /* Pers Mavisi */
+            color: white;
+            font-weight: 600;
+            padding: 0.85rem 2rem;
+            border-radius: 9999px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            text-align: center;
+            border: none;
+            cursor: pointer;
+            width: 425px;
+            display: block;
+            margin-top: 1rem;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .form-content button:hover {
+            background-color: #0000CD; /* Koyu Pers Mavisi */
+            transform: translateY(-2px);
+        }
+
+        .input-with-logo {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .customer-logo {
+            position: absolute;
+            right: 10px;
+            height: 30px;
+            width: auto;
+            object-fit: contain;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            max-width: 80px;
+            display: none;
+        }
+        .customer-logo.visible {
+            opacity: 1;
+            display: block;
+        }
+        .input-with-logo input {
+            padding-right: 100px;
+        }
+
+        /* Sağ yarıya GIF eklemek için yeni stil */
+        .right-half {
+            flex: 1; /* Sağdaki tüm boş alanı kapla */
+            background-image: url('hanil3.gif');
+            background-size: cover; /* Resmi tüm alanı kaplayacak şekilde boyutlandır */
+            background-position: center; /* Resmi ortala */
+            background-repeat: no-repeat;
+            position: relative;
+            z-index: 5;
+        }
+
+        /* Küçük ekranlar için responsive ayarlar */
         @media (max-width: 768px) {
             body {
                 flex-direction: column;
-                overflow-y: auto; /* Küçük ekranlarda kaydırma çubuğunu etkinleştir */
             }
             .logo-container {
-                position: static; /* Statik pozisyonla akışa bırak */
-                margin: 1.5rem auto 0; /* Ortala ve üstten boşluk */
+                top: 1.5rem;
+                left: 1.5rem;
+            }
+            .logo {
+                max-width: 150px;
             }
             .left-half {
-                flex: 0 0 auto; /* Otomatik yükseklik */
-                padding: 1.5rem;
+                flex: 0 0 100%;
+                padding-left: 1.5rem;
+                padding-right: 1.5rem;
+                height: auto;
+                min-height: 60vh;
             }
-            .welcome-content h1 {
-                font-size: 2.25rem; /* text-4xl */
+            .form-content {
+                padding-top: calc(5rem + 1cm); /* Mevcut 5rem'e ek 1 cm öteleme */
+                max-width: 100%;
             }
-            .welcome-content p {
-                font-size: 0.9rem;
+            .form-content h1 {
+                font-size: 2rem;
             }
-            .action-button {
-                padding: 0.75rem 2rem; /* Küçük ekranlarda da yüksekliği 0.85 katına düşür (önceki 0.85rem * 0.85 ~= 0.72rem, bu biraz yuvarlanmış hali) */
+            .form-content input,
+            .form-content textarea {
+                padding: 0.6rem 0.8rem;
+            }
+            .form-content button {
+                padding: 0.75rem 2rem;
                 width: 298px;
             }
             .right-half {
                 flex: 0 0 40vh;
-                display: none; /* Küçük ekranlarda gizli */
             }
         }
     </style>
@@ -159,44 +176,102 @@
         <img src="ASSAN_HANIL-1.png" alt="Hanil Logo" class="logo">
     </div>
 
-    <div class="left-half">
-        <div class="form-container">
-            <h2>Yeni Proje Oluştur</h2>
-            <form id="projectForm">
-                <div class="form-group">
-                    <label for="projectName">Proje Adı:</label>
-                    <input type="text" id="projectName" required>
-                </div>
-                <div class="form-group">
-                    <label for="projectLife">Proje Ömrü (Yıl):</label>
-                    <input type="number" id="projectLife" required min="1">
-                </div>
-                <div class="form-group">
-                    <label for="projectStartYear">Başlama Yılı:</label>
-                    <input type="number" id="projectStartYear" required min="1900" max="2100">
-                </div>
-                <div class="form-group">
-                    <label for="customerName">Müşteri Adı:</label>
-                    <input type="text" id="customerName" required>
-                </div>
-                <div class="form-group">
-                    <label for="projectDescription">Açıklama (İsteğe Bağlı):</label>
-                    <textarea id="projectDescription" rows="3"></textarea>
-                </div>
-                <button type="submit" class="action-button">Proje Oluştur</button>
-            </form>
-        </div>
-    </div>
+    <body>
+        <div class="left-half">
+            <div class="form-content">
+                <h1 class="text-3xl font-extrabold text-gray-800 mb-8">Yeni Proje Bilgileri</h1>
+                <form id="newProjectForm">
+                    <div class="grid grid-cols-1 gap-6 mb-6">
+                        <div class="md:col-span-1">
+                            <label for="customerName" class="block text-sm font-medium text-gray-700 mb-1">Müşteri Adı</label>
+                            <div class="input-with-logo">
+                                <input type="text" id="customerName" placeholder="Müşteri Adı" class="w-full" required>
+                                <img id="customerLogo" class="customer-logo" src="" alt="Müşteri Logosu">
+                            </div>
+                        </div>
+                        <div class="md:col-span-1">
+                            <label for="projectName" class="block text-sm font-medium text-gray-700 mb-1">Proje Adı</label>
+                            <input type="text" id="projectName" placeholder="Proje Adı" class="w-full" required>
+                        </div>
+                    </div>
 
-    <div class="right-half">
-        <img src="welcome-image.png" alt="Hoş Geldiniz Görseli">
-    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div>
+                            <label for="projectStartYear" class="block text-sm font-medium text-gray-700 mb-1">Proje Başlama Yılı</label>
+                            <input type="number" id="projectStartYear" placeholder="Başlama Yılı" class="w-full" min="1900" max="2100" required>
+                        </div>
+                        <div>
+                            <label for="projectLife" class="block text-sm font-medium text-gray-700 mb-1">Proje Ömrü (Yıl)</label>
+                            <input type="number" id="projectLife" placeholder="Proje Ömrü" class="w-full" min="1" required>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 gap-6 mb-6">
+                        <div class="md:col-span-1">
+                            <label for="projectDescription" class="block text-sm font-medium text-gray-700 mb-1">Proje Açıklaması</label>
+                            <textarea id="projectDescription" placeholder="Proje hakkında kısa açıklama" rows="2" class="w-full"></textarea>
+                        </div>
+                    </div>
+                    <button type="submit">
+                        Proje Oluştur ve Devam Et
+                    </button>
+                </form>
+            </div>
+        </div>
+        <div class="right-half"></div>
+    </body>
 
     <script>
-        document.getElementById('projectForm').addEventListener('submit', function(event) {
-            event.preventDefault(); // Formun varsayılan gönderimini engeller
+        const customerLogos = {
+            'byd': 'logos/byd.png',
+            'ford': 'logos/ford.png',
+            'stellantis': 'logos/stellantis.png',
+            'renault': 'logos/renault.png',
+            'tesla': 'logos/tesla.png',
+            'mercedes-benz': 'logos/mercedes-benz.png'
+        };
 
-            // Form alanlarından verileri alır
+        const customerNameInput = document.getElementById('customerName');
+        const customerLogoImg = document.getElementById('customerLogo');
+        const projectStartYearInput = document.getElementById('projectStartYear');
+
+        // Sayfa yüklendiğinde yıl değerini otomatik olarak ayarla
+        projectStartYearInput.value = new Date().getFullYear();
+
+        // Müşteri adı girildikçe logo gösterme/gizleme
+        customerNameInput.addEventListener('input', function() {
+            const enteredText = customerNameInput.value.toLowerCase().trim();
+            let bestMatchKey = null;
+            let maxLength = 0;
+
+            if (enteredText.length > 0) {
+                for (const key in customerLogos) {
+                    if (key.startsWith(enteredText)) {
+                        if (key.length > maxLength) {
+                            bestMatchKey = key;
+                            maxLength = key.length;
+                        }
+                    }
+                }
+            }
+
+            if (bestMatchKey) {
+                customerLogoImg.src = customerLogos.hasOwnProperty(bestMatchKey) ? customerLogos[bestMatchKey] : '';
+                customerLogoImg.style.display = 'block';
+                customerLogoImg.classList.add('visible');
+            } else {
+                customerLogoImg.classList.remove('visible');
+                setTimeout(() => {
+                    customerLogoImg.style.display = 'none';
+                    customerLogoImg.src = '';
+                }, 300);
+            }
+        });
+
+        // Form gönderildiğinde
+        document.getElementById('newProjectForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
             const projectName = document.getElementById('projectName').value;
             const projectLife = document.getElementById('projectLife').value;
             const projectStartYear = document.getElementById('projectStartYear').value;
@@ -221,8 +296,7 @@
 
             // Ana sayfaya yönlendirme yapmaya çalışır
             if (window.parent && window.parent.loadPage) {
-                // Yeni oluşturulan projenin ID'sini BOM sayfasına ilet
-                window.parent.loadPage(`bom_page.html?projectId=${newProject.id}`);
+                window.parent.loadPage('bom_page.html');
             } else {
                 // Yönlendirme yapılamazsa kullanıcıyı bilgilendirir
                 alert('Proje oluşturuldu ancak ana sayfaya yönlendirme yapılamadı. Tarayıcı konsolunu kontrol edin.');
