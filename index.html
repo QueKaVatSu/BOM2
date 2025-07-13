@@ -28,8 +28,6 @@
             top: 0;
             left: 0;
             z-index: 20; /* Sidebar'ın üzerinde kalması için */
-            /* Başlangıçta gizli olacak */
-            display: none;
         }
 
         .logo-container {
@@ -151,8 +149,7 @@
             background-repeat: no-repeat;
             position: relative;
             z-index: 5;
-            /* Başlangıçta gizli olacak */
-            display: none;
+            display: block; /* Başlangıçta görünür */
         }
         /* Gizlenmesi gerektiğinde kullanılacak sınıf */
         .right-half-initial.hidden {
@@ -163,36 +160,45 @@
         .sidebar {
             position: fixed;
             top: 0;
-            left: -250px; /* Başlangıçta gizli */
-            width: 250px;
+            left: -200px; /* Başlangıçta gizli */
+            width: 200px; /* Genişlik 200px olarak ayarlandı */
             height: 100%;
-            background-color: transparent;
-            box-shadow: 2px 0 5px rgba(0,0,0,0.5);
-            transition: left 0.3s ease; /* Kayarak açılma animasyonu */
+            background-color: #f7fafc; /* Hafif bir arka plan rengi */
+            box-shadow: 3px 0 10px rgba(0,0,0,0.1); /* Daha belirgin gölge */
+            transition: left 0.3s ease, box-shadow 0.3s ease; /* Gölge animasyonu eklendi */
             z-index: 1000;
             display: flex;
             flex-direction: column;
+            border-right: 1px solid #e2e8f0; /* Hafif sağ kenarlık */
         }
 
         .sidebar.open {
-            left: 0; /* Açıldığında görünür */
+            left: 0;
         }
 
+        /* Sidebar Logo Konteyneri ve Logo Stilleri */
         .sidebar-logo-container {
             padding: 20px;
             text-align: center;
             background-color: white;
             z-index: 1;
+            border-bottom: 1px solid #e2e8f0; /* Logo altı çizgi */
+            display: flex; /* Logoyu ortalamak için flex kullanıldı */
+            justify-content: center;
+            align-items: center;
+            min-height: 80px; /* Logo alanı için minimum yükseklik */
         }
 
         .sidebar-logo {
-            max-width: 180px;
+            max-width: 150px; /* Logo boyutu biraz küçültüldü */
             height: auto;
         }
 
+
         .sidebar-bottom-section {
             flex-grow: 1;
-            background-color: #00008B; /* Pers Mavisi */
+            /* Gradiyan arka plan eklendi */
+            background: linear-gradient(to bottom, #00004d, #000066); /* Koyu Pers Mavisi'nden daha koyu bir tona */
             padding-top: 20px;
             z-index: 0;
             display: flex;
@@ -201,48 +207,59 @@
 
         .sidebar-menu {
             list-style: none;
-            padding: 0 20px;
+            padding: 0 15px; /* Yan boşluklar biraz daraltıldı */
             margin: 0;
             flex-grow: 1;
         }
 
         .sidebar-menu li {
-            margin-bottom: 10px;
+            margin-bottom: 8px; /* Öğeler arası boşluk biraz azaltıldı */
         }
 
         .sidebar-menu a {
-            display: block;
-            padding: 15px 0;
+            display: flex;
+            align-items: center;
+            padding: 12px 10px; /* Dikey padding azaltıldı, yatay padding ayarlandı */
             color: white;
             text-decoration: none;
             font-weight: 500;
-            transition: background-color 0.2s ease, color 0.2s ease, border-left-color 0.2s ease;
+            font-size: 0.95rem; /* Font boyutu biraz küçültüldü */
+            transition: background-color 0.3s ease, color 0.3s ease, border-left-color 0.3s ease, transform 0.2s ease; /* Yeni animasyonlar eklendi */
             border-left: 5px solid transparent;
+            border-radius: 5px; /* Hafif yuvarlak köşeler */
         }
 
-        .sidebar-menu a:hover,
+        .sidebar-menu a:hover {
+            background-color: rgba(255, 255, 255, 0.15); /* Hover rengi daha belirgin */
+            border-left-color: white;
+            transform: translateX(5px); /* Hover'da hafif kayma efekti */
+            color: white;
+        }
+
         .sidebar-menu a.active {
-            background-color: rgba(255, 255, 255, 0.2);
+            background-color: rgba(255, 255, 255, 0.25); /* Aktif rengi daha belirgin */
             border-left-color: white;
             color: white;
+            font-weight: 600; /* Aktif öğenin fontu daha kalın */
+            box-shadow: inset 3px 0 8px rgba(0, 0, 0, 0.2); /* İç gölge eklendi */
         }
 
         /* İçerik alanı (iframe) stilleri */
         .content-frame-container {
             position: absolute;
             top: 0;
-            left: 0; /* Başlangıçta tam ekran, sidebar açılınca kayacak */
+            left: 0;
             width: 100%;
             height: 100%;
             z-index: 999;
             background-color: #ffffff;
-            transition: left 0.3s ease, width 0.3s ease; /* Kayma animasyonu */
-            /* display: none;  Varsayılan olarak gizli */
+            transition: left 0.3s ease, width 0.3s ease;
+            display: none;
         }
 
         .content-frame-container.shifted {
-            left: 250px; /* Sidebar açıldığında kayacak */
-            width: calc(100% - 250px); /* Sidebar açıldığında daralacak */
+            left: 200px; /* Sidebar açıldığında kayacak */
+            width: calc(100% - 200px); /* Sidebar açıldığında daralacak */
         }
 
         .content-frame-container iframe {
@@ -297,20 +314,23 @@
                 margin-top: 0.75rem;
             }
             .right-half-initial {
-                flex: 0 0 40vh; /* Küçük ekranlarda gif'e belirli bir yükseklik ver */
-                display: block; /* Küçük ekranlarda da görünür */
+                flex: 0 0 40vh;
+                display: block;
             }
 
             .sidebar {
                 width: 100%;
-                left: -100%; /* Küçük ekranlarda sidebar'ı tamamen gizle */
+                left: -100%;
                 padding-top: 0;
+                box-shadow: none; /* Küçük ekranlarda gölgeyi kaldır */
+                border-right: none; /* Küçük ekranlarda kenarlığı kaldır */
             }
             .sidebar.open {
-                left: 0; /* Açıldığında tam ekran */
+                left: 0;
             }
+            /* Küçük ekranlarda logo konteyneri tekrar gösterilecek */
             .sidebar-logo-container {
-                display: none; /* Küçük ekranlarda sidebar logosunu gizle */
+                display: flex; /* Geri göster */
             }
             .sidebar-bottom-section {
                 padding-top: 0;
@@ -320,26 +340,30 @@
                 padding: 0 10px;
                 margin: 0;
                 flex-grow: 1;
-                display: flex; /* Yatay menü için flex */
-                justify-content: space-around; /* Menü öğelerini eşit dağıt */
-                flex-wrap: wrap; /* Gerekirse alt satıra geç */
+                display: flex;
+                justify-content: space-around;
+                flex-wrap: wrap;
             }
             .sidebar-menu li {
-                margin-bottom: 0; /* Yatay menüde margin-bottom'ı kaldır */
+                margin-bottom: 0;
             }
             .sidebar-menu a {
                 padding: 10px 5px;
                 text-align: center;
-                border-left: none; /* Kenar çizgiyi kaldır */
-                border-bottom: 3px solid transparent; /* Alt çizgi ekle */
+                border-left: none;
+                border-bottom: 3px solid transparent;
+                border-radius: 0; /* Küçük ekranlarda yuvarlak köşeleri kaldır */
+                transform: none; /* Küçük ekranlarda kayma efektini kaldır */
+                box-shadow: none; /* Küçük ekranlarda iç gölgeyi kaldır */
             }
             .sidebar-menu a:hover,
             .sidebar-menu a.active {
-                border-left-color: transparent; /* Kenar çizgiyi şeffaf yap */
-                border-bottom-color: white; /* Alt çizginin rengini değiştir */
+                border-left-color: transparent;
+                border-bottom-color: white;
+                background-color: rgba(255, 255, 255, 0.2); /* Hover/active rengi yine de kalsın */
             }
             .content-frame-container.shifted {
-                left: 0; /* Küçük ekranlarda iframe kaymayacak */
+                left: 0;
                 width: 100%;
             }
         }
@@ -432,17 +456,84 @@
         const sidebarLinks = document.querySelectorAll('.sidebar-menu a');
         const mainFormContainer = document.getElementById('mainFormContainer');
         const rightHalfInitial = document.getElementById('rightHalfInitial');
+        
+        const sidebarWidth = 200; // Genişlik 200px olarak güncellendi
 
-        const sidebarWidth = 250;
+        // Sayfa yüklendiğinde yıl değerini otomatik olarak ayarla
+        projectStartYearInput.value = new Date().getFullYear();
 
-        // Bu event listener kaldırıldı çünkü form artık index.html içinde değil, iframe içinde
-        // Form gönderildiğinde (artık create_project_form.html'den tetiklenecek)
-        /*
+        // Müşteri adı girildikçe logo gösterme/gizleme
+        customerNameInput.addEventListener('input', function() {
+            const enteredText = customerNameInput.value.toLowerCase().trim();
+            let bestMatchKey = null;
+            let maxLength = 0;
+
+            if (enteredText.length > 0) {
+                for (const key in customerLogos) {
+                    if (key.startsWith(enteredText)) {
+                        if (key.length > maxLength) {
+                            bestMatchKey = key;
+                            maxLength = key.length;
+                        }
+                    }
+                }
+            }
+
+            if (bestMatchKey) {
+                customerLogoImg.src = customerLogos.hasOwnProperty(bestMatchKey) ? customerLogos[bestMatchKey] : '';
+                customerLogoImg.style.display = 'block';
+                customerLogoImg.classList.add('visible');
+            } else {
+                customerLogoImg.classList.remove('visible');
+                setTimeout(() => {
+                    customerLogoImg.style.display = 'none';
+                    customerLogoImg.src = '';
+                }, 300);
+            }
+        });
+
+        // Form gönderildiğinde
         document.getElementById('newProjectForm').addEventListener('submit', function(event) {
             event.preventDefault();
-            // ... (proje oluşturma ve kaydetme kısmı create_project_form.html'e taşındı)
+
+            const projectName = document.getElementById('projectName').value;
+            const projectLife = document.getElementById('projectLife').value;
+            const projectStartYear = document.getElementById('projectStartYear').value;
+            const customerName = document.getElementById('customerName').value;
+            const projectDescription = document.getElementById('projectDescription').value;
+
+            const newProject = {
+                id: Date.now(),
+                name: projectName,
+                life: parseInt(projectLife),
+                startYear: parseInt(projectStartYear),
+                customer: customerName,
+                description: projectDescription,
+                materials: []
+            };
+
+            let projects = JSON.parse(localStorage.getItem('projects') || '[]');
+            projects.push(newProject);
+            localStorage.setItem('projects', JSON.stringify(projects));
+
+            // Ana formu gizle
+            mainFormContainer.style.display = 'none';
+            // Sağdaki başlangıç GIF'ini gizle
+            rightHalfInitial.classList.add('hidden');
+
+            // Sidebar'ı aç
+            sidebar.classList.add('open');
+            // İçerik çerçevesini göster ve kaydır
+            contentFrameContainer.style.display = 'block';
+            if (window.innerWidth > 768) {
+                contentFrameContainer.classList.add('shifted');
+            }
+            
+            // İlk menü öğesini aktif yap ve sayfayı yükle
+            sidebarLinks.forEach(link => link.classList.remove('active'));
+            sidebarLinks && sidebarLinks.length > 0 && sidebarLinks[0].classList.add('active');
+            loadPage('volume_table.html');
         });
-        */
 
         // Sidebar menü bağlantıları için tıklama olayları
         sidebarLinks.forEach(link => {
@@ -459,33 +550,8 @@
         });
 
         // iframe'e sayfa yükleme işlevi
-        // Bu fonksiyon welcome_page.html ve create_project_form.html tarafından çağrılacak
         window.loadPage = function(pageName) {
             mainContentFrame.src = pageName;
-        };
-
-        // Yeni proje oluşturulduktan sonra ana içeriği göstermek için
-        window.showMainContent = function() {
-            // Ana formu ve GIF'i gizle
-            mainFormContainer.style.display = 'none';
-            rightHalfInitial.classList.add('hidden');
-
-            // Sidebar'ı aç
-            sidebar.classList.add('open');
-
-            // İçerik çerçevesini göster ve kaydır
-            contentFrameContainer.style.display = 'block';
-            if (window.innerWidth > 768) {
-                contentFrameContainer.classList.add('shifted');
-            } else {
-                contentFrameContainer.style.left = '0';
-                contentFrameContainer.style.width = '100%';
-            }
-
-            // İlk menü öğesini aktif yap ve varsayılan sayfayı yükle
-            sidebarLinks.forEach(link => link.classList.remove('active'));
-            sidebarLinks && sidebarLinks.length > 0 && sidebarLinks[0].classList.add('active');
-            loadPage('volume_table.html');
         };
 
         // Pencere yeniden boyutlandırıldığında iframe ve sidebar konumlandırmasını ayarla
@@ -498,7 +564,7 @@
                     contentFrameContainer.style.left = '0';
                     contentFrameContainer.style.width = '100%';
                 }
-            } else { // Sidebar kapalıysa (yani welcome/create form ekranındaysa)
+            } else { // Sidebar kapalıysa (yani form ekranındaysa)
                 contentFrameContainer.style.left = '0';
                 contentFrameContainer.style.width = '100%';
             }
@@ -508,8 +574,17 @@
         window.addEventListener('load', function() {
             let projects = JSON.parse(localStorage.getItem('projects') || '[]');
             if (projects.length > 0) {
-                // Eğer projeler varsa, doğrudan Volume Tablosu'nu yükle ve ana içeriği göster
-                window.showMainContent();
+                // Eğer projeler varsa, doğrudan Volume Tablosu'nu yükle
+                mainFormContainer.style.display = 'none';
+                rightHalfInitial.classList.add('hidden');
+                sidebar.classList.add('open');
+                contentFrameContainer.style.display = 'block';
+                if (window.innerWidth > 768) {
+                    contentFrameContainer.classList.add('shifted');
+                }
+                loadPage('volume_table.html'); // Varsayılan sayfayı yükle
+                sidebarLinks.forEach(link => link.classList.remove('active'));
+                sidebarLinks && sidebarLinks.length > 0 && sidebarLinks[0].classList.add('active');
             } else {
                 // Eğer proje yoksa, hoş geldin sayfasını yükle
                 mainFormContainer.style.display = 'none'; // İlk form container gizli kalacak
@@ -521,6 +596,7 @@
                 mainContentFrame.src = 'welcome_page.html'; // Hoş geldin sayfasını yükle
             }
         });
+
     </script>
 </body>
 </html>
