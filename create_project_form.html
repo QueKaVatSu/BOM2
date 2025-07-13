@@ -66,8 +66,8 @@
         .form-content input:focus,
         .form-content textarea:focus {
             outline: none;
-            border-color: #00008B; /* Pers Mavisi Odak */
-            box-shadow: 0 0 0 3px rgba(0, 0, 139, 0.3); /* Pers Mavisi Gölge */
+            border-color: #00008B;
+            box-shadow: 0 0 0 3px rgba(0, 0, 139, 0.3);
         }
         .form-content textarea {
             resize: none;
@@ -75,7 +75,7 @@
         }
 
         .form-content button {
-            background-color: #00008B; /* Pers Mavisi */
+            background-color: #00008B;
             color: white;
             font-weight: 600;
             padding: 0.85rem 2rem;
@@ -91,7 +91,7 @@
             margin-right: auto;
         }
         .form-content button:hover {
-            background-color: #0000CD; /* Koyu Pers Mavisi */
+            background-color: #0000CD;
             transform: translateY(-2px);
         }
 
@@ -119,12 +119,11 @@
             padding-right: 100px;
         }
 
-        /* Sağ yarıya GIF eklemek için yeni stil */
         .right-half {
-            flex: 1; /* Sağdaki tüm boş alanı kapla */
+            flex: 1;
             background-image: url('hanil3.gif');
-            background-size: cover; /* Resmi tüm alanı kaplayacak şekilde boyutlandır */
-            background-position: center; /* Resmi ortala */
+            background-size: cover;
+            background-position: center;
             background-repeat: no-repeat;
             position: relative;
             z-index: 5;
@@ -175,100 +174,69 @@
         <img src="ASSAN_HANIL-1.png" alt="Hanil Logo" class="logo">
     </div>
 
-    <body>
-        <div class="left-half">
-            <div class="form-content">
-                <h1 class="text-3xl font-extrabold text-gray-800 mb-8">Yeni Proje Bilgileri</h1>
-                <form id="newProjectForm">
-                    <div class="grid grid-cols-1 gap-6 mb-6">
-                        <div class="md:col-span-1">
-                            <label for="customerName" class="block text-sm font-medium text-gray-700 mb-1">Müşteri Adı</label>
-                            <div class="input-with-logo">
-                                <input type="text" id="customerName" placeholder="Müşteri Adı" class="w-full" required>
-                                <img id="customerLogo" class="customer-logo" src="" alt="Müşteri Logosu">
-                            </div>
-                        </div>
-                        <div class="md:col-span-1">
-                            <label for="projectName" class="block text-sm font-medium text-gray-700 mb-1">Proje Adı</label>
-                            <input type="text" id="projectName" placeholder="Proje Adı" class="w-full" required>
-                        </div>
+    <div class="left-half">
+        <div class="form-content">
+            <h1>Yeni Proje Oluştur</h1>
+            <p class="text-gray-600 mb-6">Projeniz için temel bilgileri girerek başlayın.</p>
+            <form id="projectForm">
+                <div class="mb-4">
+                    <label for="projectName" class="block text-gray-700 text-sm font-bold mb-2">Proje Adı</label>
+                    <input type="text" id="projectName" name="projectName" placeholder="Örn: Yeni Araç Projesi" required
+                           class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                </div>
+                <div class="mb-4">
+                    <label for="projectLife" class="block text-gray-700 text-sm font-bold mb-2">Proje Ömrü (Yıl)</label>
+                    <input type="number" id="projectLife" name="projectLife" placeholder="Örn: 5" required
+                           class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline min-w-0">
+                </div>
+                <div class="mb-4">
+                    <label for="projectStartYear" class="block text-gray-700 text-sm font-bold mb-2">Proje Başlangıç Yılı</label>
+                    <input type="number" id="projectStartYear" name="projectStartYear" placeholder="Örn: 2023" required
+                           class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline min-w-0">
+                </div>
+                <div class="mb-6">
+                    <label for="customerName" class="block text-gray-700 text-sm font-bold mb-2">Müşteri Adı</label>
+                    <div class="input-with-logo">
+                        <input type="text" id="customerName" name="customerName" placeholder="Örn: Toyota, Ford, Tofaş" required
+                               class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                        <img id="customerLogo" src="" alt="Customer Logo" class="customer-logo">
                     </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                        <div>
-                            <label for="projectStartYear" class="block text-sm font-medium text-gray-700 mb-1">Proje Başlama Yılı</label>
-                            <input type="number" id="projectStartYear" placeholder="Başlama Yılı" class="w-full" min="1900" max="2100" required>
-                        </div>
-                        <div>
-                            <label for="projectLife" class="block text-sm font-medium text-gray-700 mb-1">Proje Ömrü (Yıl)</label>
-                            <input type="number" id="projectLife" placeholder="Proje Ömrü" class="w-full" min="1" required>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 gap-6 mb-6">
-                        <div class="md:col-span-1">
-                            <label for="projectDescription" class="block text-sm font-medium text-gray-700 mb-1">Proje Açıklaması</label>
-                            <textarea id="projectDescription" placeholder="Proje hakkında kısa açıklama" rows="2" class="w-full"></textarea>
-                        </div>
-                    </div>
-                    <button type="submit">
-                        Proje Oluştur ve Devam Et
-                    </button>
-                </form>
-            </div>
+                </div>
+                <div class="mb-6">
+                    <label for="projectDescription" class="block text-gray-700 text-sm font-bold mb-2">Proje Açıklaması</label>
+                    <textarea id="projectDescription" name="projectDescription" rows="4" placeholder="Proje hakkında kısa bir açıklama girin..."
+                              class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"></textarea>
+                </div>
+                <button type="submit">Proje Oluştur</button>
+            </form>
         </div>
-        <div class="right-half"></div>
-    </body>
+    </div>
+
+    <div class="right-half"></div>
 
     <script>
+        const projectForm = document.getElementById('projectForm');
+        const customerNameInput = document.getElementById('customerName');
+        const customerLogo = document.getElementById('customerLogo');
+
         const customerLogos = {
-            'byd': 'logos/byd.png',
-            'ford': 'logos/ford.png',
-            'stellantis': 'logos/stellantis.png',
-            'renault': 'logos/renault.png',
-            'tesla': 'logos/tesla.png',
-            'mercedes-benz': 'logos/mercedes-benz.png'
+            'toyota': 'toyota_logo.png',
+            'ford': 'ford_logo.png',
+            'tofaş': 'tofas_logo.png'
         };
 
-        const customerNameInput = document.getElementById('customerName');
-        const customerLogoImg = document.getElementById('customerLogo');
-        const projectStartYearInput = document.getElementById('projectStartYear');
-
-        // Sayfa yüklendiğinde yıl değerini otomatik olarak ayarla
-        projectStartYearInput.value = new Date().getFullYear();
-
-        // Müşteri adı girildikçe logo gösterme/gizleme
         customerNameInput.addEventListener('input', function() {
-            const enteredText = customerNameInput.value.toLowerCase().trim();
-            let bestMatchKey = null;
-            let maxLength = 0;
-
-            if (enteredText.length > 0) {
-                for (const key in customerLogos) {
-                    if (key.startsWith(enteredText)) {
-                        if (key.length > maxLength) {
-                            bestMatchKey = key;
-                            maxLength = key.length;
-                        }
-                    }
-                }
-            }
-
-            if (bestMatchKey) {
-                customerLogoImg.src = customerLogos.hasOwnProperty(bestMatchKey) ? customerLogos[bestMatchKey] : '';
-                customerLogoImg.style.display = 'block';
-                customerLogoImg.classList.add('visible');
+            const customer = this.value.toLowerCase();
+            if (customerLogos[customer]) {
+                customerLogo.src = customerLogos[customer];
+                customerLogo.classList.add('visible');
             } else {
-                customerLogoImg.classList.remove('visible');
-                setTimeout(() => {
-                    customerLogoImg.style.display = 'none';
-                    customerLogoImg.src = '';
-                }, 300);
+                customerLogo.classList.remove('visible');
+                customerLogo.src = '';
             }
         });
 
-        // Form gönderildiğinde
-        document.getElementById('newProjectForm').addEventListener('submit', function(event) {
+        projectForm.addEventListener('submit', function(event) {
             event.preventDefault();
 
             const projectName = document.getElementById('projectName').value;
@@ -277,27 +245,25 @@
             const customerName = document.getElementById('customerName').value;
             const projectDescription = document.getElementById('projectDescription').value;
 
-            // Yeni proje nesnesini oluşturur
             const newProject = {
-                id: Date.now(), // Benzersiz bir ID için zaman damgası
+                id: Date.now(),
                 name: projectName,
-                life: parseInt(projectLife), // Sayısal değere dönüştürür
-                startYear: parseInt(projectStartYear), // Sayısal değere dönüştürür
+                life: parseInt(projectLife),
+                startYear: parseInt(projectStartYear),
                 customer: customerName,
                 description: projectDescription,
-                materials: [] // Malzeme listesi başlangıçta boş
+                materials: [],
+                volumes: [] // Add this line to initialize volumes array
             };
 
-            // Mevcut projeleri localStorage'dan alır veya boş bir dizi oluşturur
             let projects = JSON.parse(localStorage.getItem('projects') || '[]');
-            projects.push(newProject); // Yeni projeyi listeye ekler
-            localStorage.setItem('projects', JSON.stringify(projects)); // Projeleri localStorage'a kaydeder
+            projects.push(newProject);
+            localStorage.setItem('projects', JSON.stringify(projects));
+            localStorage.setItem('lastProject', JSON.stringify(newProject)); // Save the newly created project as the last project
 
-            // Ana sayfaya yönlendirme yapmaya çalışır
             if (window.parent && window.parent.loadPage) {
-                window.parent.loadPage('bom_page.html');
+                window.parent.loadPage('dashboard.html'); // BOM page yerine dashboard sayfasına yönlendir
             } else {
-                // Yönlendirme yapılamazsa kullanıcıyı bilgilendirir
                 alert('Proje oluşturuldu ancak ana sayfaya yönlendirme yapılamadı. Tarayıcı konsolunu kontrol edin.');
                 console.error("window.parent.loadPage is not defined. Ensure index.html defines loadPage globally.");
             }
