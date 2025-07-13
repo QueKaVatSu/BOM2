@@ -57,13 +57,30 @@
         .node text.production-location-text {
             font-weight: bold;
         }
+        /* Make (ASHA) için yeşil */
+        .node text.green-text {
+            fill: #28a745; /* Bootstrap success green */
+        }
+        /* Buy (Supplier) için kırmızı */
+        .node text.red-text {
+            fill: #dc3545; /* Bootstrap danger red */
+        }
+        /* Hammadde metni için */
+        .node text.raw-material-text {
+            fill: #666;
+        }
+        /* Ana Ürün metni için (şu an daire içinde gösterilmiyor, sadece tooltipte) */
+        .node text.main-product-text {
+            font-weight: bold;
+            fill: blue;
+        }
         .link {
             fill: none;
             stroke: #ccc;
             stroke-width: 1.5px; /* Kalınlık 2 katına çıkarıldı (0.75px * 2) */
         }
         .link-label {
-            font-size: 16px; /* Bağlantı metni boyutu */
+            font-size: 16px; /* Bağlantı metni boyutu 4 katına çıkarıldı (8px * 4) */
             fill: #666;
             text-anchor: middle;
             pointer-events: none; /* Etkileşimi engelle */
@@ -119,6 +136,7 @@
                         productionLocation: "N/A", 
                         productionMethod: "N/A", 
                         assemblyType: "N/A", 
+                        isMainProduct: false, // Dummy root is not a main product
                         children: potentialRoots
                     };
                     return dummyRoot;
@@ -133,7 +151,8 @@
 
             const width = document.getElementById('chart').clientWidth;
             const height = document.getElementById('chart').clientHeight;
-            const radius = (Math.min(width, height) / 2 - 20) * 4.0; // Radius çarpanı artırılarak çizgilerin boyu artırıldı
+            // Radius çarpanı 2.5'ten 3.75'e çıkarıldı (1.5 katına artırıldı)
+            const radius = (Math.min(width, height) / 2 - 20) * 3.75; 
 
             const svg = d3.select("#chart")
                 .append("svg")
@@ -167,12 +186,14 @@
                     return [x, y];
                 }
 
+                // numLevelsForScaling artık sadece ölçekleme oranını belirliyor, maksimum seviyeyi değil.
+                const numLevelsForScaling = 10; 
+
                 const calculateNodeRadius = (d) => {
-                    const numLevelsForScaling = 10;
+                    const effectiveDepth = d.depth; 
                     const baseCircleRadius = 92.5; 
                     const minCircleRadius = 2.5; 
                     const totalRadiusRange = baseCircleRadius - minCircleRadius; 
-                    const effectiveDepth = Math.min(d.depth, numLevelsForScaling - 1); 
                     return Math.max(minCircleRadius, baseCircleRadius - (effectiveDepth * (totalRadiusRange / numLevelsForScaling)));
                 };
 
@@ -223,10 +244,10 @@
 
                 linkLabels.append("rect") // Metin arka planı için dikdörtgen
                     .attr("class", "link-label-background")
-                    .attr("x", -20) 
-                    .attr("y", -6)  
-                    .attr("width", 40) 
-                    .attr("height", 12) 
+                    .attr("x", -60) /* Genişleyen yazıya göre ayarlandı */
+                    .attr("y", -20)  /* Genişleyen yazıya göre ayarlandı */
+                    .attr("width", 120) /* Genişleyen yazıya göre ayarlandı */
+                    .attr("height", 40) /* Genişleyen yazıya göre ayarlandı */
                     .attr("rx", 3) 
                     .attr("ry", 3); 
 
@@ -234,8 +255,6 @@
                     .attr("class", "link-label")
                     .attr("dy", "0.31em")
                     .text(d => d.target.data.assemblyType || 'N/A'); 
-
-                const numLevelsForScaling = 10; 
 
                 const baseCircleRadius = 92.5; 
                 const minCircleRadius = 2.5; 
@@ -264,79 +283,68 @@
                 node.each(function(d) {
                     const currentRadius = parseFloat(d3.select(this).select(".outer-circle").attr("r")); 
                     
-                    const effectiveDepth = Math.min(d.depth, numLevelsForScaling - 1);
+                    const effectiveDepth = d.depth;
                     const mainFontSize = Math.max(minMainFontSize, baseMainFontSize - (effectiveDepth * ((baseMainFontSize - minMainFontSize) / numLevelsForScaling)));
                     const subFontSize = Math.max(minSubFontSize, baseSubFontSize - (effectiveDepth * ((baseSubFontSize - minSubFontSize) / numLevelsForScaling)));
 
-                    let contentHeights = [mainFontSize, subFontSize, subFontSize]; // description, partNumber, assemblyType
-                    let productionLocationTextHeight = 0; 
-                    let productionLocationText = '';
-                    let productionLocationColor = '';
+                    let contentLines = [];
+                    let totalContentHeight = 0;
 
-                    // Üretim konumu metnini belirle ve stilini ayarla
+                    // 1. Parça İsmi (Açıklama)
+                    contentLines.push({ text: d.data.description, class: "main-text", fontSize: mainFontSize });
+                    totalContentHeight += mainFontSize;
+
+                    // 2. Parça Numarası
+                    contentLines.push({ text: `No: ${d.data.partNumber}`, class: "sub-text", fontSize: subFontSize });
+                    totalContentHeight += subFontSize;
+
+                    // 3. Make/Buy (Üretim Konumu)
+                    let productionLocationText = '';
+                    let productionLocationClass = '';
                     if (d.data.productionLocation === 'ASHA') {
                         productionLocationText = 'MAKE';
-                        productionLocationColor = 'green';
-                        productionLocationTextHeight = subFontSize; 
-                        contentHeights.unshift(productionLocationTextHeight); 
+                        productionLocationClass = 'production-location-text green-text'; 
                     } else if (d.data.productionLocation === 'Supplier') {
                         productionLocationText = 'BUY';
-                        productionLocationColor = 'red';
-                        productionLocationTextHeight = subFontSize; 
-                        contentHeights.unshift(productionLocationTextHeight); 
+                        productionLocationClass = 'production-location-text red-text'; 
+                    }
+                    if (productionLocationText) {
+                        contentLines.push({ text: productionLocationText, class: productionLocationClass, fontSize: subFontSize });
+                        totalContentHeight += subFontSize;
                     }
 
-                    let totalContentHeight = contentHeights.reduce((sum, h) => sum + h, 0);
-
+                    // 4. Hammadde (eğer varsa ve boş değilse)
+                    if (d.data.rawMaterial && d.data.rawMaterial !== '') {
+                        contentLines.push({ text: `Hammadde: ${d.data.rawMaterial}`, class: "raw-material-text", fontSize: subFontSize });
+                        totalContentHeight += subFontSize;
+                    }
+                    
+                    // Metinlerin dikey konumunu hesapla
                     let currentY = -totalContentHeight / 2;
 
-                    // Üretim konumu metnini ekle (MAKE/BUY)
-                    if (productionLocationText) {
+                    contentLines.forEach(line => {
                         d3.select(this).append("text")
-                            .attr("class", "production-location-text")
+                            .attr("class", line.class)
                             .attr("x", 0)
-                            .attr("y", currentY + (productionLocationTextHeight / 2))
+                            .attr("y", currentY + (line.fontSize / 2))
                             .attr("text-anchor", "middle")
                             .attr("transform", `rotate(${-(d.x * 180 / Math.PI - 90)})`)
-                            .style("font-size", `${subFontSize}px`)
-                            .style("font-weight", "bold")
-                            .style("fill", productionLocationColor)
-                            .text(productionLocationText);
-                        currentY += productionLocationTextHeight;
-                    }
-
-                    d3.select(this).append("text")
-                        .attr("class", "main-text")
-                        .attr("x", 0)
-                        .attr("y", currentY + (mainFontSize / 2)) 
-                        .attr("text-anchor", "middle")
-                        .attr("transform", `rotate(${-(d.x * 180 / Math.PI - 90)})`)
-                        .style("font-size", `${mainFontSize}px`)
-                        .text(d.data.description);
-                    currentY += mainFontSize; 
-
-                    d3.select(this).append("text")
-                        .attr("class", "sub-text")
-                        .attr("x", 0)
-                        .attr("y", currentY + (subFontSize / 2)) 
-                        .attr("text-anchor", "middle")
-                        .attr("transform", `rotate(${-(d.x * 180 / Math.PI - 90)})`)
-                        .style("font-size", `${subFontSize}px`)
-                        .text(`No: ${d.data.partNumber}`);
-                    currentY += subFontSize; 
-
-                    d3.select(this).append("text")
-                        .attr("class", "sub-text")
-                        .attr("x", 0)
-                        .attr("y", currentY + (subFontSize / 2)) 
-                        .attr("text-anchor", "middle")
-                        .attr("transform", `rotate(${-(d.x * 180 / Math.PI - 90)})`)
-                        .style("font-size", `${subFontSize}px`)
-                        .text(`Montaj Şekli: ${d.data.assemblyType || 'N/A'}`);
+                            .style("font-size", `${line.fontSize}px`)
+                            .text(line.text);
+                        currentY += line.fontSize;
+                    });
                 });
 
                 node.append("title")
-                    .text(d => `${d.data.partNumber}\n${d.data.description}\nLevel: ${d.depth}\nMontaj Şekli: ${d.data.assemblyType || 'N/A'}`);
+                    .text(d => {
+                        let tooltipText = `Parça Adı: ${d.data.description}\nParça No: ${d.data.partNumber}`;
+                        if (d.data.isMainProduct) tooltipText += "\nAna Ürün"; // Keep this in tooltip
+                        if (d.data.productionLocation) tooltipText += `\nÜretim Konumu: ${d.data.productionLocation}`;
+                        if (d.data.rawMaterial) tooltipText += `\nHammadde: ${d.data.rawMaterial}`;
+                        if (d.data.productionMethod) tooltipText += `\nÜretim Yöntemi: ${d.data.productionMethod}`;
+                        if (d.data.assemblyType) tooltipText += `\nMontaj Şekli: ${d.data.assemblyType}`;
+                        return tooltipText;
+                    });
             }
 
             const hierarchicalData = buildD3Hierarchy(bomMaterials);
