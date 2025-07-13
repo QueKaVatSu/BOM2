@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BOM & Volume Analizi</title>
+    <title>Yeni Proje Oluştur</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
@@ -19,40 +19,166 @@
             position: relative;
         }
 
+        /* Ana form kapsayıcısı */
+        #mainFormContainer {
+            display: none; /* Başlangıçta gizli */
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 20; /* Sidebar'ın üzerinde kalması için */
+        }
+
         .logo-container {
             position: absolute;
             top: 2rem;
             left: 3rem;
-            z-index: 30;
+            z-index: 30; /* En üstte olmalı */
         }
         .logo {
             max-width: 200px;
             height: auto;
         }
 
+        .left-half {
+            flex: 0 0 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            padding-left: 3rem;
+            box-sizing: border-box;
+            z-index: 10;
+            position: relative;
+            margin-top: 1.25rem;
+        }
+        .form-content {
+            max-width: 100%;
+            text-align: left;
+            padding-top: 0;
+            padding-right: 0;
+            margin: 0;
+        }
+        .form-content h1 {
+            font-weight: 700;
+            color: #1a202c;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+            text-align: left;
+            font-size: 3rem;
+            margin-top: 5rem;
+            margin-bottom: 0.5rem;
+        }
+        .form-content label {
+            font-weight: 400;
+            color: #4a5568;
+            margin-bottom: 0.25rem;
+            display: block;
+        }
+        .form-content input,
+        .form-content textarea {
+            border: 1px solid #cbd5e0;
+            padding: 0.75rem 1rem;
+            width: 100%;
+            border-radius: 0.5rem;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .form-content input:focus,
+        .form-content textarea:focus {
+            outline: none;
+            border-color: #00008B; /* Pers Mavisi Odak */
+            box-shadow: 0 0 0 3px rgba(0, 0, 139, 0.3); /* Pers Mavisi Gölge */
+        }
+        .form-content textarea {
+            resize: none;
+            overflow-y: auto;
+        }
+
+        .form-content button {
+            background-color: #00008B; /* Pers Mavisi */
+            color: white;
+            font-weight: 600;
+            padding: 0.85rem 2rem;
+            border-radius: 9999px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            text-align: center;
+            border: none;
+            cursor: pointer;
+            width: 425px;
+            display: block;
+            margin-top: 1rem;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .form-content button:hover {
+            background-color: #0000CD; /* Koyu Pers Mavisi */
+            transform: translateY(-2px);
+        }
+
+        .input-with-logo {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .customer-logo {
+            position: absolute;
+            right: 10px;
+            height: 30px;
+            width: auto;
+            object-fit: contain;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            max-width: 80px;
+            display: none;
+        }
+        .customer-logo.visible {
+            opacity: 1;
+            display: block;
+        }
+        .input-with-logo input {
+            padding-right: 100px;
+        }
+
+        /* Sağ yarıya GIF eklemek için yeni stil */
+        .right-half-initial {
+            flex: 1; /* Sağdaki tüm boş alanı kapla */
+            background-image: url('hanil3.gif');
+            background-size: cover; /* Resmi tüm alanı kaplayacak şekilde boyutlandır */
+            background-position: center; /* Resmi ortala */
+            background-repeat: no-repeat;
+            position: relative;
+            z-index: 5;
+            display: none; /* Başlangıçta gizli */
+        }
+        /* Gizlenmesi gerektiğinde kullanılacak sınıf */
+        .right-half-initial.hidden {
+            display: none;
+        }
+
         /* Sidebar Stilleri */
         .sidebar {
             position: fixed;
             top: 0;
-            left: -250px;
+            left: -250px; /* Başlangıçta gizli */
             width: 250px;
             height: 100%;
-            background-color: transparent; /* Başlangıçta şeffaf */
+            background-color: transparent;
             box-shadow: 2px 0 5px rgba(0,0,0,0.5);
-            transition: left 0.3s ease;
+            transition: left 0.3s ease; /* Kayarak açılma animasyonu */
             z-index: 1000;
             display: flex;
             flex-direction: column;
         }
 
         .sidebar.open {
-            left: 0;
+            left: 0; /* Açıldığında görünür */
         }
 
         .sidebar-logo-container {
             padding: 20px;
             text-align: center;
-            background-color: white; /* Logo arka planı */
+            background-color: white;
             z-index: 1;
         }
 
@@ -63,7 +189,7 @@
 
         .sidebar-bottom-section {
             flex-grow: 1;
-            background-color: #00008B; /* Lacivert arka plan */
+            background-color: #00008B; /* Pers Mavisi */
             padding-top: 20px;
             z-index: 0;
             display: flex;
@@ -102,18 +228,18 @@
         .content-frame-container {
             position: absolute;
             top: 0;
-            left: 0;
+            left: 0; /* Başlangıçta tam ekran, sidebar açılınca kayacak */
             width: 100%;
             height: 100%;
             z-index: 999;
             background-color: #ffffff;
-            transition: left 0.3s ease, width 0.3s ease;
-            display: none; /* Başlangıçta gizli */
+            transition: left 0.3s ease, width 0.3s ease; /* Kayma animasyonu */
+            display: block; /* Başlangıçta görünür */
         }
 
         .content-frame-container.shifted {
-            left: 250px;
-            width: calc(100% - 250px);
+            left: 250px; /* Sidebar açıldığında kayacak */
+            width: calc(100% - 250px); /* Sidebar açıldığında daralacak */
         }
 
         .content-frame-container iframe {
@@ -124,6 +250,12 @@
 
         /* Küçük ekranlar için responsive ayarlar */
         @media (max-width: 768px) {
+            .main-form-container {
+                flex-direction: column;
+                position: relative;
+                width: 100%;
+                height: auto;
+            }
             .logo-container {
                 top: 1.5rem;
                 left: 1.5rem;
@@ -131,16 +263,51 @@
             .logo {
                 max-width: 150px;
             }
+            .left-half {
+                flex: 0 0 100%;
+                padding-left: 1.5rem;
+                padding-right: 1.5rem;
+                height: auto;
+                min-height: 60vh;
+                margin-top: 1.25rem;
+            }
+            .form-content {
+                padding-top: 0;
+                max-width: 100%;
+                margin: 0;
+                padding-right: 1.5rem;
+            }
+            .form-content h1 {
+                font-size: 2rem;
+                margin-top: 4rem;
+                margin-bottom: 0.25rem;
+            }
+            .form-content input,
+            .form-content textarea {
+                padding: 0.6rem 0.8rem;
+            }
+            .form-content button {
+                padding: 0.75rem 2rem;
+                width: 298px;
+                margin-left: auto;
+                margin-right: auto;
+                margin-top: 0.75rem;
+            }
+            .right-half-initial {
+                flex: 0 0 40vh; /* Küçük ekranlarda gif'e belirli bir yükseklik ver */
+                display: block; /* Küçük ekranlarda da görünür */
+            }
+
             .sidebar {
                 width: 100%;
-                left: -100%;
+                left: -100%; /* Küçük ekranlarda sidebar'ı tamamen gizle */
                 padding-top: 0;
             }
             .sidebar.open {
-                left: 0;
+                left: 0; /* Açıldığında tam ekran */
             }
             .sidebar-logo-container {
-                display: none; /* Küçük ekranlarda logoyu gizle */
+                display: none; /* Küçük ekranlarda sidebar logosunu gizle */
             }
             .sidebar-bottom-section {
                 padding-top: 0;
@@ -150,25 +317,26 @@
                 padding: 0 10px;
                 margin: 0;
                 flex-grow: 1;
-                display: flex;
-                justify-content: space-around;
-                flex-wrap: wrap;
+                display: flex; /* Yatay menü için flex */
+                justify-content: space-around; /* Menü öğelerini eşit dağıt */
+                flex-wrap: wrap; /* Gerekirse alt satıra geç */
             }
             .sidebar-menu li {
-                margin-bottom: 0;
+                margin-bottom: 0; /* Yatay menüde margin-bottom'ı kaldır */
             }
             .sidebar-menu a {
-                padding: 10px 0;
-                border-left: none;
-                border-bottom: 5px solid transparent;
+                padding: 10px 5px;
+                text-align: center;
+                border-left: none; /* Kenar çizgiyi kaldır */
+                border-bottom: 3px solid transparent; /* Alt çizgi ekle */
             }
             .sidebar-menu a:hover,
             .sidebar-menu a.active {
-                border-left-color: transparent;
-                border-bottom-color: white;
+                border-left-color: transparent; /* Kenar çizgiyi şeffaf yap */
+                border-bottom-color: white; /* Alt çizginin rengini değiştir */
             }
             .content-frame-container.shifted {
-                left: 0; /* Küçük ekranlarda kaydırma yapma */
+                left: 0; /* Küçük ekranlarda iframe kaymayacak */
                 width: 100%;
             }
         }
@@ -179,80 +347,231 @@
         <img src="ASSAN_HANIL-1.png" alt="Hanil Logo" class="logo">
     </div>
 
-    <div class="sidebar" id="sidebar">
+    <div id="mainFormContainer" class="main-form-container">
+        <div class="left-half">
+            <div class="form-content">
+                <h1 class="text-3xl font-extrabold text-gray-800 mb-8">Yeni Proje Bilgileri</h1>
+                <form id="newProjectForm">
+                    <div class="grid grid-cols-1 gap-6 mb-6">
+                        <div class="md:col-span-1">
+                            <label for="customerName" class="block text-sm font-medium text-gray-700 mb-1">Müşteri Adı</label>
+                            <div class="input-with-logo">
+                                <input type="text" id="customerName" placeholder="Müşteri Adı" class="w-full" required>
+                                <img id="customerLogo" class="customer-logo" src="" alt="Müşteri Logosu">
+                            </div>
+                        </div>
+                        <div class="md:col-span-1">
+                            <label for="projectName" class="block text-sm font-medium text-gray-700 mb-1">Proje Adı</label>
+                            <input type="text" id="projectName" placeholder="Proje Adı" class="w-full" required>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div>
+                            <label for="projectStartYear" class="block text-sm font-medium text-gray-700 mb-1">Proje Başlama Yılı</label>
+                            <input type="number" id="projectStartYear" placeholder="Başlama Yılı" class="w-full" min="1900" max="2100" required>
+                        </div>
+                        <div>
+                            <label for="projectLife" class="block text-sm font-medium text-gray-700 mb-1">Proje Ömrü (Yıl)</label>
+                            <input type="number" id="projectLife" placeholder="Proje Ömrü" class="w-full" min="1" required>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 gap-6 mb-6">
+                        <div class="md:col-span-1">
+                            <label for="projectDescription" class="block text-sm font-medium text-gray-700 mb-1">Proje Açıklaması</label>
+                            <textarea id="projectDescription" placeholder="Proje hakkında kısa açıklama" rows="2" class="w-full"></textarea>
+                        </div>
+                    </div>
+                    <button type="submit">
+                        Proje Oluştur ve Devam Et
+                    </button>
+                </form>
+            </div>
+        </div>
+        <div id="rightHalfInitial" class="right-half-initial"></div> </div>
+
+    <div id="sidebar" class="sidebar">
         <div class="sidebar-logo-container">
             <img src="ASSAN_HANIL-1.png" alt="Hanil Logo" class="sidebar-logo">
         </div>
         <div class="sidebar-bottom-section">
             <ul class="sidebar-menu">
-                <li><a href="#" data-page="dashboard.html">Proje Detayları</a></li>
-                <li><a href="#" data-page="bom_page.html">BOM Yöneticisi</a></li>
-                <li><a href="#" data-page="volume_table.html">Hacim Analizi</a></li>
-                <li><a href="#" data-page="visual_bom.html">Görsel BOM</a></li>
+                <li><a href="#" data-page="volume_table.html" class="active">Volume Tablosu</a></li>
+                <li><a href="#" data-page="bom_page.html">BOM</a></li>
+                <li><a href="#" data-page="feature_tree.html">Unsur Ağacı</a></li>
+                <li><a href="#" data-page="visual_bom.html">Visual BOM</a></li>
             </ul>
         </div>
     </div>
 
-    <div class="content-frame-container" id="contentFrameContainer">
+    <div id="contentFrameContainer" class="content-frame-container">
         <iframe id="mainContentFrame" src="" frameborder="0"></iframe>
     </div>
 
     <script>
+        const customerLogos = {
+            'byd': 'logos/byd.png',
+            'ford': 'logos/ford.png',
+            'stellantis': 'logos/stellantis.png',
+            'renault': 'logos/renault.png',
+            'tesla': 'logos/tesla.png',
+            'mercedes-benz': 'logos/mercedes-benz.png'
+        };
+
+        const customerNameInput = document.getElementById('customerName');
+        const customerLogoImg = document.getElementById('customerLogo');
+        const projectStartYearInput = document.getElementById('projectStartYear');
         const sidebar = document.getElementById('sidebar');
         const contentFrameContainer = document.getElementById('contentFrameContainer');
         const mainContentFrame = document.getElementById('mainContentFrame');
         const sidebarLinks = document.querySelectorAll('.sidebar-menu a');
+        const mainFormContainer = document.getElementById('mainFormContainer');
+        const rightHalfInitial = document.getElementById('rightHalfInitial');
+        
+        const sidebarWidth = 250;
 
-        // Sayfa yükleme fonksiyonu
-        window.loadPage = function(pageName) {
-            mainContentFrame.src = pageName;
-            sidebarLinks.forEach(link => {
-                if (link.dataset.page === pageName) {
-                    link.classList.add('active');
-                } else {
-                    link.classList.remove('active');
+        // Sayfa yüklendiğinde yıl değerini otomatik olarak ayarla
+        projectStartYearInput.value = new Date().getFullYear();
+
+        // Müşteri adı girildikçe logo gösterme/gizleme
+        customerNameInput.addEventListener('input', function() {
+            const enteredText = customerNameInput.value.toLowerCase().trim();
+            let bestMatchKey = null;
+            let maxLength = 0;
+
+            if (enteredText.length > 0) {
+                for (const key in customerLogos) {
+                    if (key.startsWith(enteredText)) {
+                        if (key.length > maxLength) {
+                            bestMatchKey = key;
+                            maxLength = key.length;
+                        }
+                    }
                 }
-            });
+            }
 
-            // Sidebar açıkken contentFrame'i kaydır
+            if (bestMatchKey) {
+                customerLogoImg.src = customerLogos.hasOwnProperty(bestMatchKey) ? customerLogos[bestMatchKey] : '';
+                customerLogoImg.style.display = 'block';
+                customerLogoImg.classList.add('visible');
+            } else {
+                customerLogoImg.classList.remove('visible');
+                setTimeout(() => {
+                    customerLogoImg.style.display = 'none';
+                    customerLogoImg.src = '';
+                }, 300);
+            }
+        });
+
+        // Form gönderildiğinde
+        document.getElementById('newProjectForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const projectName = document.getElementById('projectName').value;
+            const projectLife = document.getElementById('projectLife').value;
+            const projectStartYear = document.getElementById('projectStartYear').value;
+            const customerName = document.getElementById('customerName').value;
+            const projectDescription = document.getElementById('projectDescription').value;
+
+            const newProject = {
+                id: Date.now(),
+                name: projectName,
+                life: parseInt(projectLife),
+                startYear: parseInt(projectStartYear),
+                customer: customerName,
+                description: projectDescription,
+                materials: []
+            };
+
+            let projects = JSON.parse(localStorage.getItem('projects') || '[]');
+            projects.push(newProject);
+            localStorage.setItem('projects', JSON.stringify(projects));
+
+            // Form gönderildiğinde doğrudan menülü görünüme geç
+            mainFormContainer.style.display = 'none';
+            rightHalfInitial.style.display = 'none'; // GIF'i gizle
+            sidebar.classList.add('open');
+            contentFrameContainer.style.display = 'block';
             if (window.innerWidth > 768) {
                 contentFrameContainer.classList.add('shifted');
             }
-            contentFrameContainer.style.display = 'block'; // iframe'i göster
-            sidebar.classList.add('open'); // Sidebar'ı aç
-        };
+            
+            // create_project_form.html'den bom_page.html'e yönlendirildiği için burada bom_page.html'yi aktif yapabiliriz.
+            sidebarLinks.forEach(link => link.classList.remove('active'));
+            const bomPageLink = Array.from(sidebarLinks).find(link => link.getAttribute('data-page') === 'bom_page.html');
+            if (bomPageLink) {
+                bomPageLink.classList.add('active');
+            }
+            // create_project_form.html zaten loadPage('bom_page.html') çağırıyor, bu yüzden burada tekrar çağırmaya gerek yok.
+        });
 
-        // Sidebar menü bağlantıları için olay dinleyicileri
+        // Sidebar menü bağlantıları için tıklama olayları
         sidebarLinks.forEach(link => {
             link.addEventListener('click', function(event) {
-                event.preventDefault(); // Varsayılan bağlantı davranışını engelle
-                const pageToLoad = this.dataset.page;
-                loadPage(pageToLoad);
+                event.preventDefault();
+                event.stopPropagation();
+
+                sidebarLinks.forEach(item => item.classList.remove('active'));
+                this.classList.add('active');
+
+                const page = this.getAttribute('data-page');
+                loadPage(page);
             });
         });
 
-        // Sayfa yüklendiğinde kontrol et
-        document.addEventListener('DOMContentLoaded', () => {
-            const projects = JSON.parse(localStorage.getItem('projects') || '[]');
-            contentFrameContainer.style.display = 'block'; // iframe container'ı görünür yap
-
-            if (projects.length > 0) {
-                // Eğer projeler varsa, doğrudan Dashboard sayfasını yükle
-                loadPage('dashboard.html'); // Dashboard sayfasını yükle
-                // İlk menü öğesini aktif yap (Dashboard)
-                sidebarLinks.forEach(link => link.classList.remove('active'));
-                const dashboardLink = document.querySelector('.sidebar-menu a[data-page="dashboard.html"]');
-                if (dashboardLink) {
-                    dashboardLink.classList.add('active');
-                }
+        // iframe'e sayfa yükleme işlevi
+        window.loadPage = function(pageName) {
+            if (pageName === 'create_project_form.html') {
+                contentFrameContainer.style.display = 'none'; // iframe'i gizle (welcome_page veya önceki içerik)
+                mainFormContainer.style.display = 'flex'; // Formu göster
+                rightHalfInitial.style.display = 'block'; // GIF'i göster
+                sidebar.classList.remove('open'); // Sidebar'ı gizle (eğer açıksa)
+                contentFrameContainer.classList.remove('shifted'); // iframe'i eski konumuna al
+                mainContentFrame.src = pageName; // create_project_form.html'i iframe'e yükle
             } else {
-                // Eğer proje yoksa, hoş geldin sayfasını yükle
-                sidebar.classList.remove('open'); // Sidebar kapalı kalacak
-                contentFrameContainer.style.left = '0'; // iframe tam ekranda kalacak
-                contentFrameContainer.style.width = '100%'; // iframe tam ekranda kalacak
-                mainContentFrame.src = 'welcome_page.html'; // Hoş geldin sayfasını yükle
+                mainFormContainer.style.display = 'none'; // Formu gizle
+                rightHalfInitial.style.display = 'none'; // GIF'i gizle
+                sidebar.classList.add('open'); // Sidebar'ı aç
+                contentFrameContainer.style.display = 'block'; // iframe'i göster
+                if (window.innerWidth > 768) {
+                    contentFrameContainer.classList.add('shifted');
+                } else {
+                    contentFrameContainer.style.left = '0';
+                    contentFrameContainer.style.width = '100%';
+                }
+                mainContentFrame.src = pageName; // Yeni sayfayı iframe'e yükle
+            }
+        };
+
+
+        // Pencere yeniden boyutlandırıldığında iframe ve sidebar konumlandırmasını ayarla
+        window.addEventListener('resize', function() {
+            if (sidebar.classList.contains('open')) { // Sidebar açıksa
+                if (window.innerWidth > 768) {
+                    contentFrameContainer.style.left = sidebarWidth + 'px';
+                    contentFrameContainer.style.width = `calc(100% - ${sidebarWidth}px)`;
+                } else {
+                    contentFrameContainer.style.left = '0';
+                    contentFrameContainer.style.width = '100%';
+                }
+            } else { // Sidebar kapalıysa (yani form ekranındaysa veya welcome ekranındaysa)
+                contentFrameContainer.style.left = '0';
+                contentFrameContainer.style.width = '100%';
             }
         });
+
+        // Sayfa ilk yüklendiğinde, sadece welcome_page'i göster
+        window.addEventListener('load', function() {
+            mainFormContainer.style.display = 'none'; // Formu gizle
+            rightHalfInitial.style.display = 'none'; // GIF'i gizle
+            sidebar.classList.remove('open'); // Sidebar'ı gizle
+            contentFrameContainer.style.display = 'block'; // iframe'i göster
+            contentFrameContainer.style.left = '0'; // iframe'i tam ekrana getir
+            contentFrameContainer.style.width = '100%'; // iframe'i tam ekrana getir
+            mainContentFrame.src = 'welcome_page.html'; // welcome_page'i yükle
+        });
+
     </script>
 </body>
 </html>
