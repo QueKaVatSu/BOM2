@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Görsel BOM Hiyerarşisi (Dairesel)</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #ffffff; /* Arka plan renklendirmesi kaldırıldı, beyaz yapıldı */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            overflow: hidden; /* D3 içeriği kaydırmayı engeller */
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .chart-container {
+            width: 95vw; /* Genişliği %95 görünüm alanı genişliğine ayarla */
+            height: 90vh; /* Yüksekliği %90 görünüm alanı yüksekliğine ayarla */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+        .node .outer-circle {
+            fill: none; 
+            stroke-width: 6px; 
+            cursor: pointer;
+        }
+        .node text {
+            font-family: sans-serif;
+            text-anchor: middle;
+            fill: #333;
+            pointer-events: none; 
+        }
+        .node text.main-text {
+            font-weight: bold;
+        }
+        .node text.sub-text {
+            fill: #555;
+        }
+        /* Yeni stil: üretim konumu metni için */
+        .node text.production-location-text {
+            font-weight: bold;
+        }
+        .link {
+            fill: none;
+            stroke: #ccc;
+            stroke-width: 1.5px; /* Kalınlık 2 katına çıkarıldı (0.75px * 2) */
+        }
+        .link-label {
+            font-size: 16px; /* Bağlantı metni boyutu */
+            fill: #666;
+            text-anchor: middle;
+            pointer-events: none; /* Etkileşimi engelle */
+        }
+        .link-label-background {
+            fill: rgba(255, 255, 255, 0.7); /* Hafif şeffaf beyaz */
+            border-radius: 3px; /* Köşeleri yuvarla */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-2xl font-bold mb-4">Görsel BOM Hiyerarşisi</h1>
+        <div id="chart" class="chart-container"></div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const bomMaterials = JSON.parse(localStorage.getItem('bomMaterials') || '[]');
+
+            if (bomMaterials.length === 0) {
+                const chartDiv = document.getElementById('chart');
+                chartDiv.innerHTML = '<p class="text-gray-600">Görselleştirilecek BOM verisi bulunamadı. Lütfen <a href="#" onclick="window.parent.loadPage(\'bom_page.html\'); return false;" class="text-blue-500 hover:underline">BOM sayfasından</a> veri giriniz.</p>';
+                return;
+            }
+
+            function buildD3Hierarchy(materials) {
+                const dataMap = new Map(materials.map(item => [item.partNumber, { ...item, children: [] }]));
+                let rootNode = null;
+
+                materials.forEach(item => {
+                    if (item.parentPartNumber) {
+                        const parent = dataMap.get(item.parentPartNumber);
+                        if (parent) {
+                            parent.children.push(dataMap.get(item.partNumber));
+                        } else {
+                            console.warn(`Parent part number ${item.parentPartNumber} not found for ${item.partNumber}. This item will be a root.`);
+                            rootNode = dataMap.get(item.partNumber);
+                        }
+                    } else {
+                        rootNode = dataMap.get(item.partNumber);
+                    }
+                });
+
+                const potentialRoots = Array.from(dataMap.values()).filter(item => !item.parentPartNumber || !materials.some(m => m.partNumber === item.parentPartNumber));
+                if (potentialRoots.length > 1) {
+                    console.warn("Multiple root nodes found or some nodes don't have a valid parent. Creating a dummy root.");
+                    const dummyRoot = {
+                        partNumber: "ROOT",
+                        description: "Tüm Ürünler",
+                        quantity: 0,
+                        unit: "",
+                        productionLocation: "N/A", 
+                        productionMethod: "N/A", 
+                        assemblyType: "N/A", 
+                        children: potentialRoots
+                    };
+                    return dummyRoot;
+                } else if (potentialRoots.length === 1) {
+                    return potentialRoots[0];
+                } else {
+                    console.error("No root node found in BOM materials.");
+                    return null;
+                }
+            }
+
+
+            const width = document.getElementById('chart').clientWidth;
+            const height = document.getElementById('chart').clientHeight;
+            const radius = (Math.min(width, height) / 2 - 20) * 4.0; // Radius çarpanı artırılarak çizgilerin boyu artırıldı
+
+            const svg = d3.select("#chart")
+                .append("svg")
+                .attr("width", width)
+                .attr("height", height);
+            
+            const g = svg.append("g")
+                .attr("transform", `translate(${width / 2},${height / 2})`);
+
+            const zoom = d3.zoom()
+                .scaleExtent([0.1, 10]) 
+                .on("zoom", (event) => {
+                    g.attr("transform", event.transform);
+                });
+
+            svg.call(zoom); 
+
+            const tree = d3.tree()
+                .size([2 * Math.PI, radius])
+                .separation((a, b) => (a.parent == b.parent ? 60 : 120) / a.depth); 
+
+            const colorScale = d3.scaleOrdinal(d3.schemeCategory10);
+
+            function drawChart(data) {
+                const root = d3.hierarchy(data, d => d.children);
+                tree(root);
+
+                function polarToCartesian(angle, radius) {
+                    const x = radius * Math.sin(angle);
+                    const y = radius * -Math.cos(angle);
+                    return [x, y];
+                }
+
+                const calculateNodeRadius = (d) => {
+                    const numLevelsForScaling = 10;
+                    const baseCircleRadius = 92.5; 
+                    const minCircleRadius = 2.5; 
+                    const totalRadiusRange = baseCircleRadius - minCircleRadius; 
+                    const effectiveDepth = Math.min(d.depth, numLevelsForScaling - 1); 
+                    return Math.max(minCircleRadius, baseCircleRadius - (effectiveDepth * (totalRadiusRange / numLevelsForScaling)));
+                };
+
+                const link = g.selectAll(".link") 
+                    .data(root.links())
+                    .enter().append("path")
+                    .attr("class", "link")
+                    .attr("d", d => {
+                        const [sx, sy] = polarToCartesian(d.source.x, d.source.y);
+                        const [tx, ty] = polarToCartesian(d.target.x, d.target.y);
+
+                        const r_s = calculateNodeRadius(d.source);
+                        const r_t = calculateNodeRadius(d.target);
+
+                        const vx = tx - sx;
+                        const vy = ty - sy;
+                        const dist = Math.sqrt(vx * vx + vy * vy);
+
+                        const nvx = vx / dist;
+                        const nvy = vy / dist;
+
+                        const sx_edge = sx + nvx * r_s;
+                        const sy_edge = sy + nvy * r_s;
+                        const tx_edge = tx - nvx * r_t;
+                        const ty_edge = ty - nvy * r_t;
+
+                        return `M ${sx_edge} ${sy_edge} L ${tx_edge} ${ty_edge}`; 
+                    });
+
+                // Link metinleri için grup oluşturma
+                const linkLabels = g.selectAll(".link-label-group")
+                    .data(root.links())
+                    .enter().append("g")
+                    .attr("class", "link-label-group")
+                    .attr("transform", d => {
+                        const [sx, sy] = polarToCartesian(d.source.x, d.source.y);
+                        const [tx, ty] = polarToCartesian(d.target.x, d.target.y);
+                        // Bağlantı çizgisinin ortası
+                        const midX = (sx + tx) / 2;
+                        const midY = (sy + ty) / 2;
+                        // Metni çevirmek için açıyı hesapla
+                        let angle = d.target.x * 180 / Math.PI - 90;
+                        if (angle > 90) angle = angle - 180;
+                        if (angle < -90) angle = angle + 180;
+
+                        return `translate(${midX},${midY}) rotate(${angle})`;
+                    });
+
+                linkLabels.append("rect") // Metin arka planı için dikdörtgen
+                    .attr("class", "link-label-background")
+                    .attr("x", -20) 
+                    .attr("y", -6)  
+                    .attr("width", 40) 
+                    .attr("height", 12) 
+                    .attr("rx", 3) 
+                    .attr("ry", 3); 
+
+                linkLabels.append("text")
+                    .attr("class", "link-label")
+                    .attr("dy", "0.31em")
+                    .text(d => d.target.data.assemblyType || 'N/A'); 
+
+                const numLevelsForScaling = 10; 
+
+                const baseCircleRadius = 92.5; 
+                const minCircleRadius = 2.5; 
+
+                const baseMainFontSize = 14; 
+                const minMainFontSize = 4;    
+
+                const baseSubFontSize = 10;   
+                const minSubFontSize = 3;     
+
+                const node = g.selectAll(".node") 
+                    .data(root.descendants())
+                    .enter().append("g")
+                    .attr("class", d => "node" + (d.children ? " node--internal" : " node--leaf"))
+                    .attr("transform", d => `
+                        rotate(${d.x * 180 / Math.PI - 90})
+                        translate(${d.y},0)
+                    `);
+
+                node.append("circle")
+                    .attr("class", "outer-circle")
+                    .attr("r", calculateNodeRadius)
+                    .style("stroke", d => colorScale(d.depth)) 
+                    .style("fill", "#FFFFFF"); // Dairelerin arka planları beyaz olsun
+
+                node.each(function(d) {
+                    const currentRadius = parseFloat(d3.select(this).select(".outer-circle").attr("r")); 
+                    
+                    const effectiveDepth = Math.min(d.depth, numLevelsForScaling - 1);
+                    const mainFontSize = Math.max(minMainFontSize, baseMainFontSize - (effectiveDepth * ((baseMainFontSize - minMainFontSize) / numLevelsForScaling)));
+                    const subFontSize = Math.max(minSubFontSize, baseSubFontSize - (effectiveDepth * ((baseSubFontSize - minSubFontSize) / numLevelsForScaling)));
+
+                    let contentHeights = [mainFontSize, subFontSize, subFontSize]; // description, partNumber, assemblyType
+                    let productionLocationTextHeight = 0; 
+                    let productionLocationText = '';
+                    let productionLocationColor = '';
+
+                    // Üretim konumu metnini belirle ve stilini ayarla
+                    if (d.data.productionLocation === 'ASHA') {
+                        productionLocationText = 'MAKE';
+                        productionLocationColor = 'green';
+                        productionLocationTextHeight = subFontSize; 
+                        contentHeights.unshift(productionLocationTextHeight); 
+                    } else if (d.data.productionLocation === 'Supplier') {
+                        productionLocationText = 'BUY';
+                        productionLocationColor = 'red';
+                        productionLocationTextHeight = subFontSize; 
+                        contentHeights.unshift(productionLocationTextHeight); 
+                    }
+
+                    let totalContentHeight = contentHeights.reduce((sum, h) => sum + h, 0);
+
+                    let currentY = -totalContentHeight / 2;
+
+                    // Üretim konumu metnini ekle (MAKE/BUY)
+                    if (productionLocationText) {
+                        d3.select(this).append("text")
+                            .attr("class", "production-location-text")
+                            .attr("x", 0)
+                            .attr("y", currentY + (productionLocationTextHeight / 2))
+                            .attr("text-anchor", "middle")
+                            .attr("transform", `rotate(${-(d.x * 180 / Math.PI - 90)})`)
+                            .style("font-size", `${subFontSize}px`)
+                            .style("font-weight", "bold")
+                            .style("fill", productionLocationColor)
+                            .text(productionLocationText);
+                        currentY += productionLocationTextHeight;
+                    }
+
+                    d3.select(this).append("text")
+                        .attr("class", "main-text")
+                        .attr("x", 0)
+                        .attr("y", currentY + (mainFontSize / 2)) 
+                        .attr("text-anchor", "middle")
+                        .attr("transform", `rotate(${-(d.x * 180 / Math.PI - 90)})`)
+                        .style("font-size", `${mainFontSize}px`)
+                        .text(d.data.description);
+                    currentY += mainFontSize; 
+
+                    d3.select(this).append("text")
+                        .attr("class", "sub-text")
+                        .attr("x", 0)
+                        .attr("y", currentY + (subFontSize / 2)) 
+                        .attr("text-anchor", "middle")
+                        .attr("transform", `rotate(${-(d.x * 180 / Math.PI - 90)})`)
+                        .style("font-size", `${subFontSize}px`)
+                        .text(`No: ${d.data.partNumber}`);
+                    currentY += subFontSize; 
+
+                    d3.select(this).append("text")
+                        .attr("class", "sub-text")
+                        .attr("x", 0)
+                        .attr("y", currentY + (subFontSize / 2)) 
+                        .attr("text-anchor", "middle")
+                        .attr("transform", `rotate(${-(d.x * 180 / Math.PI - 90)})`)
+                        .style("font-size", `${subFontSize}px`)
+                        .text(`Montaj Şekli: ${d.data.assemblyType || 'N/A'}`);
+                });
+
+                node.append("title")
+                    .text(d => `${d.data.partNumber}\n${d.data.description}\nLevel: ${d.depth}\nMontaj Şekli: ${d.data.assemblyType || 'N/A'}`);
+            }
+
+            const hierarchicalData = buildD3Hierarchy(bomMaterials);
+            if (hierarchicalData) {
+                drawChart(hierarchicalData);
+            }
+        });
+    </script>
+</body>
+</html>
