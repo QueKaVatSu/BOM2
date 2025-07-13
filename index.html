@@ -19,16 +19,6 @@
             position: relative;
         }
 
-        #mainFormContainer {
-            display: flex;
-            width: 100%;
-            height: 100%;
-            position: absolute;
-            top: 0;
-            left: 0;
-            z-index: 20;
-        }
-
         .logo-container {
             position: absolute;
             top: 2rem;
@@ -40,119 +30,6 @@
             height: auto;
         }
 
-        .left-half {
-            flex: 0 0 50%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: flex-start;
-            padding-left: 3rem;
-            box-sizing: border-box;
-            z-index: 10;
-            position: relative;
-            margin-top: 1.25rem;
-        }
-        .form-content {
-            max-width: 100%;
-            text-align: left;
-            padding-top: 0;
-            padding-right: 0;
-            margin: 0;
-        }
-        .form-content h1 {
-            font-weight: 700;
-            color: #1a202c;
-            line-height: 1.2;
-            margin-bottom: 1.5rem;
-            text-align: left;
-            font-size: 3rem;
-            margin-top: 5rem;
-            margin-bottom: 0.5rem;
-        }
-        .form-content label {
-            font-weight: 400;
-            color: #4a5568;
-            margin-bottom: 0.25rem;
-            display: block;
-        }
-        .form-content input,
-        .form-content textarea {
-            border: 1px solid #cbd5e0;
-            padding: 0.75rem 1rem;
-            width: 100%;
-            border-radius: 0.5rem;
-            transition: border-color 0.2s ease, box-shadow 0.2s ease;
-        }
-        .form-content input:focus,
-        .form-content textarea:focus {
-            outline: none;
-            border-color: #00008B;
-            box-shadow: 0 0 0 3px rgba(0, 0, 139, 0.3);
-        }
-        .form-content textarea {
-            resize: none;
-            overflow-y: auto;
-        }
-
-        .form-content button {
-            background-color: #00008B;
-            color: white;
-            font-weight: 600;
-            padding: 0.85rem 2rem;
-            border-radius: 9999px;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-            text-align: center;
-            border: none;
-            cursor: pointer;
-            width: 425px;
-            display: block;
-            margin-top: 1rem;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        .form-content button:hover {
-            background-color: #0000CD;
-            transform: translateY(-2px);
-        }
-
-        .input-with-logo {
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
-        .customer-logo {
-            position: absolute;
-            right: 10px;
-            height: 30px;
-            width: auto;
-            object-fit: contain;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            max-width: 80px;
-            display: none;
-        }
-        .customer-logo.visible {
-            opacity: 1;
-            display: block;
-        }
-        .input-with-logo input {
-            padding-right: 100px;
-        }
-
-        .right-half-initial {
-            flex: 1;
-            background-image: url('hanil3.gif');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            position: relative;
-            z-index: 5;
-            display: block;
-        }
-        .right-half-initial.hidden {
-            display: none;
-        }
-
         /* Sidebar Stilleri */
         .sidebar {
             position: fixed;
@@ -160,7 +37,7 @@
             left: -250px;
             width: 250px;
             height: 100%;
-            background-color: transparent;
+            background-color: transparent; /* Başlangıçta şeffaf */
             box-shadow: 2px 0 5px rgba(0,0,0,0.5);
             transition: left 0.3s ease;
             z-index: 1000;
@@ -175,7 +52,7 @@
         .sidebar-logo-container {
             padding: 20px;
             text-align: center;
-            background-color: white;
+            background-color: white; /* Logo arka planı */
             z-index: 1;
         }
 
@@ -186,7 +63,7 @@
 
         .sidebar-bottom-section {
             flex-grow: 1;
-            background-color: #00008B;
+            background-color: #00008B; /* Lacivert arka plan */
             padding-top: 20px;
             z-index: 0;
             display: flex;
@@ -231,7 +108,7 @@
             z-index: 999;
             background-color: #ffffff;
             transition: left 0.3s ease, width 0.3s ease;
-            display: none;
+            display: none; /* Başlangıçta gizli */
         }
 
         .content-frame-container.shifted {
@@ -247,52 +124,12 @@
 
         /* Küçük ekranlar için responsive ayarlar */
         @media (max-width: 768px) {
-            .main-form-container {
-                flex-direction: column;
-                position: relative;
-                width: 100%;
-                height: auto;
-            }
             .logo-container {
                 top: 1.5rem;
                 left: 1.5rem;
             }
             .logo {
                 max-width: 150px;
-            }
-            .left-half {
-                flex: 0 0 100%;
-                padding-left: 1.5rem;
-                padding-right: 1.5rem;
-                height: auto;
-                min-height: 60vh;
-                margin-top: 1.25rem;
-            }
-            .form-content {
-                padding-top: 0;
-                max-width: 100%;
-                margin: 0;
-                padding-right: 1.5rem;
-            }
-            .form-content h1 {
-                font-size: 2rem;
-                margin-top: 4rem;
-                margin-bottom: 0.25rem;
-            }
-            .form-content input,
-            .form-content textarea {
-                padding: 0.6rem 0.8rem;
-            }
-            .form-content button {
-                padding: 0.75rem 2rem;
-                width: 298px;
-                margin-left: auto;
-                margin-right: auto;
-                margin-top: 0.75rem;
-            }
-            .right-half-initial {
-                flex: 0 0 40vh;
-                display: block;
             }
             .sidebar {
                 width: 100%;
@@ -303,7 +140,7 @@
                 left: 0;
             }
             .sidebar-logo-container {
-                display: none;
+                display: none; /* Küçük ekranlarda logoyu gizle */
             }
             .sidebar-bottom-section {
                 padding-top: 0;
@@ -330,52 +167,16 @@
                 border-left-color: transparent;
                 border-bottom-color: white;
             }
+            .content-frame-container.shifted {
+                left: 0; /* Küçük ekranlarda kaydırma yapma */
+                width: 100%;
+            }
         }
     </style>
 </head>
 <body>
-    <div id="mainFormContainer">
-        <div class="logo-container">
-            <img src="ASSAN_HANIL-1.png" alt="Hanil Logo" class="logo">
-        </div>
-        <div class="left-half">
-            <div class="form-content">
-                <h1>Yeni Proje Oluştur</h1>
-                <p class="text-gray-600 mb-6">Projeniz için temel bilgileri girerek başlayın.</p>
-                <form id="projectForm">
-                    <div class="mb-4">
-                        <label for="projectName" class="block text-gray-700 text-sm font-bold mb-2">Proje Adı</label>
-                        <input type="text" id="projectName" name="projectName" placeholder="Örn: Yeni Araç Projesi" required
-                               class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                    </div>
-                    <div class="mb-4">
-                        <label for="projectLife" class="block text-gray-700 text-sm font-bold mb-2">Proje Ömrü (Yıl)</label>
-                        <input type="number" id="projectLife" name="projectLife" placeholder="Örn: 5" required
-                               class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline min-w-0">
-                    </div>
-                    <div class="mb-4">
-                        <label for="projectStartYear" class="block text-gray-700 text-sm font-bold mb-2">Proje Başlangıç Yılı</label>
-                        <input type="number" id="projectStartYear" name="projectStartYear" placeholder="Örn: 2023" required
-                               class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline min-w-0">
-                    </div>
-                    <div class="mb-6">
-                        <label for="customerName" class="block text-gray-700 text-sm font-bold mb-2">Müşteri Adı</label>
-                        <div class="input-with-logo">
-                            <input type="text" id="customerName" name="customerName" placeholder="Örn: Toyota, Ford, Tofaş" required
-                                   class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                            <img id="customerLogo" src="" alt="Customer Logo" class="customer-logo">
-                        </div>
-                    </div>
-                    <div class="mb-6">
-                        <label for="projectDescription" class="block text-gray-700 text-sm font-bold mb-2">Proje Açıklaması</label>
-                        <textarea id="projectDescription" name="projectDescription" rows="4" placeholder="Proje hakkında kısa bir açıklama girin..."
-                                  class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"></textarea>
-                    </div>
-                    <button type="submit">Proje Oluştur</button>
-                </form>
-            </div>
-        </div>
-        <div id="rightHalfInitial" class="right-half-initial"></div>
+    <div class="logo-container">
+        <img src="ASSAN_HANIL-1.png" alt="Hanil Logo" class="logo">
     </div>
 
     <div class="sidebar" id="sidebar">
@@ -397,32 +198,10 @@
     </div>
 
     <script>
-        const projectForm = document.getElementById('projectForm');
-        const customerNameInput = document.getElementById('customerName');
-        const customerLogo = document.getElementById('customerLogo');
-        const mainFormContainer = document.getElementById('mainFormContainer');
-        const rightHalfInitial = document.getElementById('rightHalfInitial');
         const sidebar = document.getElementById('sidebar');
         const contentFrameContainer = document.getElementById('contentFrameContainer');
         const mainContentFrame = document.getElementById('mainContentFrame');
         const sidebarLinks = document.querySelectorAll('.sidebar-menu a');
-
-        const customerLogos = {
-            'toyota': 'toyota_logo.png',
-            'ford': 'ford_logo.png',
-            'tofaş': 'tofas_logo.png'
-        };
-
-        customerNameInput.addEventListener('input', function() {
-            const customer = this.value.toLowerCase();
-            if (customerLogos[customer]) {
-                customerLogo.src = customerLogos[customer];
-                customerLogo.classList.add('visible');
-            } else {
-                customerLogo.classList.remove('visible');
-                customerLogo.src = '';
-            }
-        });
 
         // Sayfa yükleme fonksiyonu
         window.loadPage = function(pageName) {
@@ -440,8 +219,6 @@
                 contentFrameContainer.classList.add('shifted');
             }
             contentFrameContainer.style.display = 'block'; // iframe'i göster
-            mainFormContainer.style.display = 'none'; // Formu gizle
-            rightHalfInitial.classList.add('hidden'); // GIF'i gizle
             sidebar.classList.add('open'); // Sidebar'ı aç
         };
 
@@ -457,9 +234,11 @@
         // Sayfa yüklendiğinde kontrol et
         document.addEventListener('DOMContentLoaded', () => {
             const projects = JSON.parse(localStorage.getItem('projects') || '[]');
+            contentFrameContainer.style.display = 'block'; // iframe container'ı görünür yap
+
             if (projects.length > 0) {
                 // Eğer projeler varsa, doğrudan Dashboard sayfasını yükle
-                loadPage('dashboard.html'); // Yeni Dashboard sayfasını yükle
+                loadPage('dashboard.html'); // Dashboard sayfasını yükle
                 // İlk menü öğesini aktif yap (Dashboard)
                 sidebarLinks.forEach(link => link.classList.remove('active'));
                 const dashboardLink = document.querySelector('.sidebar-menu a[data-page="dashboard.html"]');
@@ -468,13 +247,10 @@
                 }
             } else {
                 // Eğer proje yoksa, hoş geldin sayfasını yükle
-                mainFormContainer.style.display = 'none';
-                rightHalfInitial.classList.add('hidden');
-                sidebar.classList.remove('open');
-                contentFrameContainer.style.display = 'block';
-                contentFrameContainer.style.left = '0';
-                contentFrameContainer.style.width = '100%';
-                mainContentFrame.src = 'welcome_page.html';
+                sidebar.classList.remove('open'); // Sidebar kapalı kalacak
+                contentFrameContainer.style.left = '0'; // iframe tam ekranda kalacak
+                contentFrameContainer.style.width = '100%'; // iframe tam ekranda kalacak
+                mainContentFrame.src = 'welcome_page.html'; // Hoş geldin sayfasını yükle
             }
         });
     </script>
