@@ -42,6 +42,7 @@
         .form-content {
             max-width: 100%;
             text-align: left;
+            padding-top: 2cm; /* Toplamda 2 cm aşağı öteleme */
         }
         .form-content h1 {
             font-weight: 700;
@@ -150,7 +151,7 @@
                 min-height: 60vh;
             }
             .form-content {
-                padding-top: 5rem;
+                padding-top: calc(5rem + 1cm); /* Mevcut 5rem'e ek 1 cm öteleme */
                 max-width: 100%;
             }
             .form-content h1 {
@@ -239,7 +240,7 @@
 
         // Müşteri adı girildikçe logo gösterme/gizleme
         customerNameInput.addEventListener('input', function() {
-            const enteredText = customerName.value.toLowerCase().trim(); // customerNameInput yerine customerName kullanıldı
+            const enteredText = customerNameInput.value.toLowerCase().trim();
             let bestMatchKey = null;
             let maxLength = 0;
 
@@ -293,12 +294,13 @@
             projects.push(newProject); // Yeni projeyi listeye ekler
             localStorage.setItem('projects', JSON.stringify(projects)); // Projeleri localStorage'a kaydeder
 
-            // Ana sayfadaki showMainContent fonksiyonunu çağırarak ana uygulamayı göster
-            if (window.parent && window.parent.showMainContent) {
-                window.parent.showMainContent();
+            // Ana sayfaya yönlendirme yapmaya çalışır
+            if (window.parent && window.parent.loadPage) {
+                window.parent.loadPage('bom_page.html');
             } else {
+                // Yönlendirme yapılamazsa kullanıcıyı bilgilendirir
                 alert('Proje oluşturuldu ancak ana sayfaya yönlendirme yapılamadı. Tarayıcı konsolunu kontrol edin.');
-                console.error("window.parent.showMainContent is not defined. Ensure index.html defines showMainContent globally.");
+                console.error("window.parent.loadPage is not defined. Ensure index.html defines loadPage globally.");
             }
         });
     </script>
