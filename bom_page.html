@@ -3,663 +3,940 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BOM Sayfası</title>
+    <title>BOM Manager - Bill of Materials</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three/examples/js/loaders/STLLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three/examples/js/controls/OrbitControls.js"></script>
     <style>
         body {
-            font-family: 'Poppins', sans-serif;
-            background-color: #f7fafc;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            height: 100vh;
-            width: 100vw;
-            overflow: hidden; /* Prevent body scroll */
+            font-family: Arial, sans-serif;
+            background-color: #f3f4f6; /* Gri arka plan */
         }
-        .sidebar {
-            width: 250px;
-            background-color: #2d3748; /* Darker sidebar */
-            color: white;
-            padding: 2rem 1rem;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
-        }
-        .sidebar-logo {
-            margin-bottom: 2rem;
-        }
-        .sidebar-logo img {
-            max-width: 150px;
-            height: auto;
-        }
-        .sidebar-menu {
-            list-style: none;
-            padding: 0;
-            width: 100%;
-            flex-grow: 1;
-        }
-        .sidebar-menu li {
-            margin-bottom: 1.5rem;
-        }
-        .sidebar-menu a {
-            display: flex;
-            align-items: center;
-            color: #cbd5e0; /* Lighter text for links */
-            text-decoration: none;
-            font-weight: 500;
-            padding: 0.75rem 1rem;
-            border-radius: 0.5rem;
-            transition: background-color 0.3s ease, color 0.3s ease;
-        }
-        .sidebar-menu a:hover,
-        .sidebar-menu a.active {
-            background-color: #4a5568; /* Darker on hover/active */
-            color: #ffffff;
-        }
-        .sidebar-menu a svg {
-            margin-right: 0.75rem;
-            width: 24px;
-            height: 24px;
-            fill: currentColor;
-        }
-        .logout-button {
-            background-color: #e53e3e; /* Red for logout */
-            color: white;
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.5rem;
-            text-decoration: none;
-            font-weight: 600;
-            transition: background-color 0.3s ease;
-            width: 100%;
-            text-align: center;
-        }
-        .logout-button:hover {
-            background-color: #c53030;
-        }
-        .main-content {
-            flex-grow: 1;
-            padding: 2rem;
-            overflow-y: auto; /* Allow content to scroll */
-        }
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-            border-bottom: 1px solid #e2e8f0;
-            padding-bottom: 1rem;
-        }
-        .header h1 {
-            font-size: 2.25rem;
-            font-weight: 700;
-            color: #2d3748;
-        }
-        .project-info {
-            background-color: #ffffff;
-            border-radius: 0.75rem;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            padding: 1.5rem;
-            margin-bottom: 2rem;
-        }
-        .project-info p {
-            font-size: 1rem;
-            color: #4a5568;
-            margin-bottom: 0.5rem;
-        }
-        .project-info p strong {
-            color: #2d3748;
-        }
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-        }
-        .section-header h2 {
-            font-size: 1.75rem;
-            font-weight: 600;
-            color: #2d3748;
-        }
-        .add-button {
-            background-color: #48bb78; /* Green for add */
-            color: white;
-            padding: 0.6rem 1.25rem;
-            border-radius: 0.5rem;
-            font-weight: 600;
-            transition: background-color 0.3s ease;
-        }
-        .add-button:hover {
-            background-color: #38a169;
-        }
-        .material-table {
-            width: 100%;
-            border-collapse: collapse;
-            background-color: #ffffff;
-            border-radius: 0.75rem;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            overflow: hidden; /* Ensures rounded corners apply to content */
-        }
-        .material-table th, .material-table td {
-            padding: 1rem 1.5rem;
-            text-align: left;
-            border-bottom: 1px solid #edf2f7;
-        }
-        .material-table th {
-            background-color: #ebf4ff; /* Light blue for table header */
-            color: #2d3748;
-            font-weight: 600;
-            text-transform: uppercase;
-            font-size: 0.875rem;
-        }
-        .material-table tbody tr:last-child td {
-            border-bottom: none;
-        }
-        .material-table tbody tr:hover {
-            background-color: #f7fafc;
-        }
-        .material-image {
-            width: 50px;
-            height: 50px;
-            object-fit: cover;
-            border-radius: 0.25rem;
-        }
-        .action-buttons button {
-            background-color: #4299e1; /* Blue for edit */
-            color: white;
-            padding: 0.4rem 0.8rem;
-            border-radius: 0.375rem;
-            font-weight: 500;
-            margin-right: 0.5rem;
-            transition: background-color 0.3s ease;
-        }
-        .action-buttons button:hover {
-            background-color: #3182ce;
-        }
-        .action-buttons button.delete {
-            background-color: #e53e3e; /* Red for delete */
-        }
-        .action-buttons button.delete:hover {
-            background-color: #c53030;
-        }
-
-        /* Modal Styles */
-        .modal {
+        #modelViewer {
+            display: none;
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            background: rgba(0, 0, 0, 0.8);
             z-index: 1000;
         }
-        .modal-content {
-            background-color: white;
-            padding: 2rem;
-            border-radius: 0.75rem;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-            width: 90%;
-            max-width: 500px;
+        #modelCanvas {
+            width: 100%;
+            height: 100%;
+        }
+        .close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: white;
+            font-size: 28px;
+            cursor: pointer;
+            z-index: 1001;
+        }
+        /* Revamped checkbox for Main Product */
+        .main-product-checkbox {
+            display: inline-block;
+            width: 24px; /* Smaller hitbox */
+            height: 24px;
+            border: 2px solid #4A90E2;
+            border-radius: 4px; /* Slightly less rounded */
+            cursor: pointer;
+            vertical-align: middle;
+            margin-right: 8px; /* Space between checkbox and text */
+            transition: all 0.2s ease-in-out;
             position: relative;
         }
-        .modal-close-button {
+        .main-product-checkbox.checked {
+            background-color: #4A90E2; /* Mavi arka plan */
+            border-color: #4A90E2;
+        }
+        .main-product-checkbox.checked::after {
+            content: '★'; /* Star icon for main product */
             position: absolute;
-            top: 1rem;
-            right: 1rem;
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: #a0aec0;
-        }
-        .modal-close-button:hover {
-            color: #4a5568;
-        }
-        .modal h3 {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: #2d3748;
-            margin-bottom: 1.5rem;
-        }
-        .modal label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-            color: #4a5568;
-        }
-        .modal input, .modal textarea, .modal select {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid #cbd5e0;
-            border-radius: 0.5rem;
-            margin-bottom: 1rem;
-        }
-        .modal button[type="submit"] {
-            background-color: #48bb78;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             color: white;
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.5rem;
-            font-weight: 600;
-            border: none;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-        .modal button[type="submit"]:hover {
-            background-color: #38a169;
-        }
-        #currentMaterialImagePreview {
-            max-width: 100px;
-            max-height: 100px;
-            margin-top: 10px;
-            display: block; /* Show only when image exists */
+            font-size: 14px;
+            font-weight: bold;
+            line-height: 1; /* Adjust line height for vertical centering */
         }
 
-        /* Material image upload button styling */
-        .file-input-wrapper {
-            position: relative;
-            overflow: hidden;
+        /* Checkbox stillerini güncelledik */
+        .checkbox { /* Genel checkbox stilleri */
             display: inline-block;
-            background-color: #4299e1;
-            color: white;
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.5rem;
-            font-weight: 600;
+            width: 28px;
+            height: 28px;
+            border: 2px solid #4A90E2; /* Varsayılan mavi */
+            border-radius: 6px;
+            margin-right: 12px;
             cursor: pointer;
-            transition: background-color 0.3s ease;
-            margin-bottom: 1rem;
+            position: relative;
+            vertical-align: middle;
         }
-        .file-input-wrapper:hover {
-            background-color: #3182ce;
+        /* BUY filtresi checkbox'ı (Supplier) */
+        .checkbox.buy.checked {
+            background-color: #FFCCCB; /* Açık Kırmızı */
+            border-color: #FFCCCB;
         }
-        .file-input-wrapper input[type="file"] {
-            position: absolute;
-            left: 0;
-            top: 0;
-            opacity: 0;
-            cursor: pointer;
+        /* MAKE filtresi checkbox'ı (ASHA) */
+        .checkbox.make.checked {
+            background-color: #90EE90; /* Açık Yeşil */
+            border-color: #90EE90;
+        }
+        /* Yeni Raw Material checkbox stili */
+        .checkbox.raw-material {
+            border-color: #00008B; /* Pers Mavisi */
+        }
+        .checkbox.raw-material.checked {
+            background-color: #00008B; /* Pers Mavisi */
+            border-color: #00008B;
+        }
+
+        .table-cell-padding {
+            padding: 12px 16px;
+        }
+        /* Yeni sınıf: Ana ürün satırları için açık pers mavisi arka plan */
+        .bg-main-product-row {
+            background-color: #E6F0FA; /* Açık pers mavisi tonu */
+        }
+        /* YENİ EKLENEN CSS: Girintili hücreler için */
+        .indent-cell {
+            padding-left: var(--indent-level); /* JavaScript tarafından ayarlanacak */
+        }
+
+        /* Tablo satır renkleri güncellendi */
+        .bg-supplier-row { /* BUY (Tedarikçi) için kırmızı */
+            background-color: #FEE2E2; /* Açık kırmızı */
+        }
+        .bg-asha-row { /* MAKE (ASHA) için yeşil */
+            background-color: #D1FAE5; /* Açık yeşil */
         }
     </style>
 </head>
-<body>
-    <div class="sidebar">
-        <div class="sidebar-logo">
-            <img src="ASSAN_HANIL-1.png" alt="Hanil Logo">
-        </div>
-        <ul class="sidebar-menu">
-            <li>
-                <a href="#" onclick="loadPage('bom_page.html')" class="active">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M3 3h18a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1zm1 2v14h16V5H4zm2 2h12v2H6V7zm0 4h12v2H6v-2zm0 4h7v2H6v-2z"/>
-                    </svg>
-                    BOM
-                </a>
-            </li>
-            <li>
-                <a href="#" onclick="loadPage('material_stock.html')">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M4 4h16a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zm0 2v12h16V6H4zm2 2h4v4H6V8zm6 0h6v4h-6V8zm-6 6h4v4H6v-4zm6 0h6v4h-6v-4z"/>
-                    </svg>
-                    Malzeme Stok
-                </a>
-            </li>
-            <li>
-                <a href="#" onclick="loadPage('supplier_page.html')">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-                    </svg>
-                    Tedarikçi
-                </a>
-            </li>
-            <li>
-                <a href="#" onclick="loadPage('report_page.html')">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M13 2.05v3.03l2.83 2.83-1.41 1.41L13 7.86V11h-2V7.86l-2.42 2.42-1.41-1.41L11 5.08V2.05c-5.06.5-9 4.76-9 9.95s3.94 9.45 9 9.95v-3.03l-2.83-2.83 1.41-1.41L11 16.14V13h2v3.14l2.42-2.42 1.41 1.41L13 18.92v3.03c5.06-.5 9-4.76 9-9.95s-3.94-9.45-9-9.95z"/>
-                    </svg>
-                    Rapor
-                </a>
-            </li>
-        </ul>
-        <a href="#" onclick="logout()" class="logout-button">Çıkış Yap</a>
-    </div>
+<body class="bg-gray-100 p-8 min-h-screen flex flex-col items-center">
+    <div class="container mx-auto bg-white rounded-lg shadow-xl p-8 mb-8">
+        <h1 class="text-3xl font-extrabold text-left text-gray-800 mb-8">Malzeme Listesi (BOM) Yöneticisi</h1>
 
-    <div class="main-content">
-        <header class="header">
-            <h1>BOM Listesi</h1>
-            <button onclick="openAddProjectModal()" class="add-button">Yeni Proje Oluştur</button>
-        </header>
-
-        <div class="project-info" id="currentProjectInfo">
-            </div>
-
-        <section>
-            <div class="section-header">
-                <h2>Malzemeler</h2>
-                <button onclick="openAddMaterialModal()" class="add-button">Malzeme Ekle</button>
-            </div>
-            <table class="material-table">
-                <thead>
-                    <tr>
-                        <th>Resim</th>
-                        <th>Malzeme Kodu</th>
-                        <th>Malzeme Adı</th>
-                        <th>Miktar</th>
-                        <th>Birim</th>
-                        <th>Birim Fiyat</th>
-                        <th>Toplam Fiyat</th>
-                        <th>Açıklama</th>
-                        <th>İşlemler</th>
-                    </tr>
-                </thead>
-                <tbody id="materialsTableBody">
-                    </tbody>
-            </table>
-        </section>
-    </div>
-
-    <div id="materialModal" class="modal hidden">
-        <div class="modal-content">
-            <button class="modal-close-button" onclick="closeMaterialModal()">×</button>
-            <h3 id="materialModalTitle">Yeni Malzeme Ekle</h3>
+        <div class="mb-10 p-6 bg-gray-50 rounded-lg border border-gray-200">
+            <h2 class="text-xl font-semibold text-gray-700 mb-5">Yeni Malzeme Ekle</h2>
             <form id="materialForm">
-                <input type="hidden" id="materialId">
-                <label for="materialImage">Malzeme Resmi:</label>
-                <div class="file-input-wrapper">
-                    <input type="file" id="materialImage" accept="image/*">
-                    Resim Seç
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                    <div>
+                        <label for="libraryInput" class="block text-sm font-medium text-gray-700 mb-1">Kütüphaneden Seç (Arama Yapın)</label>
+                        <input list="libraryOptions" id="libraryInput" placeholder="Kütüphanede arayın..." class="border border-gray-300 p-2.5 w-full rounded-md focus:ring-blue-500 focus:border-blue-500" onchange="selectFromLibrary()">
+                        <datalist id="libraryOptions">
+                            </datalist>
+                    </div>
+                    <div>
+                        <label for="partNumber" class="block text-sm font-medium text-gray-700 mb-1">Parça Numarası</label>
+                        <input type="text" id="partNumber" placeholder="Parça Numarası" class="border border-gray-300 p-2.5 w-full rounded-md focus:ring-blue-500 focus:border-500">
+                    </div>
+                    <div>
+                        <label for="description" class="block text-sm font-medium text-gray-700 mb-1">Açıklama</label>
+                        <input type="text" id="description" placeholder="Açıklama" class="border border-gray-300 p-2.5 w-full rounded-md focus:ring-blue-500 focus:border-500">
+                    </div>
+                    <div>
+                        <label for="quantity" class="block text-sm font-medium text-gray-700 mb-1">Miktar</label>
+                        <input type="number" id="quantity" placeholder="Miktar" class="border border-gray-300 p-2.5 w-full rounded-md focus:ring-blue-500 focus:border-500">
+                    </div>
+                    <div>
+                        <label for="vendor" class="block text-sm font-medium text-gray-700 mb-1">Hammadde / Tedarikçi</label>
+                        <input type="text" id="vendor" placeholder="Hammadde / Tedarikçi" class="border border-gray-300 p-2.5 w-full rounded-md focus:ring-blue-500 focus:border-500">
+                    </div>
+                    <div>
+                        <label for="weight" class="block text-sm font-medium text-gray-700 mb-1">Parça Ağırlığı (KG)</label>
+                        <input type="number" id="weight" placeholder="Parça Ağırlığı (KG)" class="border border-gray-300 p-2.5 w-full rounded-md focus:ring-blue-500 focus:border-500">
+                    </div>
+                    <div>
+                        <label for="level" class="block text-sm font-medium text-gray-700 mb-1">Seviye (1-4)</label>
+                        <input type="number" id="level" placeholder="Seviye (1-4)" class="border border-gray-300 p-2.5 w-full rounded-md focus:ring-blue-500 focus:border-500" min="1" max="4" value="1" disabled>
+                        <small class="text-gray-500">Seviye otomatik olarak belirlenir, ancak tablodan değiştirilebilir.</small>
+                    </div>
+                    <div>
+                        <label for="parentPartNumber" class="block text-sm font-medium text-gray-700 mb-1">Ebeveyn Parça Numarası (Opsiyonel)</label>
+                        <select id="parentPartNumber" class="border border-gray-300 p-2.5 w-full rounded-md focus:ring-blue-500 focus:border-500">
+                            <option value="">Yok (Ana Ürün)</option>
+                            </select>
+                    </div>
+                    <div>
+                        <label for="productionLocation" class="block text-sm font-medium text-gray-700 mb-1">Üretim Konumu</label>
+                        <select id="productionLocation" class="border border-gray-300 p-2.5 w-full rounded-md focus:ring-blue-500 focus:border-500" required>
+                            <option value="" disabled selected>Üretim Konumu Seçin</option>
+                            <option value="ASHA">MAKE</option>
+                            <option value="Supplier">BUY</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="productionMethod" class="block text-sm font-medium text-gray-700 mb-1">Üretim Yöntemi</label>
+                        <input type="text" id="productionMethod" placeholder="Örn: Enjeksiyon, Döküm" class="border border-gray-300 p-2.5 w-full rounded-md focus:ring-blue-500 focus:border-500">
+                    </div>
+                    <div>
+                        <label for="assemblyType" class="block text-sm font-medium text-gray-700 mb-1">Montaj Şekli</label>
+                        <input type="text" id="assemblyType" placeholder="Örn: Cıvatalı, Kaynaklı" class="border border-gray-300 p-2.5 w-full rounded-md focus:ring-blue-500 focus:border-500">
+                    </div>
+                    <div class="col-span-1 md:col-span-2 lg:col-span-4 grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div>
+                            <label for="photo" class="block text-sm font-medium text-gray-700 mb-1">Fotoğraf:</label>
+                            <input type="file" id="photo" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" accept="image/*">
+                        </div>
+                        <div>
+                            <label for="technicalDrawing" class="block text-sm font-medium text-gray-700 mb-1">Teknik Çizim:</label>
+                            <input type="file" id="technicalDrawing" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" accept=".pdf,image/*">
+                        </div>
+                        <div>
+                            <label for="threeDData" class="block w-full text-sm font-medium text-gray-700 mb-1">3D Verisi:</label>
+                            <input type="file" id="threeDData" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" accept=".stl,.step,.obj,.gltf">
+                        </div>
+                    </div>
                 </div>
-                <img id="currentMaterialImagePreview" src="" alt="Malzeme Resmi Önizleme" style="display: none;">
-
-                <label for="materialCode">Malzeme Kodu:</label>
-                <input type="text" id="materialCode" required>
-
-                <label for="materialName">Malzeme Adı:</label>
-                <input type="text" id="materialName" required>
-
-                <label for="materialQuantity">Miktar:</label>
-                <input type="number" id="materialQuantity" required min="1">
-
-                <label for="materialUnit">Birim:</label>
-                <input type="text" id="materialUnit" required>
-
-                <label for="materialUnitPrice">Birim Fiyatı:</label>
-                <input type="number" id="materialUnitPrice" step="0.01" required min="0">
-
-                <label for="materialDescription">Açıklama:</label>
-                <textarea id="materialDescription" rows="3"></textarea>
-
-                <button type="submit">Kaydet</button>
+                <button type="button" onclick="addMaterial()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300 ease-in-out transform hover:scale-105">Malzeme Ekle</button>
             </form>
         </div>
+
+        <div class="flex flex-col md:flex-row items-center justify-between mb-8 p-6 bg-gray-50 rounded-lg border border-gray-200">
+            <div class="flex items-center space-x-6 mb-4 md:mb-0">
+                <div class="flex items-center cursor-pointer" onclick="toggleFilter('BUY')">
+                    <div class="checkbox buy" id="supplierCheckbox"></div>
+                    <span class="text-lg font-medium text-gray-700 select-none">BUY</span>
+                </div>
+                <div class="flex items-center cursor-pointer" onclick="toggleFilter('MAKE')">
+                    <div class="checkbox make" id="ashaCheckbox"></div>
+                    <span class="text-lg font-medium text-gray-700 select-none">MAKE</span>
+                </div>
+                <div class="flex items-center cursor-pointer" onclick="toggleFilter('RAW_MATERIAL')">
+                    <div class="checkbox raw-material" id="rawMaterialCheckbox"></div>
+                    <span class="text-lg font-medium text-gray-700 select-none">Raw Material</span>
+                </div>
+            </div>
+            <div class="flex items-center w-full md:w-auto">
+                <input type="text" id="searchInput" placeholder="Parça No, Açıklama veya Grup Ara..." class="border border-gray-300 p-2.5 rounded-l-md w-full md:w-auto focus:ring-blue-500 focus:border-500">
+                <button onclick="searchMaterials()" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-r-md transition duration-300 ease-in-out">Ara</button>
+            </div>
+        </div>
+
+        <div class="mb-10 overflow-x-auto shadow-lg rounded-lg">
+            <table class="min-w-full bg-white border border-gray-300 rounded-lg">
+                <thead class="bg-gray-200" id="bomTableHeader">
+                    <tr>
+                        <th class="border px-2 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"></th><th class="border px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Parça No</th>
+                        <th class="border px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Parça İsmi</th>
+                        <th class="border px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Seviye</th>
+                        <th class="border px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Ebeveyn Parça No</th>
+                        <th class="border px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Miktar</th>
+                        <th class="border px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Üretim Yöntemi</th>
+                        <th class="border px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Montaj Şekli</th>
+                        <th class="border px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Hammadde</th>
+                        <th class="border px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">Ağırlık (KG)</th>
+                        <th class="border px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Fotoğraf</th>
+                        <th class="border px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Teknik Çizim</th>
+                        <th class="border px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">3D Verisi</th>
+                        <th class="border px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody id="materialList">
+                    </tbody>
+            </table>
+        </div>
+
+        
     </div>
 
+    <div id="modelViewer">
+        <span class="close" onclick="closeModelViewer()">&times;</span>
+        <canvas id="modelCanvas"></canvas>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/plugins/MultiDrag.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/plugins/Swap.min.js"></script>
     <script>
-        let currentProject = null;
-        let projects = [];
+        // Malzemelerin tutulduğu ana dizi
+        let materials = JSON.parse(localStorage.getItem('bomMaterials') || '[]');
 
-        document.addEventListener('DOMContentLoaded', () => {
-            loadProjects();
-            const urlParams = new URLSearchParams(window.location.search);
-            const projectId = urlParams.get('projectId');
-            if (projectId) {
-                currentProject = projects.find(p => p.id == projectId);
-            } else if (projects.length > 0) {
-                // Eğer URL'de proje ID'si yoksa ve projeler varsa ilk projeyi seç
-                currentProject = projects[0];
-            }
+        // Volume Tablosu verilerini localStorage'dan al
+        const projects = JSON.parse(localStorage.getItem('projects') || '[]');
+        const lastProject = projects[projects.length - 1];
+        let annualVolumesFromTable = {}; // Ürün adına göre hacimleri tutacak
+        let projectStartYear = null;
+        let projectLifeYears = 0;
 
-            if (currentProject) {
-                renderProjectInfo();
-                renderMaterials();
-            } else {
-                document.getElementById('currentProjectInfo').innerHTML = '<p class="text-red-500">Gösterilecek bir proje bulunamadı. Lütfen yeni bir proje oluşturun.</p>';
-            }
-        });
-
-        function loadPage(pageUrl) {
-            if (window.parent && window.parent.loadPage) {
-                // Eğer BOM sayfasına gidiyorsa ve bir proje seçiliyse, proje ID'sini URL'ye ekle
-                if (pageUrl === 'bom_page.html' && currentProject) {
-                    window.parent.loadPage(`${pageUrl}?projectId=${currentProject.id}`);
-                } else {
-                    window.parent.loadPage(pageUrl);
-                }
-            } else {
-                console.error("loadPage function is not available in parent window.");
-                window.location.href = pageUrl; // Fallback for direct access
-            }
+        if (lastProject && lastProject.volumes) {
+            lastProject.volumes.forEach(item => {
+                annualVolumesFromTable[item.productName] = item.volumes;
+            });
+            projectStartYear = lastProject.startYear;
+            projectLifeYears = lastProject.life;
         }
 
-        function logout() {
-            // Çıkış yapma mantığı
-            if (window.parent && window.parent.loadPage) {
-                window.parent.loadPage('login.html');
-            } else {
-                window.location.href = 'login.html';
-            }
-        }
+        // Kütüphane öğeleri (sabit veriler)
+        const libraryItems = [
+            { partNumber: 'C001', description: 'M6 x 20mm Cıvata', quantity: 100, vendor: 'Vendor A', productionLocation: 'Supplier', weight: 0.01, level: 1, rawMaterial: 'Çelik', productionMethod: 'Talaşlı İmalat', assemblyType: 'Cıvatalı', category: 'Cıvatalar' },
+            { partNumber: 'C002', description: 'M8 x 25mm Cıvata', quantity: 200, vendor: 'Vendor B', productionLocation: 'Supplier', weight: 0.02, level: 1, rawMaterial: 'Çelik', productionMethod: 'Talaşlı İmalat', assemblyType: 'Cıvatalı', category: 'Cıvatalar' },
+            { partNumber: 'C003', description: 'Plastik Kapak', quantity: 150, vendor: 'Vendor C', productionLocation: 'ASHA', weight: 0.03, level: 2, rawMaterial: 'PP', productionMethod: 'Enjeksiyon Kalıplama', assemblyType: 'Geçmeli', category: 'Plastik Ürünler' },
+            { partNumber: 'C004', description: 'M12 x 35mm Cıvata', quantity: 80, vendor: 'Vendor D', productionLocation: 'Supplier', weight: 0.04, level: 1, rawMaterial: 'Paslanmaz Çelik', productionMethod: 'Talaşlı İmalat', assemblyType: 'Cıvatalı', category: 'Cıvatalar' },
+            { partNumber: 'C005', description: 'Metal Braket', quantity: 50, vendor: 'Vendor E', productionLocation: 'ASHA', weight: 0.05, level: 3, rawMaterial: 'Alüminyum', productionMethod: 'Sac Metal Bükme', assemblyType: 'Kaynaklı', category: 'Metal Parçalar' },
+            { partNumber: 'C006', description: 'Sensör Kablosu', quantity: 30, vendor: 'Vendor F', productionLocation: 'Supplier', weight: 0.06, level: 2, rawMaterial: 'Bakır', productionMethod: 'Ekstrüzyon', assemblyType: 'Sıkıştırma', category: 'Kablolar ve Konnektörler' },
+            { partNumber: 'C007', description: 'Devre Kartı', quantity: 20, vendor: 'Vendor G', productionLocation: 'ASHA', weight: 0.07, level: 4, rawMaterial: 'Fiberglas', productionMethod: 'PCB Üretimi', assemblyType: 'Lehimli', category: 'Elektronik Bileşenler' },
+            { partNumber: 'C008', description: 'Kauçuk Conta', quantity: 10, vendor: 'Vendor H', productionLocation: 'Supplier', weight: 0.08, level: 1, rawMaterial: 'Kauçuk', productionMethod: 'Vulkanizasyon', assemblyType: 'Yapıştırma', category: 'Contalar ve Sızdırmazlık Elemanları' },
+            { partNumber: 'C009', description: 'LED Lamba', quantity: 5, vendor: 'Vendor I', productionLocation: 'ASHA', weight: 0.09, level: 2, rawMaterial: 'Plastik', productionMethod: 'Montaj', assemblyType: 'Geçmeli', category: 'Aydınlatma' },
+            { partNumber: 'C010', description: 'Pil Paketi', quantity: 2, vendor: 'Vendor J', productionLocation: 'Supplier', weight: 0.10, level: 3, rawMaterial: 'Lityum', productionMethod: 'Montaj', assemblyType: 'Yapıştırma', category: 'Güç Kaynakları' },
+            // Additional products
+            { partNumber: 'C011', description: 'Kablo Klipsi', quantity: 120, vendor: 'Vendor K', productionLocation: 'ASHA', weight: 0.01, level: 1, rawMaterial: 'ABS', productionMethod: 'Enjeksiyon Kalıplama', assemblyType: 'Geçmeli', category: 'Kablolar ve Konnektörler' },
+            { partNumber: 'C012', description: 'Mikro Anahtar', quantity: 90, vendor: 'Vendor L', productionLocation: 'Supplier', weight: 0.02, level: 1, rawMaterial: 'Plastik', productionMethod: 'Montaj', assemblyType: 'Lehimli', category: 'Elektronik Bileşenler' },
+            { partNumber: 'C013', description: 'Fan Motoru', quantity: 75, vendor: 'Vendor M', productionLocation: 'ASHA', weight: 0.03, level: 2, rawMaterial: 'Bakır', productionMethod: 'Sarım', assemblyType: 'Cıvatalı', category: 'Motorlar ve Fanlar' },
+            { partNumber: 'C014', description: 'Soğutucu', quantity: 60, vendor: 'Vendor N', productionLocation: 'Supplier', weight: 0.04, level: 1, rawMaterial: 'Alüminyum', productionMethod: 'Ekstrüzyon', assemblyType: 'Yapıştırma', category: 'Isı Yönetimi' },
+            { partNumber: 'C015', description: 'Termal Sensör', quantity: 40, vendor: 'Vendor O', productionLocation: 'ASHA', weight: 0.05, level: 3, rawMaterial: 'Seramik', productionMethod: 'Sinterleme', assemblyType: 'Lehimli', category: 'Sensörler' },
+            { partNumber: 'C016', description: 'Bağlantı Elemanı', quantity: 25, vendor: 'Vendor P', productionLocation: 'Supplier', weight: 0.06, level: 2, rawMaterial: 'Nikel', productionMethod: 'Presleme', assemblyType: 'Perçinli', category: 'Bağlantı Elemanları' },
+            { partNumber: 'C017', description: 'Güç Adaptörü', quantity: 15, vendor: 'Vendor Q', productionLocation: 'ASHA', weight: 0.07, level: 4, rawMaterial: 'Plastik', productionMethod: 'Montaj', assemblyType: 'Geçmeli', category: 'Güç Kaynakları' },
+            { partNumber: 'C018', description: 'Lastik Ayak', quantity: 8, vendor: 'Vendor R', productionLocation: 'Supplier', weight: 0.08, level: 1, rawMaterial: 'Kauçuk', productionMethod: 'Kalıplama', assemblyType: 'Yapıştırma', category: 'Ayaklar ve Pedler' },
+            { partNumber: 'C019', description: 'Etiket Baskı', quantity: 4, vendor: 'Vendor S', productionLocation: 'ASHA', weight: 0.09, level: 2, rawMaterial: 'Kağıt', productionMethod: 'Baskı', assemblyType: 'Yapıştırma', category: 'Etiketler' },
+            { partNumber: 'C020', description: 'Entegre Devre', quantity: 1, vendor: 'Vendor T', productionLocation: 'Supplier', weight: 0.10, level: 3, rawMaterial: 'Silikon', productionMethod: 'Yarı İletken Üretimi', assemblyType: 'Lehimli', category: 'Elektronik Bileşenler' },
+            { partNumber: 'C021', description: 'Rulman', quantity: 50, vendor: 'Vendor U', productionLocation: 'Supplier', weight: 0.02, level: 2, rawMaterial: 'Çelik', productionMethod: 'Talaşlı İmalat', assemblyType: 'Pres Geçme', category: 'Rulmanlar' },
+            { partNumber: 'C022', description: 'Mil', quantity: 30, vendor: 'Vendor V', productionLocation: 'ASHA', weight: 0.15, level: 2, rawMaterial: 'Çelik', productionMethod: 'Torna', assemblyType: 'Cıvatalı', category: 'Miller' },
+            { partNumber: 'C023', description: 'Yay', quantity: 200, vendor: 'Vendor W', productionLocation: 'Supplier', weight: 0.005, level: 1, rawMaterial: 'Çelik', productionMethod: 'Tel Bükme', assemblyType: 'Geçmeli', category: 'Yaylar' },
+            { partNumber: 'C024', description: 'Conta', quantity: 100, vendor: 'Vendor X', productionLocation: 'ASHA', weight: 0.01, level: 1, rawMaterial: 'Kauçuk', productionMethod: 'Kalıplama', assemblyType: 'Sıkıştırma', category: 'Contalar ve Sızdırmazlık Elemanları' },
+            { partNumber: 'C025', description: 'Somun', quantity: 500, vendor: 'Vendor Y', productionLocation: 'Supplier', weight: 0.002, level: 1, rawMaterial: 'Çelik', productionMethod: 'Soğuk Dövme', assemblyType: 'Cıvatalı', category: 'Cıvatalar' },
+            { partNumber: 'C026', description: 'Dişli', quantity: 10, vendor: 'Vendor Z', productionLocation: 'ASHA', weight: 0.2, level: 3, rawMaterial: 'Bronz', productionMethod: 'Dişli Kesme', assemblyType: 'Mil Geçme', category: 'Dişliler' },
+            { partNumber: 'C027', description: 'Kablo Rakoru', quantity: 75, vendor: 'Vendor AA', productionLocation: 'Supplier', weight: 0.03, level: 1, rawMaterial: 'Plastik', productionMethod: 'Enjeksiyon', assemblyType: 'Geçmeli', category: 'Kablolar ve Konnektörler' },
+            { partNumber: 'C028', description: 'Filtre', quantity: 40, vendor: 'Vendor BB', productionLocation: 'ASHA', weight: 0.1, level: 2, rawMaterial: 'Kağıt', productionMethod: 'Montaj', assemblyType: 'Yapıştırma', category: 'Filtreler' },
+            { partNumber: 'C029', description: 'Pompa Gövdesi', quantity: 5, vendor: 'Vendor CC', productionLocation: 'Supplier', weight: 1.5, level: 3, rawMaterial: 'Dökme Demir', productionMethod: 'Döküm', assemblyType: 'Cıvatalı', category: 'Pompa Parçaları' },
+            { partNumber: 'C030', description: 'Valf', quantity: 8, vendor: 'Vendor DD', productionLocation: 'ASHA', weight: 0.3, level: 3, rawMaterial: 'Pirinç', productionMethod: 'Talaşlı İmalat', assemblyType: 'Dişli', category: 'Valfler' }
+        ];
 
-        function loadProjects() {
-            const storedProjects = localStorage.getItem('projects');
-            if (storedProjects) {
-                projects = JSON.parse(storedProjects);
-            }
-        }
+        // Anlık olarak tabloda gösterilecek filtrelenmiş malzemeler
+        let filteredMaterials = []; 
+        let showSupplier = false; 
+        let showAsha = false;    
+        let showRawMaterial = false; // Yeni filtre durumu
 
-        function saveProjects() {
-            localStorage.setItem('projects', JSON.stringify(projects));
-        }
+        // Yeni malzeme ekleme fonksiyonu
+        function addMaterial() {
+            const partNumber = document.getElementById('partNumber').value;
+            const description = document.getElementById('description').value;
+            const quantity = document.getElementById('quantity').value;
+            const vendor = document.getElementById('vendor').value; // Bu artık 'Hammadde / Tedarikçi'
+            const weight = document.getElementById('weight').value;
+            // const level = document.getElementById('level').value; // Bu satırı artık formdan direkt almayacağız
+            const productionLocation = document.getElementById('productionLocation').value;
+            const productionMethod = document.getElementById('productionMethod').value; // Yeni: Üretim Yöntemi
+            const assemblyType = document.getElementById('assemblyType').value;     // Yeni: Montaj Şekli
+            const photo = document.getElementById('photo').files[0];
+            const technicalDrawing = document.getElementById('technicalDrawing').files[0];
+            const threeDData = document.getElementById('threeDData').files[0];
+            const parentPartNumber = document.getElementById('parentPartNumber').value;
 
-        function renderProjectInfo() {
-            const infoDiv = document.getElementById('currentProjectInfo');
-            if (currentProject) {
-                infoDiv.innerHTML = `
-                    <p><strong>Müşteri Adı:</strong> ${currentProject.customer}</p>
-                    <p><strong>Proje Adı:</strong> ${currentProject.name}</p>
-                    <p><strong>Başlama Yılı:</strong> ${currentProject.startYear}</p>
-                    <p><strong>Proje Ömrü:</strong> ${currentProject.life} Yıl</p>
-                    <p><strong>Açıklama:</strong> ${currentProject.description || 'N/A'}</p>
-                `;
-            } else {
-                infoDiv.innerHTML = '<p class="text-red-500">Proje bilgileri yüklenemedi.</p>';
-            }
-        }
 
-        function renderMaterials() {
-            const tableBody = document.getElementById('materialsTableBody');
-            tableBody.innerHTML = ''; // Tabloyu temizle
-
-            if (!currentProject || !currentProject.materials || currentProject.materials.length === 0) {
-                tableBody.innerHTML = '<tr><td colspan="9" class="text-center py-4 text-gray-500">Henüz malzeme eklenmemiş.</td></tr>';
+            if (!productionLocation) {
+                alert('Lütfen bir üretim konumu seçin.');
                 return;
             }
 
-            currentProject.materials.forEach(material => {
-                const row = tableBody.insertRow();
-                const totalCost = (material.quantity * material.unitPrice).toFixed(2);
-                row.innerHTML = `
-                    <td>
-                        ${material.image ? `<img src="${material.image}" alt="${material.name}" class="material-image">` : 'Yok'}
-                    </td>
-                    <td>${material.code}</td>
-                    <td>${material.name}</td>
-                    <td>${material.quantity}</td>
-                    <td>${material.unit}</td>
-                    <td>${material.unitPrice.toFixed(2)} TL</td>
-                    <td>${totalCost} TL</td>
-                    <td>${material.description || 'N/A'}</td>
-                    <td class="action-buttons">
-                        <button onclick="editMaterial(${material.id})">Düzenle</button>
-                        <button class="delete" onclick="deleteMaterial(${material.id})">Sil</button>
-                    </td>
-                `;
-            });
-        }
-
-        function openAddProjectModal() {
-            // create_project_form.html sayfasına yönlendirme yapar
-            loadPage('create_project_form.html');
-        }
-
-        let isEditing = false;
-        let editingMaterialId = null;
-
-        function openAddMaterialModal() {
-            isEditing = false;
-            document.getElementById('materialModalTitle').innerText = 'Yeni Malzeme Ekle';
-            document.getElementById('materialForm').reset();
-            document.getElementById('materialId').value = '';
-            document.getElementById('currentMaterialImagePreview').style.display = 'none';
-            document.getElementById('currentMaterialImagePreview').src = '';
-            document.getElementById('materialModal').classList.remove('hidden');
-        }
-
-        function closeMaterialModal() {
-            document.getElementById('materialModal').classList.add('hidden');
-            isEditing = false;
-            editingMaterialId = null;
-        }
-
-        document.getElementById('materialImage').addEventListener('change', function(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    // Önizleme resmini göster
-                    const preview = document.getElementById('currentMaterialImagePreview');
-                    preview.src = e.target.result;
-                    preview.style.display = 'block';
-                };
-                reader.readAsDataURL(file); // Resmi Base64 olarak oku
+            // Hammadde alanı üretim konumuna göre atanıyor
+            let rawMaterial = ''; 
+            if (productionLocation === 'ASHA') {
+                rawMaterial = vendor; 
             } else {
-                document.getElementById('currentMaterialImagePreview').style.display = 'none';
-                document.getElementById('currentMaterialImagePreview').src = '';
-            }
-        });
-
-        document.getElementById('materialForm').addEventListener('submit', function(event) {
-            event.preventDefault();
-
-            const id = document.getElementById('materialId').value ? parseInt(document.getElementById('materialId').value) : Date.now();
-            const imageFile = document.getElementById('materialImage').files[0];
-            const materialCode = document.getElementById('materialCode').value;
-            const materialName = document.getElementById('materialName').value;
-            const materialQuantity = parseInt(document.getElementById('materialQuantity').value);
-            const materialUnit = document.getElementById('materialUnit').value;
-            const materialUnitPrice = parseFloat(document.getElementById('materialUnitPrice').value);
-            const materialDescription = document.getElementById('materialDescription').value;
-
-            let materialImageBase64 = document.getElementById('currentMaterialImagePreview').src; // Mevcut önizleme resmini al
-
-            if (isEditing && editingMaterialId !== null) {
-                // Düzenleme modunda, eğer yeni bir resim seçilmediyse eski resmi koru
-                const existingMaterial = currentProject.materials.find(m => m.id === editingMaterialId);
-                if (!imageFile && existingMaterial && existingMaterial.image) {
-                    materialImageBase64 = existingMaterial.image;
-                }
-            } else if (!imageFile) {
-                 // Yeni eklemede ve resim seçilmediyse boş bırak
-                 materialImageBase64 = '';
+                rawMaterial = ''; 
             }
 
+            // **YENİ EKLENEN KOD: Level'ı otomatik olarak ata**
+            let calculatedLevel;
+            if (parentPartNumber === "" || parentPartNumber === null) {
+                calculatedLevel = 1; // Ana ürünse seviye 1
+            } else {
+                const parentMaterial = materials.find(m => m.partNumber === parentPartNumber);
+                calculatedLevel = parentMaterial ? parentMaterial.level + 1 : 1; // Ebeveyn bulunamazsa varsayılan 1
+            }
 
-            // Resim varsa ve Base64 olarak okunmuşsa kullan, yoksa mevcut olanı (veya boş stringi) kullan.
-            // Bu kısım FileReader'ın yükleme bitmesini beklemeli. Asenkron işlemi yönetmek için
-            // submit olayını bir Promise ile sarmalamak daha iyi olurdu, ama şimdilik hızlı çözüm için
-            // resim yüklenene kadar beklemeyi veya mevcut resmi kullanmayı tercih ediyoruz.
+            const newMaterial = { 
+                partNumber: partNumber || '', 
+                description: description || '', 
+                quantity: quantity ? parseInt(quantity) : 0, 
+                vendor: vendor || '', 
+                weight: weight ? parseFloat(weight) : 0.000, 
+                // level: level ? parseInt(level) : 1, // Eski level ataması
+                level: calculatedLevel, // Yeni level ataması
+                productionLocation: productionLocation, 
+                rawMaterial: rawMaterial, 
+                isMainProduct: false, 
+                productionMethod: productionMethod || '', // Yeni özellik
+                assemblyType: assemblyType || '',     // Yeni özellik
+                photoURL: photo ? URL.createObjectURL(photo) : '', 
+                technicalDrawingURL: technicalDrawing ? URL.createObjectURL(technicalDrawing) : '', 
+                threeDDataURL: threeDData ? URL.createObjectURL(threeDData) : '',
+                parentPartNumber: parentPartNumber === "" ? null : parentPartNumber 
+            };
 
-            // Async/await kullanarak resim okuma işlemini bekleyelim
-            async function processMaterial() {
-                if (imageFile) {
-                    materialImageBase64 = await readFileAsBase64(imageFile);
-                } else if (!isEditing) { // Sadece yeni eklerken ve resim seçilmediyse boş bırak
-                    materialImageBase64 = '';
-                } else if (isEditing) { // Düzenleme yaparken, resim seçilmediyse mevcut resmi koru
-                    const existingMaterial = currentProject.materials.find(m => m.id === editingMaterialId);
-                    if (existingMaterial) {
-                        materialImageBase64 = existingMaterial.image || '';
-                    } else {
-                        materialImageBase64 = '';
-                    }
-                }
+            materials.push(newMaterial); 
+            localStorage.setItem('bomMaterials', JSON.stringify(materials));
+            document.getElementById('materialForm').reset(); 
+            applyFilters();
+            populateParentPartNumberSelect(); 
+        }
 
-                const newMaterial = {
-                    id: id,
-                    image: materialImageBase64,
-                    code: materialCode,
-                    name: materialName,
-                    quantity: materialQuantity,
-                    unit: materialUnit,
-                    unitPrice: materialUnitPrice,
-                    description: materialDescription
-                };
+        // Kütüphaneden seçim yapma ve formu doldurma fonksiyonu
+        function selectFromLibrary() {
+            const selectedValue = document.getElementById('libraryInput').value;
+            let item = null;
 
-                if (isEditing) {
-                    const materialIndex = currentProject.materials.findIndex(m => m.id === editingMaterialId);
-                    if (materialIndex !== -1) {
-                        currentProject.materials[materialIndex] = newMaterial;
-                    }
+            const match = selectedValue.match(/^(.+?) - (.+)$/);
+
+            if (match) {
+                const partNum = match[1];
+                const desc = match[2];
+                item = libraryItems.find(i => i.partNumber === partNum && i.description === desc);
+            } else {
+                item = libraryItems.find(i => i.partNumber === selectedValue || i.description === selectedValue);
+            }
+
+            if (item) {
+                document.getElementById('partNumber').value = item.partNumber || '';
+                document.getElementById('description').value = item.description || '';
+                document.getElementById('quantity').value = item.quantity || '';
+                document.getElementById('vendor').value = item.vendor || '';
+                document.getElementById('weight').value = item.weight || '';
+                // document.getElementById('level').value = item.level || 1; // Level formdan otomatik belirlenecek, kütüphaneden gelmeyecek
+                document.getElementById('productionLocation').value = item.productionLocation || '';
+                document.getElementById('productionMethod').value = item.productionMethod || ''; // Yeni
+                document.getElementById('assemblyType').value = item.assemblyType || '';     // Yeni
+                // Ebeveyn seçimini kütüphane öğesi için ayarlamayız, bu kullanıcı seçimi olmalı
+                // document.getElementById('parentPartNumber').value = item.parentPartNumber || ''; 
+            } else {
+                // Eşleşme yoksa tüm alanları temizle
+                document.getElementById('partNumber').value = '';
+                document.getElementById('description').value = '';
+                document.getElementById('quantity').value = '';
+                document.getElementById('vendor').value = '';
+                document.getElementById('weight').value = '';
+                document.getElementById('level').value = 1; // Otomatik belirleneceği için burası varsayılan kalabilir
+                document.getElementById('productionLocation').value = '';
+                document.getElementById('productionMethod').value = ''; // Yeni
+                document.getElementById('assemblyType').value = '';     // Yeni
+                document.getElementById('parentPartNumber').value = ''; 
+            }
+        }
+        
+        // Malzeme satırı oluşturan yardımcı fonksiyon (eski versiyon, artık kullanılmıyor)
+        // function createMaterialRow(material) { ... } // Bu fonksiyon kaldırılabilir veya yorum satırı yapılabilir
+
+        // Yeni eklenen fonksiyon: Malzeme seviyesini güncelle
+        function updateMaterialLevel(partNumber, newLevel) {
+            const material = materials.find(m => m.partNumber === partNumber);
+            if (material) {
+                const parsedLevel = parseInt(newLevel);
+                if (!isNaN(parsedLevel) && parsedLevel >= 1 && parsedLevel <= 4) {
+                    material.level = parsedLevel;
+                    localStorage.setItem('bomMaterials', JSON.stringify(materials));
+                    applyFilters(); // Tabloyu yeniden render ederek değişikliği yansıt
                 } else {
-                    currentProject.materials.push(newMaterial);
+                    alert('Lütfen seviye için 1 ile 4 arasında geçerli bir sayı girin.');
+                    // Kullanıcıya hatalı girişi düzeltmesi için mevcut değeri geri yükleyebiliriz
+                    // applyFilters() çağrısı ile input değeri tekrar doğru hale gelecektir.
                 }
+            }
+        }
 
-                saveProjects();
-                renderMaterials();
-                closeMaterialModal();
+        // Malzeme kaldırma fonksiyonu (partNumber ile)
+        function removeMaterial(partNumber) {
+            // Silinecek malzemeyi ve onun çocuklarını bul
+            const itemsToRemove = [partNumber];
+            const findChildren = (parentPn) => {
+                materials.forEach(m => {
+                    if (m.parentPartNumber === parentPn && !itemsToRemove.includes(m.partNumber)) {
+                        itemsToRemove.push(m.partNumber);
+                        findChildren(m.partNumber); // Rekürsif olarak çocukların çocuklarını bul
+                    }
+                });
+            };
+            findChildren(partNumber);
+
+            materials = materials.filter(material => !itemsToRemove.includes(material.partNumber));
+            localStorage.setItem('bomMaterials', JSON.stringify(materials));
+            applyFilters();
+            populateParentPartNumberSelect(); 
+        }
+
+        // Ana ürün durumunu değiştirme fonksiyonu
+        function toggleMainProduct(partNumber) {
+            const material = materials.find(m => m.partNumber === partNumber);
+            if (material) {
+                material.isMainProduct = !material.isMainProduct;
+                localStorage.setItem('bomMaterials', JSON.stringify(materials));
+                applyFilters(); // Re-render to reflect the change
+            }
+        }
+        
+        // GÜNCELLENEN KOD: Malzeme listesini (tabloyu) render etme fonksiyonu
+        function renderMaterials() {
+            const materialList = document.getElementById('materialList');
+            const bomTableHeader = document.getElementById('bomTableHeader').querySelector('tr');
+            materialList.innerHTML = ''; 
+
+            // Update table headers based on showRawMaterial filter
+            if (showRawMaterial) {
+                let yearsHtml = '';
+                for (let i = 0; i < projectLifeYears; i++) {
+                    yearsHtml += `<th class="border px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">${projectStartYear + i} KG</th>`;
+                }
+                bomTableHeader.innerHTML = `
+                    <th class="border px-2 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"></th>
+                    <th class="border px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Ham Madde Adı</th>
+                    ${yearsHtml}
+                `;
+            } else {
+                bomTableHeader.innerHTML = `
+                    <th class="border px-2 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"></th>
+                    <th class="border px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Parça No</th>
+                    <th class="border px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Parça İsmi</th>
+                    <th class="border px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Seviye</th>
+                    <th class="border px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Ebeveyn Parça No</th>
+                    <th class="border px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Miktar</th>
+                    <th class="border px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Üretim Yöntemi</th>
+                    <th class="border px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Montaj Şekli</th>
+                    <th class="border px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Hammadde</th>
+                    <th class="border px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">Ağırlık (KG)</th>
+                    <th class="border px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Fotoğraf</th>
+                    <th class="border px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Teknik Çizim</th>
+                    <th class="border px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">3D Verisi</th>
+                    <th class="border px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">İşlemler</th>
+                `;
             }
 
-            processMaterial();
-        });
+            // Raw Material görünümü için özel işleme
+            if (showRawMaterial) {
+                const rawMaterialSummary = {}; 
+                materials.forEach(item => {
+                    if (item.rawMaterial && !rawMaterialSummary[item.rawMaterial]) {
+                        rawMaterialSummary[item.rawMaterial] = {
+                            name: item.rawMaterial,
+                            yearlyUsage: Array(projectLifeYears).fill(0) 
+                        };
+                    }
+                });
 
-        // Yardımcı fonksiyon: Dosyayı Base64 olarak okur
-        function readFileAsBase64(file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = () => resolve(reader.result);
-                reader.onerror = error => reject(error);
-                reader.readAsDataURL(file);
+                materials.forEach(item => {
+                    if (item.rawMaterial && item.isMainProduct && annualVolumesFromTable[item.description]) {
+                        const volumes = annualVolumesFromTable[item.description]; 
+                        for (let i = 0; i < projectLifeYears; i++) {
+                            const annualVolume = volumes[i] !== undefined ? volumes[i] : 0;
+                            if (annualVolume > 0) {
+                                rawMaterialSummary[item.rawMaterial].yearlyUsage[i] +=
+                                    (item.quantity || 0) * (item.weight || 0) * annualVolume;
+                            }
+                        }
+                    }
+                });
+
+                Object.values(rawMaterialSummary).forEach(summaryItem => {
+                    const row = document.createElement('tr');
+                    let yearlyCellsHtml = '';
+                    summaryItem.yearlyUsage.forEach(usage => {
+                        yearlyCellsHtml += `<td class="border px-4 py-3 text-right">${usage.toFixed(3)} KG</td>`;
+                    });
+
+                    row.innerHTML = `
+                        <td class="border px-2 py-3"></td>
+                        <td class="border px-4 py-3">${summaryItem.name}</td>
+                        ${yearlyCellsHtml}
+                    `;
+                    materialList.appendChild(row);
+                });
+            } else {
+                // Hiyerarşik yapıyı oluştur ve render et
+                const hierarchicalMaterials = buildHierarchy(filteredMaterials);
+                renderHierarchicalMaterials(hierarchicalMaterials, materialList, 0);
+            }
+
+            initSortableMainList(materialList); 
+        }
+
+        // YENİ EKLENEN FONKSİYON: Düz listeyi hiyerarşik yapıya dönüştürür
+        function buildHierarchy(flatMaterials) {
+            const materialMap = new Map();
+            const roots = [];
+
+            // Tüm malzemeleri bir haritaya yerleştir ve her malzemeye bir 'children' dizisi ekle
+            flatMaterials.forEach(material => {
+                materialMap.set(material.partNumber, { ...material, children: [] });
+            });
+
+            // Ebeveyn-çocuk ilişkilerini kur
+            materialMap.forEach(material => {
+                if (material.parentPartNumber && materialMap.has(material.parentPartNumber)) {
+                    materialMap.get(material.parentPartNumber).children.push(material);
+                } else {
+                    // Ebeveyni olmayanlar kök öğelerdir
+                    roots.push(material);
+                }
+            });
+            
+            // Çocukları Parça Numarasına göre sırala
+            materialMap.forEach(material => {
+                material.children.sort((a, b) => a.partNumber.localeCompare(b.partNumber));
+            });
+
+            // Kök öğeleri Parça Numarasına göre sırala
+            roots.sort((a, b) => a.partNumber.localeCompare(b.partNumber));
+
+            return roots;
+        }
+
+        // YENİ EKLENEN FONKSİYON: Hiyerarşik malzemeleri rekürsif olarak render eder
+        function renderHierarchicalMaterials(materialsToRender, parentElement, depth) {
+            materialsToRender.forEach(material => {
+                const row = createMaterialRowWithParent(material, depth); // depth parametresini geçir
+                parentElement.appendChild(row);
+                if (material.children && material.children.length > 0) {
+                    renderHierarchicalMaterials(material.children, parentElement, depth + 1);
+                }
+            });
+        }
+        
+        // GÜNCELLENEN FONKSİYON: Ebeveyn Parça No'yu da içeren malzeme satırı oluşturma (depth parametresi eklendi)
+        function createMaterialRowWithParent(material, depth = 0) { // depth varsayılan olarak 0
+            const row = document.createElement('tr');
+            // Renk sınıflarını productionLocation'a göre dinamik olarak ayarladık
+            const productionLocationClass = material.productionLocation === 'ASHA' ? 'bg-asha-row' : 'bg-supplier-row';
+            const mainProductBgClass = material.isMainProduct ? 'bg-main-product-row' : '';
+            
+            row.className = `${productionLocationClass} ${mainProductBgClass}`;
+            row.dataset.partNumber = material.partNumber;
+
+            // Girinti miktarını hesapla (1cm = 16px gibi, veya rem kullanabiliriz)
+            const indentAmount = depth * 16; // Her derinlik seviyesi için 16px (yaklaşık 1cm) boşluk
+            const indentStyle = `padding-left: ${indentAmount + 16}px;`; // İlk sütunun varsayılan padding'i 16px, buna ekle
+
+
+            row.innerHTML = `
+                <td class="border px-2 py-3 text-center">
+                    <div class="main-product-checkbox ${material.isMainProduct ? 'checked' : ''}" onclick="toggleMainProduct('${material.partNumber}')"></div>
+                </td>
+                <td class="border px-4 py-3" style="${indentStyle}">${material.partNumber || '-'}</td>
+                <td class="border px-4 py-3">${material.description || '-'}</td>
+                <td class="border px-4 py-3 text-center">
+                    <input type="number" 
+                           value="${material.level}" 
+                           min="1" 
+                           max="4" 
+                           class="w-16 text-center border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                           onchange="updateMaterialLevel('${material.partNumber}', this.value)">
+                </td>
+                <td class="border px-4 py-3 text-center">
+                    <select class="w-24 text-center border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                            onchange="updateMaterialParent('${material.partNumber}', this.value)">
+                        <option value="">Yok</option>
+                        ${materials.filter(m => m.partNumber !== material.partNumber).map(m => `
+                            <option value="${m.partNumber}" ${material.parentPartNumber === m.partNumber ? 'selected' : ''}>
+                                ${m.partNumber} - ${m.description}
+                            </option>
+                        `).join('')}
+                    </select>
+                </td>
+                <td class="border px-4 py-3 text-center">${material.quantity || '-'}</td>
+                <td class="border px-4 py-3">${material.productionMethod || '-'}</td>
+                <td class="border px-4 py-3">${material.assemblyType || '-'}</td>
+                <td class="border px-4 py-3">${material.rawMaterial || '-'}</td>
+                <td class="border px-4 py-3 text-right">${material.weight !== undefined ? material.weight.toFixed(3) + ' KG' : '-'}</td>
+                <td class="border px-4 py-3 text-center">
+                    ${material.photoURL ? `<img src="${material.photoURL}" alt="Photo" class="w-16 h-16 object-cover mx-auto rounded-md">` : 'Yok'}
+                </td>
+                <td class="border px-4 py-3 text-center">
+                    ${material.technicalDrawingURL ? `<a href="${material.technicalDrawingURL}" target="_blank" class="text-blue-600 hover:underline">Teknik Çizim</a>` : 'Yok'}
+                </td>
+                <td class="border px-4 py-3 text-center">
+                    ${material.threeDDataURL ? `<button class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded-md text-sm" onclick="view3DModel('${material.threeDDataURL}')">3D Görüntüle</button>` : 'Yok'}
+                </td>
+                <td class="border px-4 py-3 text-center">
+                    <button class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-md text-sm" onclick="removeMaterial('${material.partNumber}')">Kaldır</button>
+                </td>
+            `;
+            return row;
+        }
+
+        // YENİ EKLENEN FONKSİYON: Malzeme ebeveynini güncelle
+        function updateMaterialParent(childPartNumber, newParentPartNumber) {
+            const childMaterial = materials.find(m => m.partNumber === childPartNumber);
+            if (childMaterial) {
+                // Kendi kendine ebeveyn olmasını engelle
+                if (childPartNumber === newParentPartNumber) {
+                    alert("Bir malzeme kendi kendine ebeveyn olamaz.");
+                    applyFilters(); // Hatalı seçimi geri almak için tabloyu yeniden render et
+                    return;
+                }
+                
+                // Döngüsel referans kontrolü: Yeni ebeveyn, çocuğun bir çocuğu mu?
+                let currentParentChecker = newParentPartNumber;
+                while (currentParentChecker) {
+                    const parentObj = materials.find(m => m.partNumber === currentParentChecker);
+                    if (parentObj && parentObj.parentPartNumber === childPartNumber) {
+                        alert("Döngüsel referans hatası: Seçilen ebeveyn, bu malzemenin mevcut alt öğesidir veya alt öğesinin alt öğesidir. Lütfen geçerli bir ebeveyn seçin.");
+                        applyFilters(); // Hatalı seçimi geri almak için tabloyu yeniden render et
+                        return;
+                    }
+                    currentParentChecker = parentObj ? parentObj.parentPartNumber : null;
+                }
+
+                childMaterial.parentPartNumber = newParentPartNumber === "" ? null : newParentPartNumber;
+
+                // **YENİ EKLENEN KOD: Seviyeyi otomatik ayarla ve alt öğeleri güncelle**
+                let newLevel;
+                if (childMaterial.parentPartNumber === null) {
+                    newLevel = 1;
+                } else {
+                    const parentMaterial = materials.find(m => m.partNumber === childMaterial.parentPartNumber);
+                    newLevel = parentMaterial ? parentMaterial.level + 1 : 1; // Ebeveyn bulunamazsa varsayılan 1
+                }
+                updateDescendantLevels(childMaterial, newLevel); // Bu fonksiyon childMaterial'ın kendi level'ını da güncelleyecek.
+
+                localStorage.setItem('bomMaterials', JSON.stringify(materials));
+                applyFilters(); // Tabloyu yeniden render ederek değişikliği yansıt
+            }
+        }
+
+        // YENİ EKLENEN FONKSİYON: Alt öğelerin seviyelerini rekürsif olarak güncelle
+        function updateDescendantLevels(material, currentLevel) {
+            material.level = currentLevel;
+            const children = materials.filter(m => m.parentPartNumber === material.partNumber);
+            children.forEach(child => {
+                updateDescendantLevels(child, currentLevel + 1);
             });
         }
 
 
-        function editMaterial(id) {
-            isEditing = true;
-            editingMaterialId = id;
-            document.getElementById('materialModalTitle').innerText = 'Malzeme Düzenle';
+        // 3D Görüntüleyici ile ilgili değişkenler
+        let scene, camera, renderer, controls, animationFrameId;
 
-            const material = currentProject.materials.find(m => m.id === id);
-            if (material) {
-                document.getElementById('materialId').value = material.id;
-                document.getElementById('materialCode').value = material.code;
-                document.getElementById('materialName').value = material.name;
-                document.getElementById('materialQuantity').value = material.quantity;
-                document.getElementById('materialUnit').value = material.unit;
-                document.getElementById('materialUnitPrice').value = material.unitPrice;
-                document.getElementById('materialDescription').value = material.description;
+        function view3DModel(url) {
+            document.getElementById('modelViewer').style.display = 'block';
+            const canvas = document.getElementById('modelCanvas');
+            
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x333333); // Koyu gri arka plan
 
-                const preview = document.getElementById('currentMaterialImagePreview');
-                if (material.image) {
-                    preview.src = material.image;
-                    preview.style.display = 'block';
-                } else {
-                    preview.src = '';
-                    preview.style.display = 'none';
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+
+            // Işıklandırma
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+            scene.add(ambientLight);
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(0, 1, 1).normalize();
+            scene.add(directionalLight);
+
+            controls = new OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.25;
+            controls.screenSpacePanning = false;
+            controls.minDistance = 0.5;
+            controls.maxDistance = 100;
+
+            const loader = new THREE.STLLoader();
+            loader.load(url, function (geometry) {
+                const material = new THREE.MeshNormalMaterial();
+                const mesh = new THREE.Mesh(geometry, material);
+                scene.add(mesh);
+
+                const bbox = new THREE.Box3().setFromObject(mesh);
+                const center = bbox.getCenter(new THREE.Vector3());
+                const size = bbox.getSize(new THREE.Vector3());
+
+                camera.position.copy(center);
+                camera.position.x += size.x * 1.5;
+                camera.position.y += size.y * 1.5;
+                camera.position.z += size.z * 1.5;
+                camera.lookAt(center);
+
+                controls.target.copy(center);
+                controls.update();
+
+                animate();
+            }, undefined, function (error) {
+                console.error('3D model yüklenirken hata oluştu:', error);
+                alert('3D model yüklenemedi. Desteklenen bir format olduğundan emin olun (.stl, .step, .obj, .gltf).');
+                closeModelViewer();
+            });
+        }
+
+        function animate() {
+            animationFrameId = requestAnimationFrame(animate);
+            controls.update();
+            renderer.render(scene, camera);
+        }
+
+        function closeModelViewer() {
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+            }
+            if (renderer) {
+                renderer.dispose();
+                renderer = null;
+            }
+            if (scene) {
+                scene.traverse(object => {
+                    if (object.geometry) object.geometry.dispose();
+                    if (object.material) object.material.dispose();
+                });
+                scene = null;
+            }
+            controls = null;
+            camera = null;
+            document.getElementById('modelViewer').style.display = 'none';
+        }
+
+        window.addEventListener('resize', () => {
+            if (camera && renderer) {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            }
+        });
+
+        // Filtre kutucuklarının durumunu değiştirir
+        function toggleFilter(filterType) { 
+            const supplierCheckbox = document.getElementById('supplierCheckbox');
+            const ashaCheckbox = document.getElementById('ashaCheckbox');
+            const rawMaterialCheckbox = document.getElementById('rawMaterialCheckbox');
+
+            if (filterType === 'RAW_MATERIAL') {
+                showRawMaterial = !showRawMaterial;
+                if (showRawMaterial) {
+                    showSupplier = false;
+                    showAsha = false;
+                    supplierCheckbox.classList.remove('checked');
+                    ashaCheckbox.classList.remove('checked');
                 }
-                document.getElementById('materialModal').classList.remove('hidden');
+                rawMaterialCheckbox.classList.toggle('checked', showRawMaterial);
+            } else {
+                showRawMaterial = false;
+                rawMaterialCheckbox.classList.remove('checked');
+
+                if (filterType === 'BUY') {
+                    showSupplier = !showSupplier;
+                    supplierCheckbox.classList.toggle('checked');
+                } else if (filterType === 'MAKE') {
+                    showAsha = !showAsha;
+                    ashaCheckbox.classList.toggle('checked');
+                }
             }
+            applyFilters(); 
         }
 
-        function deleteMaterial(id) {
-            if (confirm('Bu malzemeyi silmek istediğinizden emin misiniz?')) {
-                currentProject.materials = currentProject.materials.filter(material => material.id !== id);
-                saveProjects();
-                renderMaterials();
+        // Malzemeleri aktif filtre durumlarına ve arama terimine göre filtreler
+        function applyFilters() {
+            let tempFilteredMaterials = [...materials]; 
+
+            if (showRawMaterial) {
+                tempFilteredMaterials = tempFilteredMaterials.filter(material => material.rawMaterial);
+            } else {
+                if (showSupplier && showAsha) {
+                    // Her ikisi de seçiliyse tüm MAKE ve BUY öğelerini göster (yani filtreleme yapma)
+                } else if (showSupplier) {
+                    tempFilteredMaterials = tempFilteredMaterials.filter(material => material.productionLocation === 'Supplier');
+                } else if (showAsha) {
+                    tempFilteredMaterials = tempFilteredMaterials.filter(material => material.productionLocation === 'ASHA');
+                }
             }
+
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            if (searchTerm !== '') {
+                tempFilteredMaterials = tempFilteredMaterials.filter(material => 
+                    (material.partNumber && material.partNumber.toLowerCase().includes(searchTerm)) || 
+                    (material.description && material.description.toLowerCase().includes(searchTerm)) ||
+                    (material.rawMaterial && material.rawMaterial.toLowerCase().includes(searchTerm))
+                );
+            }
+            
+            filteredMaterials = tempFilteredMaterials;
+            renderMaterials(); 
         }
+
+        function searchMaterials() {
+            applyFilters();
+        }
+        
+        // Ana tbody için Sortable (sadece yeniden sıralama)
+        let mainSortable;
+        function initSortableMainList(element) {
+            if (showRawMaterial) {
+                if (mainSortable) mainSortable.destroy();
+                return;
+            }
+
+            if (mainSortable) {
+                mainSortable.destroy();
+            }
+            // Hiyerarşik görünümde sürükle-bırak desteğini geçici olarak devre dışı bırakın
+            // Çünkü Sortable.js hiyerarşik yapıları doğrudan desteklemez ve karmaşık hale gelebilir.
+            // if (mainSortable) mainSortable.destroy();
+            // mainSortable = Sortable.create(element, { ... });
+        }
+
+        // YENİ EKLENEN FONKSİYON: Ebeveyn Parça Numarası seçim listesini doldur
+        function populateParentPartNumberSelect() {
+            const parentSelect = document.getElementById('parentPartNumber');
+            parentSelect.innerHTML = '<option value="">Yok (Ana Ürün)</option>'; 
+
+            materials.forEach(material => {
+                if (material.partNumber) { 
+                    const option = document.createElement('option');
+                    option.value = material.partNumber;
+                    option.textContent = `${material.partNumber} - ${material.description}`;
+                    parentSelect.appendChild(option);
+                }
+            });
+        }
+
+        // Sayfa yüklendiğinde çalışacak kodlar
+        document.addEventListener('DOMContentLoaded', () => {
+            const libraryDatalist = document.getElementById('libraryOptions');
+            libraryDatalist.innerHTML = ''; // Mevcut seçenekleri temizle
+
+            // Kategorilere göre öğeleri gruplandır
+            const groupedItems = libraryItems.reduce((acc, item) => {
+                const category = item.category || 'Diğer'; // Eğer kategori yoksa 'Diğer' olarak gruplandır
+                if (!acc[category]) {
+                    acc[category] = [];
+                }
+                acc[category].push(item);
+                return acc;
+            }, {});
+
+            // Grupları ve içindeki öğeleri datalist'e ekle
+            Object.keys(groupedItems).sort().forEach(category => {
+                const optgroup = document.createElement('optgroup');
+                optgroup.label = category;
+                groupedItems[category].forEach(item => {
+                    const option = document.createElement('option');
+                    option.value = `${item.partNumber} - ${item.description}`;
+                    optgroup.appendChild(option);
+                });
+                libraryDatalist.appendChild(optgroup);
+            });
+            
+            // DEMO VERİSİ (İsteğe bağlı: Başlangıçta bazı örnek malzemelerle başlamak için)
+            // Bu kısmı sadece ilk kez çalıştırdığınızda malzemelerinizin olması için kullanabilirsiniz.
+            // Eğer localStorage'da zaten malzemeniz varsa, bu kod çalışmayacaktır.
+            if (materials.length === 0) {
+                 materials.push({ partNumber: 'ASY-001', description: 'Ana Montaj Ürünü A', quantity: 1, vendor: 'ASHA', productionLocation: 'ASHA', weight: 1.5, level: 1, rawMaterial: '', isMainProduct: true, parentPartNumber: null, productionMethod: 'Montaj', assemblyType: 'Cıvatalı' });
+                 materials.push({ partNumber: 'SUB-001', description: 'Alt Montaj 1 (ASY-001)', quantity: 2, vendor: 'ASHA', productionLocation: 'ASHA', weight: 0.5, level: 2, rawMaterial: '', isMainProduct: false, parentPartNumber: 'ASY-001', productionMethod: 'Montaj', assemblyType: 'Kaynaklı' });
+                 materials.push({ partNumber: 'PART-001', description: 'Parça 1 (SUB-001)', quantity: 4, vendor: 'Supplier X', productionLocation: 'Supplier', weight: 0.1, level: 3, rawMaterial: 'Çelik', isMainProduct: false, parentPartNumber: 'SUB-001', productionMethod: 'Talaşlı İmalat', assemblyType: 'Cıvatalı' });
+                 materials.push({ partNumber: 'PART-002', description: 'Parça 2 (SUB-001)', quantity: 1, vendor: 'ASHA', productionLocation: 'ASHA', weight: 0.05, level: 3, rawMaterial: 'Plastik', isMainMethod: false, parentPartNumber: 'SUB-001', productionMethod: 'Enjeksiyon', assemblyType: 'Geçmeli' });
+                 materials.push({ partNumber: 'ASY-002', description: 'Ana Montaj Ürünü B', quantity: 1, vendor: 'Supplier Y', productionLocation: 'Supplier', weight: 2.0, level: 1, rawMaterial: '', isMainProduct: true, parentPartNumber: null, productionMethod: 'İşleme', assemblyType: 'Kaynaklı' });
+                 materials.push({ partNumber: 'SUB-002', description: 'Alt Montaj 2 (ASY-002)', quantity: 1, vendor: 'Supplier Z', productionLocation: 'Supplier', weight: 0.7, level: 2, rawMaterial: '', isMainProduct: false, parentPartNumber: 'ASY-002', productionMethod: 'Büküm', assemblyType: 'Perçinli' });
+                 localStorage.setItem('bomMaterials', JSON.stringify(materials));
+            }
+
+
+            populateParentPartNumberSelect(); 
+            applyFilters(); 
+        });
+
+        Sortable.mount(new Sortable.MultiDrag(), new Sortable.Swap());
     </script>
 </body>
 </html>
