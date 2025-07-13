@@ -108,44 +108,63 @@
             }
 
             function buildD3Hierarchy(materials) {
-                const dataMap = new Map(materials.map(item => [item.partNumber, { ...item, children: [] }]));
-                let rootNode = null;
+                const nodeMap = new Map();
+                materials.forEach(item => nodeMap.set(item.partNumber, { ...item, children: [] }));
 
+                let mainProductRoot = null;
+                const mainProductCandidates = Array.from(nodeMap.values()).filter(node => node.isMainProduct === true);
+
+                if (mainProductCandidates.length === 1) {
+                    mainProductRoot = mainProductCandidates[0];
+                    console.log("Main product identified as root:", mainProductRoot.partNumber);
+                } else if (mainProductCandidates.length > 1) {
+                    console.warn("Multiple main products designated. Falling back to identifying natural roots.");
+                } else {
+                    console.log("No main product designated. Identifying natural roots.");
+                }
+
+                // Build parent-child relationships for all nodes
                 materials.forEach(item => {
                     if (item.parentPartNumber) {
-                        const parent = dataMap.get(item.parentPartNumber);
-                        if (parent) {
-                            parent.children.push(dataMap.get(item.partNumber));
-                        } else {
-                            console.warn(`Parent part number ${item.parentPartNumber} not found for ${item.partNumber}. This item will be a root.`);
-                            rootNode = dataMap.get(item.partNumber);
+                        const parent = nodeMap.get(item.parentPartNumber);
+                        const child = nodeMap.get(item.partNumber);
+                        // Only add as child if parent exists AND child is not the designated mainProductRoot
+                        // (because mainProductRoot should not be a child of anything in this visualization)
+                        if (parent && child && (!mainProductRoot || child.partNumber !== mainProductRoot.partNumber)) {
+                            parent.children.push(child);
                         }
-                    } else {
-                        rootNode = dataMap.get(item.partNumber);
                     }
                 });
 
-                const potentialRoots = Array.from(dataMap.values()).filter(item => !item.parentPartNumber || !materials.some(m => m.partNumber === item.parentPartNumber));
-                if (potentialRoots.length > 1) {
-                    console.warn("Multiple root nodes found or some nodes don't have a valid parent. Creating a dummy root.");
-                    const dummyRoot = {
-                        partNumber: "ROOT",
-                        description: "Tüm Ürünler",
-                        quantity: 0,
-                        unit: "",
-                        productionLocation: "N/A", 
-                        productionMethod: "N/A", 
-                        assemblyType: "N/A", 
-                        isMainProduct: false, // Dummy root is not a main product
-                        children: potentialRoots
-                    };
-                    return dummyRoot;
-                } else if (potentialRoots.length === 1) {
-                    return potentialRoots[0];
-                } else {
-                    console.error("No root node found in BOM materials.");
-                    return null;
+                let finalRoot = mainProductRoot;
+
+                if (!finalRoot) {
+                    // If no unique main product was found, find natural roots (nodes that are not children of any other node)
+                    const allChildPartNumbers = new Set(materials.filter(m => m.parentPartNumber).map(m => m.partNumber));
+                    const naturalRoots = Array.from(nodeMap.values()).filter(node => !allChildPartNumbers.has(node.partNumber));
+
+                    if (naturalRoots.length === 1) {
+                        finalRoot = naturalRoots[0];
+                    } else if (naturalRoots.length > 1) {
+                        // Create a dummy root for multiple independent trees
+                        console.warn("Multiple natural roots found. Creating a dummy root to encompass them.");
+                        finalRoot = {
+                            partNumber: "DUMMY_AGGREGATE_ROOT",
+                            description: "Tüm Ürünler",
+                            quantity: 0,
+                            unit: "",
+                            productionLocation: "N/A",
+                            productionMethod: "N/A",
+                            assemblyType: "N/A",
+                            isMainProduct: false,
+                            children: naturalRoots
+                        };
+                    } else {
+                        console.error("No root node could be determined from the BOM materials.");
+                        return null;
+                    }
                 }
+                return finalRoot;
             }
 
 
