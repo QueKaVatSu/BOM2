@@ -224,7 +224,7 @@
     <script>
         const customerLogos = {
             'byd': 'logos/byd.png',
-            'ford': 'logos/ford.mng', // Bu dosya adını kontrol edin (.mng yerine .png olabilir)
+            'ford': 'logos/ford.png', // Uzantı .mng'den .png olarak düzeltildi
             'stellantis': 'logos/stellantis.png',
             'renault': 'logos/renault.png',
             'tesla': 'logos/tesla.png',
@@ -246,6 +246,8 @@
             let bestMatchKey = null;
             let maxLength = 0;
 
+            console.log("Entered text:", enteredText); // Debug: Girilen metni konsola yazdır
+
             if (enteredText.length > 0) {
                 for (const key in customerLogos) {
                     if (key.startsWith(enteredText)) {
@@ -258,10 +260,12 @@
             }
 
             if (bestMatchKey) {
-                customerLogoImg.src = customerLogos.hasOwnProperty(bestMatchKey) ? customerLogos[bestMatchKey] : '';
+                customerLogoImg.src = customerLogos[bestMatchKey];
+                console.log("Matched key:", bestMatchKey, "Logo src:", customerLogoImg.src); // Debug: Eşleşen anahtarı ve src'yi yazdır
                 customerLogoImg.style.display = 'block';
                 customerLogoImg.classList.add('visible');
             } else {
+                console.log("No match found."); // Debug: Eşleşme bulunamadı
                 customerLogoImg.classList.remove('visible');
                 setTimeout(() => {
                     customerLogoImg.style.display = 'none';
