@@ -299,12 +299,11 @@
             localStorage.setItem('projects', JSON.stringify(projects)); // Projeleri localStorage'a kaydeder
 
             // Yeni oluşturulan projeyi aktif proje olarak işaretle
-            localStorage.setItem('currentProjectId', newProject.id); // EKLEME
+            localStorage.setItem('currentProjectId', newProject.id); 
 
-            // Ana sayfaya yönlendirme yapmaya çalışır
+            // Yeni proje oluşturulduktan sonra kayıtlı projeler sayfasına yönlendir
             if (window.parent && window.parent.loadPage) {
-                // Proje ID'si ile bom_page.html'e yönlendir
-                window.parent.loadPage('bom_page.html?projectId=' + newProject.id); // DÜZELTME
+                window.parent.loadPage('view_saved_projects.html'); // YÖNLENDİRME DÜZELTİLDİ
             } else {
                 // Yönlendirme yapılamazsa kullanıcıyı bilgilendirir
                 alert('Proje oluşturuldu ancak ana sayfaya yönlendirme yapılamadı. Tarayıcı konsolunu kontrol edin.');
