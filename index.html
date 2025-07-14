@@ -115,10 +115,12 @@
             transition: margin-left 0.3s ease;
             height: 100vh;
             overflow: hidden;
+            width: 100%; /* Başlangıçta tam genişlik */
         }
 
         .content-frame-container.shifted {
             margin-left: 250px; /* Sidebar açıldığında içeriği kaydır */
+            width: calc(100% - 250px); /* Sidebar açıldığında içeriği daralt */
         }
 
         #mainContentFrame {
@@ -176,9 +178,11 @@
             .content-frame-container {
                 margin-left: 0;
                 padding-top: 60px; /* Sidebar yüksekliği kadar boşluk */
+                width: 100%; /* Tam genişlik */
             }
             .content-frame-container.shifted {
-                margin-left: 0;
+                margin-left: 0; /* Küçük ekranlarda da kaydırma yok */
+                width: 100%; /* Tam genişlik */
             }
         }
     </style>
@@ -214,8 +218,9 @@
             mainContentFrame.src = pageUrl;
 
             // Determine if sidebar should be open and content shifted
-            const pagesWithSidebar = ['volume_table.html', 'bom_page.html', 'visual_bom.html'];
-            const shouldOpenSidebar = pagesWithSidebar.some(page => pageUrl.includes(page));
+            // Sadece bu sayfalar yüklendiğinde sidebar açılsın ve içerik kaydırılsın.
+            const pagesRequiringSidebar = ['volume_table.html', 'bom_page.html', 'visual_bom.html'];
+            const shouldOpenSidebar = pagesRequiringSidebar.some(page => pageUrl.includes(page));
 
             if (shouldOpenSidebar) {
                 sidebar.classList.add('open');
@@ -232,9 +237,7 @@
             if (projectId) {
                 localStorage.setItem('currentProjectId', projectId);
             } else {
-                // welcome_page.html veya create_project_form.html gibi sayfalar için proje ID'sini temizle
-                // Ancak, projenin içinden başka bir BOM/Volume/Visual BOM sayfasına geçiş yaparken proje ID'si korunmalı.
-                // Bu kısım, sadece welcome_page.html veya create_project_form.html'ye gidildiğinde çalışmalı.
+                // welcome_page.html, create_project_form.html, view_saved_projects.html gibi sayfalar için proje ID'sini temizle
                 const pagesClearingProjectId = ['welcome_page.html', 'create_project_form.html', 'view_saved_projects.html'];
                 if (pagesClearingProjectId.some(page => pageUrl.includes(page))) {
                     localStorage.removeItem('currentProjectId');
@@ -244,8 +247,8 @@
             // Sidebar linklerini aktif/pasif yapma
             sidebarLinks.forEach(link => {
                 const linkPage = link.getAttribute('data-page');
-                // Check if the current pageUrl includes the data-page attribute for activation
-                if (linkPage && pageUrl.includes(linkPage.split('?')[0])) { // Split to ignore query params in linkPage
+                // Linkin sayfa adını URL'de kontrol et (query parametresiz)
+                if (linkPage && pageUrl.split('?')[0].includes(linkPage.split('?')[0])) {
                     link.classList.add('active');
                 } else {
                     link.classList.remove('active');
@@ -255,7 +258,6 @@
 
         // Sayfa yüklendiğinde varsayılan olarak welcome_page.html'i göster
         document.addEventListener('DOMContentLoaded', function() {
-            // Always load welcome_page.html initially
             window.loadPage('welcome_page.html');
         });
 
@@ -264,21 +266,23 @@
             link.addEventListener('click', function(event) {
                 event.preventDefault();
                 const pageToLoad = this.getAttribute('data-page');
-                window.loadPage(pageToLoad);
+                const currentProjectId = localStorage.getItem('currentProjectId');
+                let url = pageToLoad;
+                if (currentProjectId) {
+                    url += `?projectId=${currentProjectId}`;
+                }
+                window.loadPage(url);
             });
         });
 
-        // Çıkış butonu işlevi (örnek)
+        // Çıkış butonu işlevi
         exitButton.addEventListener('click', function() {
             alert('Çıkış yapılıyor...');
             localStorage.removeItem('currentProjectId'); // Mevcut proje ID'sini temizle
-            localStorage.removeItem('bomMaterials'); // BOM malzemelerini temizle
             // İsteğe bağlı: Anasayfaya yönlendir veya login ekranına dön
             window.loadPage('welcome_page.html');
         });
 
-        // iframe içindeki bir sayfadan parent'taki loadPage'i çağırmak için global fonksiyon
-        // Bu kısım zaten var olan bir fonksiyonun güncellenmesi gerektiği için burada tekrar edilmeyecektir.
     </script>
 </body>
 </html>
