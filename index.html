@@ -549,12 +549,13 @@
                 sidebarLinks.forEach(link => link.classList.remove('active'));
                 sidebarLinks && sidebarLinks.length > 0 && sidebarLinks[0].classList.add('active');
             } else {
-                // Eğer proje yoksa, form ekranını göster
-                mainFormContainer.style.display = 'flex'; // Formu görünür yap
-                rightHalfInitial.classList.remove('hidden'); // GIF'i görünür yap
+                // Eğer proje yoksa, ana formu ve GIF'i gizle, iframe'i göster ve welcome_page.html'i yükle
+                mainFormContainer.style.display = 'none'; // Formu gizle
+                rightHalfInitial.classList.add('hidden'); // GIF'i gizle
                 sidebar.classList.remove('open'); // Sidebar'ı kapalı tut
-                contentFrameContainer.style.display = 'none'; // iframe'i gizle
-                // welcome_page.html yüklemesi kaldırıldı, kullanıcı formu dolduracak
+                contentFrameContainer.style.display = 'block'; // iframe'i göster
+                contentFrameContainer.classList.remove('shifted'); // iframe'in kaydırılmadığından (tam ekran olduğundan) emin ol
+                mainContentFrame.src = 'welcome_page.html'; // Hoş geldin sayfasını yükle
             }
         });
 
