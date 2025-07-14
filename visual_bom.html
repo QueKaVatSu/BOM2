@@ -10,34 +10,66 @@
         body {
             font-family: Arial, sans-serif;
             background-color: #ffffff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
             margin: 0;
+            padding: 0;
             overflow: hidden; 
-            flex-direction: column; /* Sayfalama kontrolleri için dikey düzenleme */
+            display: flex; /* Sidebar ve ana içerik için flex */
+            height: 100vh;
+            width: 100vw;
         }
-        .container {
-            background-color: #ffffff;
+        .container-wrapper { /* Ana konteynerleri saracak dış div */
+            display: flex;
+            width: 100%;
+            height: 100%;
+        }
+        .sidebar {
+            width: 280px; /* Sidebar genişliği */
+            background-color: #f8f9fa;
+            border-right: 1px solid #e0e0e0;
             padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            text-align: center;
+            overflow-y: auto; /* İçerik taşarsa kaydırma çubuğu */
+            box-shadow: 2px 0 5px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            flex-shrink: 0; /* Küçülmesini engelle */
+        }
+        .sidebar-item {
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            color: #333;
+            transition: background-color 0.2s ease, color 0.2s ease;
+            white-space: nowrap; /* Metnin tek satırda kalmasını sağlar */
+            overflow: hidden; /* Taşmayı gizle */
+            text-overflow: ellipsis; /* Taşmayı üç nokta ile göster */
+        }
+        .sidebar-item:hover {
+            background-color: #e2e6ea;
+        }
+        .sidebar-item.active {
+            background-color: #007bff;
+            color: white;
+            font-weight: bold;
+        }
+        .main-content {
+            flex-grow: 1; /* Geri kalan alanı kapla */
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            margin-top: 20px; /* Üstten boşluk */
+            padding: 20px;
         }
         .chart-container {
-            width: 95vw;
-            height: 80vh; /* Sayfalama için altta boşluk bırakıldı */
+            width: 100%; /* Kalan genişliği kapla */
+            height: 95%; /* Kalan yüksekliği kapla */
             display: flex;
             justify-content: center;
             align-items: center;
             position: relative;
         }
+        /* Geri kalan D3 ve düğüm/bağlantı stilleri aynı kalacak */
         .node .outer-circle {
             fill: none; 
             stroke-width: 6px; 
@@ -82,46 +114,19 @@
             fill: rgba(255, 255, 255, 0.7); 
             border-radius: 3px; 
         }
-        .pagination-controls {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-top: 20px;
-            margin-bottom: 20px;
-        }
-        .pagination-controls button {
-            background-color: #007bff;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            margin: 0 10px;
-            transition: background-color 0.3s ease;
-        }
-        .pagination-controls button:hover:not(:disabled) {
-            background-color: #0056b3;
-        }
-        .pagination-controls button:disabled {
-            background-color: #cccccc;
-            cursor: not-allowed;
-        }
-        .page-info {
-            font-size: 18px;
-            font-weight: bold;
-            color: #333;
-        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1 class="text-2xl font-bold mb-4">Görsel BOM Hiyerarşisi</h1>
-        <div id="chart" class="chart-container"></div>
-        <div class="pagination-controls">
-            <button id="prevBtn" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed">Önceki</button>
-            <span id="pageInfo" class="page-info mx-4"></span>
-            <button id="nextBtn" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed">Sonraki</button>
+    <div class="container-wrapper">
+        <div class="sidebar" id="sidebar">
+            <h2 class="text-xl font-bold mb-4">Ana Ürünler</h2>
+            <div id="product-list" class="flex flex-col gap-2">
+                </div>
+        </div>
+
+        <div class="main-content">
+            <h1 class="text-2xl font-bold mb-4">Görsel BOM Hiyerarşisi</h1>
+            <div id="chart" class="chart-container"></div>
         </div>
     </div>
 
@@ -130,8 +135,8 @@
             const bomMaterials = JSON.parse(localStorage.getItem('bomMaterials') || '[]');
 
             if (bomMaterials.length === 0) {
-                const chartDiv = document.getElementById('chart');
-                chartDiv.innerHTML = '<p class="text-gray-600">Görselleştirilecek BOM verisi bulunamadı. Lütfen <a href="#" onclick="window.parent.loadPage(\'bom_page.html\'); return false;" class="text-blue-500 hover:underline">BOM sayfasından</a> veri giriniz.</p>';
+                document.getElementById('sidebar').innerHTML = '<h2 class="text-xl font-bold mb-4">Ana Ürünler</h2><p class="text-gray-600">Veri yok.</p>';
+                document.getElementById('chart').innerHTML = '<p class="text-gray-600">Görselleştirilecek BOM verisi bulunamadı. Lütfen <a href="#" onclick="window.parent.loadPage(\'bom_page.html\'); return false;" class="text-blue-500 hover:underline">BOM sayfasından</a> veri giriniz.</p>';
                 return;
             }
 
@@ -186,8 +191,11 @@
                 return rootsToVisualize;
             }
 
-            const svgWidth = document.getElementById('chart').clientWidth;
-            const svgHeight = document.getElementById('chart').clientHeight;
+            // SVG ve D3 ayarları
+            const chartContainer = document.getElementById('chart');
+            // Genişlik ve yüksekliği dinamik olarak al
+            const svgWidth = chartContainer.clientWidth;
+            const svgHeight = chartContainer.clientHeight;
 
             const svg = d3.select("#chart")
                 .append("svg")
@@ -200,10 +208,8 @@
                     mainChartGroup.attr("transform", event.transform);
                 });
 
-            // SVG'ye zoom davranışını uygula
             svg.call(zoom); 
 
-            // Grafik içeriğini tutacak ana grup (zoom ve pan bu gruba uygulanacak)
             const mainChartGroup = svg.append("g");
             const colorScale = d3.scaleOrdinal(d3.schemeCategory10);
 
@@ -211,22 +217,17 @@
             let currentTreeIndex = 0;
 
             function renderCurrentTree() {
-                // Önceki ağacı temizle
-                mainChartGroup.html(""); 
+                mainChartGroup.html(""); // Önceki ağacı temizle
 
                 if (allHierarchyRoots.length === 0) {
-                    const chartDiv = document.getElementById('chart');
-                    chartDiv.innerHTML = '<p class="text-gray-600">Görselleştirilecek geçerli BOM hiyerarşisi bulunamadı.</p>';
-                    updatePaginationControls();
+                    chartContainer.innerHTML = '<p class="text-gray-600">Görselleştirilecek geçerli BOM hiyerarşisi bulunamadı.</p>';
                     return;
                 }
 
                 const data = allHierarchyRoots[currentTreeIndex];
 
-                // Ağacın boyutunu ayarla
                 const radius = (Math.min(svgWidth, svgHeight) / 2 - 20) * 0.9; // Tek ağaç için ayarlandı
 
-                // D3 ağaç düzenini oluştur
                 const tree = d3.tree()
                     .size([2 * Math.PI, radius])
                     .separation((a, b) => (a.parent == b.parent ? 60 : 120) / a.depth); 
@@ -395,51 +396,55 @@
                         return tooltipText;
                     });
                 
-                // Sayfalama kontrollerini güncelle
-                updatePaginationControls(); 
+                // Sidebar'da seçili öğeyi vurgula
+                updateSidebarSelection();
             }
 
-            function updatePaginationControls() {
-                const prevBtn = document.getElementById('prevBtn');
-                const nextBtn = document.getElementById('nextBtn');
-                const pageInfo = document.getElementById('pageInfo');
+            function populateSidebar() {
+                const productListDiv = document.getElementById('product-list');
+                productListDiv.innerHTML = ''; // Önceki listeyi temizle
 
-                prevBtn.disabled = currentTreeIndex === 0;
-                nextBtn.disabled = currentTreeIndex === allHierarchyRoots.length - 1;
-                pageInfo.textContent = `${currentTreeIndex + 1} / ${allHierarchyRoots.length}`;
-
-                // Eğer tek bir ağaç varsa, sayfalama kontrollerini gizle
-                if (allHierarchyRoots.length <= 1) {
-                    document.querySelector('.pagination-controls').style.display = 'none';
-                } else {
-                    document.querySelector('.pagination-controls').style.display = 'flex'; // Göster
+                if (allHierarchyRoots.length === 0) {
+                    productListDiv.innerHTML = '<p class="text-gray-500 text-sm">Görselleştirilecek ana ürün bulunamadı.</p>';
+                    return;
                 }
+
+                allHierarchyRoots.forEach((root, index) => {
+                    const itemDiv = document.createElement('div');
+                    itemDiv.classList.add('sidebar-item');
+                    itemDiv.textContent = root.description; // Ana ürünün açıklamasını göster
+                    itemDiv.dataset.index = index; // Hangi hiyerarşi olduğunu belirtmek için indeks sakla
+
+                    itemDiv.addEventListener('click', () => {
+                        currentTreeIndex = index;
+                        renderCurrentTree();
+                    });
+                    productListDiv.appendChild(itemDiv);
+                });
+                updateSidebarSelection(); // Başlangıçta ilk öğeyi seçili yap
             }
 
-            document.getElementById('prevBtn').addEventListener('click', () => {
-                if (currentTreeIndex > 0) {
-                    currentTreeIndex--;
-                    renderCurrentTree();
-                }
-            });
-
-            document.getElementById('nextBtn').addEventListener('click', () => {
-                if (currentTreeIndex < allHierarchyRoots.length - 1) {
-                    currentTreeIndex++;
-                    renderCurrentTree();
-                }
-            });
+            function updateSidebarSelection() {
+                const sidebarItems = document.querySelectorAll('.sidebar-item');
+                sidebarItems.forEach((item, index) => {
+                    if (index === currentTreeIndex) {
+                        item.classList.add('active');
+                    } else {
+                        item.classList.remove('active');
+                    }
+                });
+            }
 
             // Tüm hiyerarşi köklerini oluştur
             allHierarchyRoots = buildMultipleD3Hierarchies(bomMaterials);
             
-            // Eğer kökler varsa, ilk ağacı çiz
+            // Eğer kökler varsa, sidebar'ı doldur ve ilk ağacı çiz
             if (allHierarchyRoots.length > 0) {
+                populateSidebar();
                 renderCurrentTree(); 
             } else {
-                const chartDiv = document.getElementById('chart');
-                chartDiv.innerHTML = '<p class="text-gray-600">Görselleştirilecek geçerli BOM hiyerarşisi bulunamadı.</p>';
-                updatePaginationControls(); // Kontrolleri güncelle (gizle)
+                document.getElementById('sidebar').innerHTML = '<h2 class="text-xl font-bold mb-4">Ana Ürünler</h2><p class="text-gray-600">Veri yok.</p>';
+                chartContainer.innerHTML = '<p class="text-gray-600">Görselleştirilecek geçerli BOM hiyerarşisi bulunamadı.</p>';
             }
         });
     </script>
