@@ -5,233 +5,302 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Yeni Proje Oluştur</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Poppins', sans-serif;
-            background-color: #f3f4f6;
+            background-color: #ffffff;
             margin: 0;
             padding: 0;
+            overflow: hidden;
             display: flex;
+            height: 100vh;
+            width: 100vw;
+            position: relative;
+        }
+        .logo-container {
+            position: absolute;
+            top: 2rem;
+            left: 3rem;
+            z-index: 20;
+        }
+        .logo {
+            max-width: 200px;
+            height: auto;
+        }
+        .left-half {
+            flex: 0 0 50%;
+            display: flex;
+            flex-direction: column;
             justify-content: center;
-            align-items: flex-start; /* İçeriği yukarı hizala */
-            min-height: 100vh; /* Minimum tam yükseklik */
-            padding-top: 2rem; /* Üstten boşluk bırak */
+            align-items: flex-start;
+            padding-left: 3rem;
             box-sizing: border-box;
+            z-index: 10;
+            position: relative;
         }
-        .container {
-            background-color: white;
-            padding: 2.5rem;
-            border-radius: 0.75rem;
-            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 600px;
-            margin-bottom: 2rem; /* Alttan boşluk bırak */
+        .form-content {
+            max-width: 100%;
+            text-align: left;
+            padding-top: 2cm; /* Toplamda 2 cm aşağı öteleme */
         }
-        h1 {
-            font-size: 2.25rem;
+        .form-content h1 {
             font-weight: 700;
             color: #1a202c;
+            line-height: 1.2;
             margin-bottom: 1.5rem;
-            text-align: center;
         }
-        label {
-            display: block;
-            font-weight: 600;
-            color: #2d3748;
-            margin-bottom: 0.5rem;
-        }
-        input[type="text"], input[type="file"] {
-            width: 100%;
-            padding: 0.75rem 1rem;
-            border: 1px solid #e2e8f0;
-            border-radius: 0.375rem;
-            font-size: 1rem;
+        .form-content label {
+            font-weight: 400;
             color: #4a5568;
-            margin-bottom: 1rem;
-            box-sizing: border-box;
+            margin-bottom: 0.25rem;
+            display: block;
         }
-        input[type="file"] {
-            padding: 0.5rem 1rem; /* File input için dikey boşluğu ayarla */
+        .form-content input,
+        .form-content textarea {
+            border: 1px solid #cbd5e0;
+            padding: 0.75rem 1rem;
+            width: 100%;
+            border-radius: 0.5rem;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
         }
-        button {
+        .form-content input:focus,
+        .form-content textarea:focus {
+            outline: none;
+            border-color: #00008B; /* Pers Mavisi Odak */
+            box-shadow: 0 0 0 3px rgba(0, 0, 139, 0.3); /* Pers Mavisi Gölge */
+        }
+        .form-content textarea {
+            resize: none;
+            overflow-y: auto;
+        }
+
+        .form-content button {
             background-color: #00008B; /* Pers Mavisi */
             color: white;
             font-weight: 600;
             padding: 0.85rem 2rem;
-            border-radius: 0.375rem;
+            border-radius: 9999px;
             transition: background-color 0.3s ease, transform 0.2s ease;
-            width: 100%;
+            text-align: center;
             border: none;
             cursor: pointer;
-            font-size: 1.125rem;
+            width: 425px;
+            display: block;
+            margin-top: 1rem;
+            margin-left: auto;
+            margin-right: auto;
         }
-        button:hover {
+        .form-content button:hover {
             background-color: #0000CD; /* Koyu Pers Mavisi */
             transform: translateY(-2px);
         }
-        .file-upload-container {
-            border: 2px dashed #cbd5e0;
-            border-radius: 0.375rem;
-            padding: 2rem;
-            text-align: center;
-            cursor: pointer;
-            margin-bottom: 1rem;
-            transition: background-color 0.3s ease;
+
+        .input-with-logo {
+            position: relative;
+            display: flex;
+            align-items: center;
         }
-        .file-upload-container:hover {
-            background-color: #f7fafc;
+        .customer-logo {
+            position: absolute;
+            right: 10px;
+            height: 30px;
+            width: auto;
+            object-fit: contain;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            max-width: 80px;
+            display: none;
         }
-        .file-upload-icon {
-            font-size: 3rem;
-            color: #a0aec0;
-            margin-bottom: 0.5rem;
+        .customer-logo.visible {
+            opacity: 1;
+            display: block;
         }
-        .file-upload-text {
-            color: #718096;
-            font-weight: 600;
+        .input-with-logo input {
+            padding-right: 100px;
         }
-        .file-name {
-            margin-top: 0.5rem;
-            font-style: italic;
-            color: #4a5568;
+
+        /* Sağ yarıya GIF eklemek için yeni stil */
+        .right-half {
+            flex: 1; /* Sağdaki tüm boş alanı kapla */
+            background-image: url('hanil3.gif');
+            background-size: cover; /* Resmi tüm alanı kaplayacak şekilde boyutlandır */
+            background-position: center; /* Resmi ortala */
+            background-repeat: no-repeat;
+            position: relative;
+            z-index: 5;
         }
-        .success-message {
-            background-color: #d1fae5;
-            color: #065f46;
-            padding: 1rem;
-            border-radius: 0.375rem;
-            margin-top: 1rem;
-            text-align: center;
-            display: none; /* Varsayılan olarak gizli */
-        }
-        .error-message {
-            background-color: #fee2e2;
-            color: #991b1b;
-            padding: 1rem;
-            border-radius: 0.375rem;
-            margin-top: 1rem;
-            text-align: center;
-            display: none; /* Varsayılan olarak gizli */
+
+        /* Küçük ekranlar için responsive ayarlar */
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+            .logo-container {
+                top: 1.5rem;
+                left: 1.5rem;
+            }
+            .logo {
+                max-width: 150px;
+            }
+            .left-half {
+                flex: 0 0 100%;
+                padding-left: 1.5rem;
+                padding-right: 1.5rem;
+                height: auto;
+                min-height: 60vh;
+            }
+            .form-content {
+                padding-top: calc(5rem + 1cm); /* Mevcut 5rem'e ek 1 cm öteleme */
+                max-width: 100%;
+            }
+            .form-content h1 {
+                font-size: 2rem;
+            }
+            .form-content input,
+            .form-content textarea {
+                padding: 0.6rem 0.8rem;
+            }
+            .form-content button {
+                padding: 0.75rem 2rem;
+                width: 298px;
+            }
+            .right-half {
+                flex: 0 0 40vh;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Yeni Proje Oluştur</h1>
-        <form id="projectForm" enctype="multipart/form-data">
-            <div class="mb-4">
-                <label for="projectName">Proje Adı</label>
-                <input type="text" id="projectName" name="projectName" placeholder="Proje Adını Girin" required>
-            </div>
-            <div class="mb-4">
-                <label for="projectCode">Proje Kodu</label>
-                <input type="text" id="projectCode" name="projectCode" placeholder="Proje Kodunu Girin" required>
-            </div>
-            <div class="mb-4">
-                <label for="carModel">Araç Modeli</label>
-                <input type="text" id="carModel" name="carModel" placeholder="Araç Modelini Girin" required>
-            </div>
-            <div class="mb-4">
-                <label for="customer">Müşteri</label>
-                <input type="text" id="customer" name="customer" placeholder="Müşteri Adını Girin" required>
-            </div>
-            <div class="mb-4">
-                <label for="uploadFile">BOM Dosyasını Yükle (CSV)</label>
-                <div class="file-upload-container" id="fileUploadContainer">
-                    <i class="fas fa-cloud-upload-alt file-upload-icon"></i>
-                    <p class="file-upload-text">Dosyayı buraya sürükleyip bırakın veya tıklayın</p>
-                    <input type="file" id="uploadFile" name="uploadFile" accept=".csv" class="hidden">
-                    <p class="file-name" id="fileNameDisplay"></p>
-                </div>
-            </div>
-            <button type="submit">Proje Oluştur</button>
-            <div id="successMessage" class="success-message"></div>
-            <div id="errorMessage" class="error-message"></div>
-        </form>
+    <div class="logo-container">
+        <img src="ASSAN_HANIL-1.png" alt="Hanil Logo" class="logo">
     </div>
 
+    <body>
+        <div class="left-half">
+            <div class="form-content">
+                <h1 class="text-3xl font-extrabold text-gray-800 mb-8">Yeni Proje Bilgileri</h1>
+                <form id="newProjectForm">
+                    <div class="grid grid-cols-1 gap-6 mb-6">
+                        <div class="md:col-span-1">
+                            <label for="customerName" class="block text-sm font-medium text-gray-700 mb-1">Müşteri Adı</label>
+                            <div class="input-with-logo">
+                                <input type="text" id="customerName" placeholder="Müşteri Adı" class="w-full" required>
+                                <img id="customerLogo" class="customer-logo" src="" alt="Müşteri Logosu">
+                            </div>
+                        </div>
+                        <div class="md:col-span-1">
+                            <label for="projectName" class="block text-sm font-medium text-gray-700 mb-1">Proje Adı</label>
+                            <input type="text" id="projectName" placeholder="Proje Adı" class="w-full" required>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div>
+                            <label for="projectStartYear" class="block text-sm font-medium text-gray-700 mb-1">Proje Başlama Yılı</label>
+                            <input type="number" id="projectStartYear" placeholder="Başlama Yılı" class="w-full" min="1900" max="2100" required>
+                        </div>
+                        <div>
+                            <label for="projectLife" class="block text-sm font-medium text-gray-700 mb-1">Proje Ömrü (Yıl)</label>
+                            <input type="number" id="projectLife" placeholder="Proje Ömrü" class="w-full" min="1" required>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 gap-6 mb-6">
+                        <div class="md:col-span-1">
+                            <label for="projectDescription" class="block text-sm font-medium text-gray-700 mb-1">Proje Açıklaması</label>
+                            <textarea id="projectDescription" placeholder="Proje hakkında kısa açıklama" rows="2" class="w-full"></textarea>
+                        </div>
+                    </div>
+                    <button type="submit">
+                        Proje Oluştur ve Devam Et
+                    </button>
+                </form>
+            </div>
+        </div>
+        <div class="right-half"></div>
+    </body>
+
     <script>
-        const fileUploadContainer = document.getElementById('fileUploadContainer');
-        const uploadFile = document.getElementById('uploadFile');
-        const fileNameDisplay = document.getElementById('fileNameDisplay');
-        const projectForm = document.getElementById('projectForm');
-        const successMessage = document.getElementById('successMessage');
-        const errorMessage = document.getElementById('errorMessage');
+        const customerLogos = {
+            'byd': 'logos/byd.png',
+            'ford': 'logos/ford.png',
+            'stellantis': 'logos/stellantis.png',
+            'renault': 'logos/renault.png',
+            'tesla': 'logos/tesla.png',
+            'mercedes-benz': 'logos/mercedes-benz.png',
+            'hyundai': 'logos/hyundai.png', // Yeni eklenen
+            'tofas': 'logos/tofas.png'    // Yeni eklenen
+        };
+        const customerNameInput = document.getElementById('customerName');
+        const customerLogoImg = document.getElementById('customerLogo');
+        const projectStartYearInput = document.getElementById('projectStartYear');
 
-        // Dosya sürükle bırak ve tıklama olayları
-        fileUploadContainer.addEventListener('click', () => {
-            uploadFile.click();
-        });
+        // Sayfa yüklendiğinde yıl değerini otomatik olarak ayarla
+        projectStartYearInput.value = new Date().getFullYear();
 
-        uploadFile.addEventListener('change', (event) => {
-            if (event.target.files.length > 0) {
-                fileNameDisplay.textContent = event.target.files[0].name;
-            } else {
-                fileNameDisplay.textContent = '';
-            }
-        });
+        // Müşteri adı girildikçe logo gösterme/gizleme
+        customerNameInput.addEventListener('input', function() {
+            const enteredText = customerNameInput.value.toLowerCase().trim();
+            let bestMatchKey = null;
+            let maxLength = 0;
 
-        fileUploadContainer.addEventListener('dragover', (event) => {
-            event.preventDefault();
-            fileUploadContainer.style.backgroundColor = '#e2e8f0';
-        });
-
-        fileUploadContainer.addEventListener('dragleave', (event) => {
-            fileUploadContainer.style.backgroundColor = '';
-        });
-
-        fileUploadContainer.addEventListener('drop', (event) => {
-            event.preventDefault();
-            fileUploadContainer.style.backgroundColor = '';
-            const files = event.dataTransfer.files;
-            if (files.length > 0) {
-                uploadFile.files = files;
-                fileNameDisplay.textContent = files[0].name;
-            }
-        });
-
-        // Form gönderimi
-        projectForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-
-            const formData = new FormData(projectForm);
-
-            // Mesajları temizle
-            successMessage.style.display = 'none';
-            errorMessage.style.display = 'none';
-
-            try {
-                // Bu örnek bir API çağrısıdır. Kendi backend API endpoint'inizi kullanmalısınız.
-                // Eğer bir backend'iniz yoksa ve sadece localStorage'a kaydediyorsanız,
-                // bu kısmı doğrudan localStorage işlemlerine yönlendirebilirsiniz.
-                const response = await fetch('/api/create-project', { // Buradaki '/api/create-project' kendi backend endpoint'iniz olmalı
-                    method: 'POST',
-                    body: formData,
-                });
-
-                const result = await response.json();
-
-                if (response.ok) {
-                    successMessage.textContent = result.message || 'Proje başarıyla oluşturuldu!';
-                    successMessage.style.display = 'block';
-                    projectForm.reset(); // Formu temizle
-                    fileNameDisplay.textContent = ''; // Dosya adını temizle
-
-                    // **** BURADAKİ SATIRI DEĞİŞTİRİYORUZ ****
-                    // parent pencerenin (index.html) tamamını yeniden yükle
-                    window.parent.location.reload(); 
-                    // Bu satır, projenin oluşturulmasından sonra yan menünün güncellenmesini sağlar.
-
-                } else {
-                    errorMessage.textContent = result.message || 'Proje oluşturulurken bir hata oluştu.';
-                    errorMessage.style.display = 'block';
+            if (enteredText.length > 0) {
+                for (const key in customerLogos) {
+                    if (key.startsWith(enteredText)) {
+                        if (key.length > maxLength) {
+                            bestMatchKey = key;
+                            maxLength = key.length;
+                        }
+                    }
                 }
-            } catch (error) {
-                console.error('Hata:', error);
-                errorMessage.textContent = 'Bir ağ hatası oluştu veya sunucuya ulaşılamadı.';
-                errorMessage.style.display = 'block';
+            }
+
+            if (bestMatchKey) {
+                customerLogoImg.src = customerLogos.hasOwnProperty(bestMatchKey) ? customerLogos[bestMatchKey] : '';
+                customerLogoImg.style.display = 'block';
+                customerLogoImg.classList.add('visible');
+            } else {
+                customerLogoImg.classList.remove('visible');
+                setTimeout(() => {
+                    customerLogoImg.style.display = 'none';
+                    customerLogoImg.src = '';
+                }, 300);
+            }
+        });
+
+        // Form gönderildiğinde
+        document.getElementById('newProjectForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const projectName = document.getElementById('projectName').value;
+            const projectLife = document.getElementById('projectLife').value;
+            const projectStartYear = document.getElementById('projectStartYear').value;
+            const customerName = document.getElementById('customerName').value;
+            const projectDescription = document.getElementById('projectDescription').value;
+
+            // Yeni proje nesnesini oluşturur
+            const newProject = {
+                id: Date.now(), // Benzersiz bir ID için zaman damgası
+                name: projectName,
+                life: parseInt(projectLife), // Sayısal değere dönüştürür
+                startYear: parseInt(projectStartYear), // Sayısal değere dönüştürür
+                customer: customerName,
+                description: projectDescription,
+                materials: [] // Malzeme listesi başlangıçta boş
+            };
+
+            // Mevcut projeleri localStorage'dan alır veya boş bir dizi oluşturur
+            let projects = JSON.parse(localStorage.getItem('projects') || '[]');
+            projects.push(newProject); // Yeni projeyi listeye ekler
+            localStorage.setItem('projects', JSON.stringify(projects)); // Projeleri localStorage'a kaydeder
+
+            // Ana sayfayı yeniden yükle
+            if (window.parent) {
+                window.parent.location.reload(); 
+            } else {
+                alert('Proje oluşturuldu ancak ana sayfa yenilenemedi. Tarayıcı konsolunu kontrol edin.');
+                console.error("Parent window is not accessible for reload.");
             }
         });
     </script>
