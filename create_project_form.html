@@ -303,7 +303,8 @@
 
             // Yeni proje oluşturulduktan sonra kayıtlı projeler sayfasına yönlendir
             if (window.parent && window.parent.loadPage) {
-                window.parent.loadPage('view_saved_projects.html'); // YÖNLENDİRME DÜZELTİLDİ
+                // YÖNLENDİRME DÜZELTİLDİ: volume_table.html sayfasına yönlendir
+                window.parent.loadPage(`volume_table.html?projectId=${newProject.id}`);
             } else {
                 // Yönlendirme yapılamazsa kullanıcıyı bilgilendirir
                 alert('Proje oluşturuldu ancak ana sayfaya yönlendirme yapılamadı. Tarayıcı konsolunu kontrol edin.');
