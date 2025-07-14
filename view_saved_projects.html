@@ -29,130 +29,86 @@
             text-align: center;
         }
         .project-card {
-            background-color: #ffffff;
-            border: 1px solid #e2e8f0;
-            border-radius: 0.5rem;
-            padding: 1.5rem;
-            margin-bottom: 1rem;
             display: flex;
             align-items: center;
-            gap: 1.5rem;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            background-color: #ffffff;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1rem;
+            transition: transform 0.2s ease-in-out;
         }
         .project-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            transform: translateY(-3px);
         }
-        .project-card .customer-logo-small {
-            width: 80px;
-            height: auto;
+        .project-logo {
+            width: 64px; /* w-16 */
+            height: 64px; /* h-16 */
+            margin-right: 1rem; /* mr-4 */
             object-fit: contain;
-            flex-shrink: 0;
         }
-        .project-details {
+        .project-info {
             flex-grow: 1;
-            text-align: left;
         }
-        .project-details h3 {
-            font-weight: 600;
-            font-size: 1.25rem;
-            color: #1a202c;
-            margin-bottom: 0.25rem;
+        .project-info h3 {
+            font-size: 1.25rem; /* text-xl */
+            font-weight: 600; /* font-semibold */
+            color: #1a202c; /* gray-900 */
         }
-        .project-details p {
-            font-size: 0.95rem;
-            color: #4a5568;
-            margin-bottom: 0.2rem;
-            line-height: 1.3;
+        .project-info p {
+            font-size: 0.875rem; /* text-sm */
+            color: #4a5568; /* gray-700 */
+        }
+        .project-info .meta-data {
+            font-size: 0.75rem; /* text-xs */
+            color: #718096; /* gray-500 */
+            margin-top: 0.5rem;
         }
         .project-actions {
-            flex-shrink: 0;
             display: flex;
             flex-direction: column;
-            gap: 0.5rem;
+            gap: 0.5rem; /* space-y-2 */
+            margin-left: 1rem; /* ml-4 */
         }
-        .view-button, .delete-button {
-            background-color: #00008B;
+        .project-actions button {
+            padding: 0.5rem 1rem; /* px-4 py-2 */
+            border-radius: 0.375rem; /* rounded-md */
             color: white;
-            font-weight: 600;
-            padding: 0.5rem 1.25rem;
-            border-radius: 0.375rem;
-            transition: background-color 0.3s ease;
-            text-decoration: none;
-            display: inline-block;
+            font-weight: 500;
+            transition: background-color 0.2s ease;
             cursor: pointer;
             border: none;
-            width: 100px; /* Buton genişliğini sabitle */
+        }
+        .project-actions .view-button {
+            background-color: #3182CE; /* blue-600 */
+        }
+        .project-actions .view-button:hover {
+            background-color: #2B6CB0; /* blue-700 */
+        }
+        .project-actions .delete-button {
+            background-color: #E53E3E; /* red-600 */
+        }
+        .project-actions .delete-button:hover {
+            background-color: #C53030; /* red-700 */
+        }
+        .no-projects-message {
             text-align: center;
-        }
-        .view-button:hover {
-            background-color: #0000CD;
-        }
-        .delete-button {
-            background-color: #EF4444; /* Kırmızı */
-        }
-        .delete-button:hover {
-            background-color: #DC2626; /* Koyu Kırmızı */
-        }
-        #noProjectsMessage {
-            text-align: center;
-            color: #4a5568;
-            margin-top: 2rem;
-            font-size: 1.1rem;
-        }
-
-        /* Küçük ekranlar için responsive ayarlar */
-        @media (max-width: 768px) {
-            body {
-                padding: 15px;
-            }
-            .container {
-                padding: 20px;
-            }
-            h2 {
-                font-size: 1.75rem;
-            }
-            .project-card {
-                flex-direction: column;
-                align-items: flex-start;
-                padding: 1rem;
-                gap: 1rem;
-            }
-            .project-card .customer-logo-small {
-                width: 60px;
-            }
-            .project-details h3 {
-                font-size: 1.1rem;
-            }
-            .project-details p {
-                font-size: 0.85rem;
-            }
-            .project-actions {
-                flex-direction: row; /* Küçük ekranlarda butonları yan yana getir */
-                width: 100%;
-                justify-content: space-around;
-            }
-            .view-button, .delete-button {
-                width: 48%; /* Butonların %48'ini kaplamasını sağla */
-                padding: 0.4rem 0.8rem;
-                font-size: 0.9rem;
-            }
+            color: #718096;
+            padding: 2rem;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>Kayıtlı Projeleriniz</h2>
-        <div id="projectsList" class="grid grid-cols-1 gap-4">
+        <h2>Kayıtlı Projeler</h2>
+        <div id="projectList">
             </div>
-        <p id="noProjectsMessage" class="hidden">Henüz kayıtlı projeniz bulunmamaktadır.</p>
     </div>
 
     <script>
         const customerLogos = {
             'byd': 'logos/byd.png',
-            'ford': 'logos/ford.mng', // Bu dosya adının doğru olduğundan emin olun (.mng yerine .png, .jpg vb.)
+            'ford': 'logos/ford.png', // Buradaki dosya uzantısını kontrol edin (.mng yerine .png)
             'stellantis': 'logos/stellantis.png',
             'renault': 'logos/renault.png',
             'tesla': 'logos/tesla.png',
@@ -162,40 +118,39 @@
             'tofaş': 'logos/tofas.png'
         };
 
-        const projectsList = document.getElementById('projectsList');
-        const noProjectsMessage = document.getElementById('noProjectsMessage');
-
         function displaySavedProjects() {
             const projects = JSON.parse(localStorage.getItem('projects') || '[]');
-            projectsList.innerHTML = ''; // Önceki listeyi temizle
+            const projectListDiv = document.getElementById('projectList');
+            projectListDiv.innerHTML = ''; // Önceki listeyi temizle
 
             if (projects.length === 0) {
-                noProjectsMessage.classList.remove('hidden');
+                projectListDiv.innerHTML = '<p class="no-projects-message">Henüz kaydedilmiş proje bulunmamaktadır.</p>';
                 return;
-            } else {
-                noProjectsMessage.classList.add('hidden');
             }
 
             projects.forEach(project => {
-                const customerLogoPath = customerLogos[project.customer.toLowerCase()] || ''; // Logo yolu
                 const projectCard = document.createElement('div');
                 projectCard.className = 'project-card';
+
+                // Müşteri logosu yolunu belirle
+                const customerLogoPath = project.customer ? customerLogos[project.customer.toLowerCase()] : null;
+                const logoHtml = customerLogoPath ? `<img src="${customerLogoPath}" alt="${project.customer} Logo" class="project-logo">` : '';
+
                 projectCard.innerHTML = `
-                    ${customerLogoPath ? `<img src="${customerLogoPath}" alt="${project.customer} Logo" class="customer-logo-small">` : ''}
-                    <div class="project-details">
-                        <h3>${project.name}</h3>
-                        <p><strong>Müşteri:</strong> ${project.customer}</p>
-                        <p><strong>Başlama Yılı:</strong> ${project.startYear}</p>
-                        <p><strong>Proje Ömrü:</strong> ${project.life} Yıl</p>
-                        <p><strong>Açıklama:</strong> ${project.description || 'Yok'}</p>
-                        ${project.bom && project.bom.revision ? `<p><strong>Son BOM Revizyonu:</strong> ${project.bom.revision}</p>` : ''}
+                    ${logoHtml}
+                    <div class="project-info">
+                        <h3>${project.name || 'Proje Adı Yok'}</h3>
+                        <p>Müşteri: ${project.customer || 'N/A'}</p>
+                        <p>Başlama Yılı: ${project.startYear || 'N/A'} | Ömür: ${project.life || 'N/A'} yıl</p>
+                        <p>Açıklama: ${project.description || 'Yok'}</p>
+                        <p class="meta-data">Son Kaydeden: ${project.lastSavedBy || 'Bilinmiyor'} | Revizyon Tarihi: ${project.revisionDate || 'N/A'}</p>
                     </div>
                     <div class="project-actions">
                         <button class="view-button" data-project-id="${project.id}">Görüntüle</button>
                         <button class="delete-button" data-project-id="${project.id}">Sil</button>
                     </div>
                 `;
-                projectsList.appendChild(projectCard);
+                projectListDiv.appendChild(projectCard);
             });
 
             // Görüntüle butonlarına olay dinleyicileri ekle
@@ -203,7 +158,8 @@
                 button.addEventListener('click', function() {
                     const projectId = this.getAttribute('data-project-id');
                     if (window.parent && window.parent.loadPage) {
-                        window.parent.loadPage(`view_saved_bom.html?projectId=${projectId}`);
+                        // BOM sayfasını proje ID'si ile yükle
+                        window.parent.loadPage(`bom_page.html?projectId=${projectId}`); 
                     } else {
                         console.error('window.parent.loadPage is not defined.');
                         alert('Kayıtlı projeyi görüntülemek için ana sayfaya yönlendirme yapılamadı.');
@@ -220,6 +176,15 @@
                         projects = projects.filter(p => p.id !== projectIdToDelete);
                         localStorage.setItem('projects', JSON.stringify(projects));
                         displaySavedProjects(); // Listeyi yeniden yükle
+
+                        // Eğer silinen proje aktif projeyse, aktif proje ID'sini temizle
+                        if (localStorage.getItem('currentProjectId') == projectIdToDelete) {
+                            localStorage.removeItem('currentProjectId');
+                            // Opsiyonel: Ana sayfayı veya yeni proje formunu yükle
+                            if (window.parent && window.parent.loadPage) {
+                                window.parent.loadPage('welcome_page.html');
+                            }
+                        }
                     }
                 });
             });
