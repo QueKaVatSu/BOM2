@@ -117,27 +117,30 @@
         }
 
         /* Başlık ve filtre kutularının arka planı sabit beyaz ve kutulu görünüm kaldırıldı */
+        /* Genel konteyner için arka planı ve gölgeleri kaldır */
         .container.mx-auto.bg-white.rounded-lg.shadow-xl.p-8.mb-8 {
-            background-color: #ffffff; /* Sabit beyaz */
-            box-shadow: none; /* Gölge kaldırıldı */
-            border-radius: 0; /* Köşe yuvarlaması kaldırıldı */
-            padding: 0; /* İç boşluk kaldırıldı, aşağıdaki div'lere bırakıldı */
+            background-color: #ffffff !important; /* Sabit beyaz */
+            box-shadow: none !important; /* Gölge kaldırıldı, !important ile çakışmaları önle */
+            border-radius: 0 !important; /* Köşe yuvarlaması kaldırıldı, !important ile çakışmaları önle */
+            padding: 0 !important; /* İç boşluk kaldırıldı, aşağıdaki div'lere bırakıldı, !important ile çakışmaları önle */
         }
 
-        .mb-10.p-6.bg-gray-50.rounded-lg.border.border-gray-200 {
-            background-color: #ffffff; /* Sabit beyaz */
-            border: none; /* Kenarlık kaldırıldı */
-            border-radius: 0; /* Köşe yuvarlaması kaldırıldı */
+        /* Yeni Malzeme Ekle bölümü için arka planı, kenarlığı ve gölgeyi kaldır */
+        .mb-10.p-6.bg-white.rounded-lg.border.border-gray-200 {
+            background-color: #ffffff !important; /* Sabit beyaz, !important ile çakışmaları önle */
+            border: none !important; /* Kenarlık kaldırıldı, !important ile çakışmaları önle */
+            border-radius: 0 !important; /* Köşe yuvarlaması kaldırıldı, !important ile çakışmaları önle */
             padding: 24px; /* Mevcut padding bırakıldı */
-            box-shadow: none; /* Gölge kaldırıldı */
+            box-shadow: none !important; /* Gölge kaldırıldı, !important ile çakışmaları önle */
         }
 
-        .flex.flex-col.md\:flex-row.items-center.justify-between.mb-8.p-6.bg-gray-50.rounded-lg.border.border-gray-200 {
-            background-color: #ffffff; /* Sabit beyaz */
-            border: none; /* Kenarlık kaldırıldı */
-            border-radius: 0; /* Köşe yuvarlaması kaldırıldı */
+        /* Filtreleme ve arama bölümü için arka planı, kenarlığı ve gölgeyi kaldır */
+        .flex.flex-col.md\:flex-row.items-center.justify-between.mb-8.p-6.bg-white.rounded-lg.border.border-gray-200 {
+            background-color: #ffffff !important; /* Sabit beyaz, !important ile çakışmaları önle */
+            border: none !important; /* Kenarlık kaldırıldı, !important ile çakışmaları önle */
+            border-radius: 0 !important; /* Köşe yuvarlaması kaldırıldı, !important ile çakışmaları önle */
             padding: 24px; /* Mevcut padding bırakıldı */
-            box-shadow: none; /* Gölge kaldırıldı */
+            box-shadow: none !important; /* Gölge kaldırıldı, !important ile çakışmaları önle */
         }
     </style>
 </head>
