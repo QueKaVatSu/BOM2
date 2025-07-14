@@ -623,9 +623,10 @@
         window.loadPage = function(pageUrl) {
             mainContentFrame.src = pageUrl;
             sidebar.classList.add('open');
+            contentFrameContainer.style.display = 'block'; // iframe'i göster
             contentFrameContainer.classList.add('shifted');
             mainFormContainer.style.display = 'none'; // Formu gizle
-            rightHalfInitial.classList.add('hidden'); // GIF'i gizla
+            rightHalfInitial.classList.add('hidden'); // GIF'i gizle
 
             // URL'den projectId'yi al ve localStorage'a kaydet
             const url = new URL(pageUrl, window.location.origin);
@@ -678,7 +679,7 @@
                     sidebarLinks.forEach(link => link.classList.remove('active'));
                     sidebarLinks && sidebarLinks.length > 0 && sidebarLinks[0].classList.add('active');
                 } else {
-                    // currentProjectId bulunamadıysa, welcome sayfasına yönlendir
+                    // currentProjectId bulunamadıysa (örneğin silinmişse), welcome sayfasına yönlendir
                     localStorage.removeItem('currentProjectId');
                     mainFormContainer.style.display = 'none';
                     rightHalfInitial.classList.add('hidden');
