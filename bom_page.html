@@ -912,17 +912,9 @@
                 if (filterType === 'BUY') {
                     showSupplier = !showSupplier;
                     supplierCheckbox.classList.toggle('checked', showSupplier);
-                    if (showSupplier && showAsha) { // Eğer BUY seçiliyse MAKE'i kaldır
-                        showAsha = false;
-                        ashaCheckbox.classList.remove('checked');
-                    }
                 } else if (filterType === 'MAKE') {
                     showAsha = !showAsha;
                     ashaCheckbox.classList.toggle('checked', showAsha);
-                    if (showAsha && showSupplier) { // Eğer MAKE seçiliyse BUY'ı kaldır
-                        showSupplier = false;
-                        supplierCheckbox.classList.remove('checked');
-                    }
                 }
             }
             applyFilters();
