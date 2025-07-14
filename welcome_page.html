@@ -81,6 +81,12 @@
             background-color: #0000CD; /* Koyu Pers Mavisi */
             transform: translateY(-2px);
         }
+        .action-button.secondary { /* Yeni sınıf, farklı mavi tonu için */
+            background-color: #3182CE; /* Farklı bir mavi */
+        }
+        .action-button.secondary:hover {
+            background-color: #2B6CB0; /* Koyu farklı mavi */
+        }
         .right-half {
             flex: 1; /* Sağdaki tüm boş alanı kapla */
             background-image: url('hanil3.gif'); /* GIF yolu */
@@ -140,7 +146,7 @@
             <p class="text-xl text-gray-600">Bu platform, malzeme listelerinizi (BOM) kolayca yönetmenize, projelerinizin hacim analizlerini yapmanıza ve 3D modellerinizi görüntülemenize olanak tanır. Başlamak için bir seçenek belirleyin.</p>
             <div class="action-buttons">
                 <a href="#" onclick="window.parent.loadPage('create_project_form.html')" class="action-button">Yeni Proje Oluştur</a>
-                <a href="#" onclick="window.parent.loadPage('view_saved_projects.html')" class="action-button">Kayıtlı Projeleri Görüntüle</a>
+                <a href="#" onclick="window.parent.loadPage('view_saved_projects.html')" class="action-button secondary">Kayıtlı Projeleri Görüntüle</a>
             </div>
         </div>
     </div>
