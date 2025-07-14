@@ -16,6 +16,7 @@
             min-height: 100vh;
             margin: 0;
             overflow: hidden; 
+            flex-direction: column; /* Sayfalama kontrolleri için dikey düzenleme */
         }
         .container {
             background-color: #ffffff;
@@ -27,10 +28,11 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            margin-top: 20px; /* Üstten boşluk */
         }
         .chart-container {
             width: 95vw;
-            height: 90vh;
+            height: 80vh; /* Sayfalama için altta boşluk bırakıldı */
             display: flex;
             justify-content: center;
             align-items: center;
@@ -80,12 +82,47 @@
             fill: rgba(255, 255, 255, 0.7); 
             border-radius: 3px; 
         }
+        .pagination-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+        .pagination-controls button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 0 10px;
+            transition: background-color 0.3s ease;
+        }
+        .pagination-controls button:hover:not(:disabled) {
+            background-color: #0056b3;
+        }
+        .pagination-controls button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        .page-info {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1 class="text-2xl font-bold mb-4">Görsel BOM Hiyerarşisi</h1>
         <div id="chart" class="chart-container"></div>
+        <div class="pagination-controls">
+            <button id="prevBtn" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed">Önceki</button>
+            <span id="pageInfo" class="page-info mx-4"></span>
+            <button id="nextBtn" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed">Sonraki</button>
+        </div>
     </div>
 
     <script>
@@ -102,7 +139,6 @@
                 const nodeMap = new Map();
                 materials.forEach(item => nodeMap.set(item.partNumber, { ...item, children: [] }));
 
-                // Build parent-child relationships for all nodes
                 materials.forEach(item => {
                     if (item.parentPartNumber) {
                         const parent = nodeMap.get(item.parentPartNumber);
@@ -118,13 +154,11 @@
                 const rootsToVisualize = [];
                 const processedNodesForVisualization = new Set(); 
 
-                // 1. Prioritize main products as roots
                 const mainProductRootCandidates = Array.from(nodeMap.values()).filter(node => node.isMainProduct === true);
 
                 mainProductRootCandidates.forEach(mpRoot => {
-                    if (!processedNodesForVisualization.has(mpRoot.partNumber)) { // Ensure not already processed
+                    if (!processedNodesForVisualization.has(mpRoot.partNumber)) { 
                         rootsToVisualize.push(mpRoot);
-                        // Mark all nodes in this subtree as processed
                         const markSubtreeProcessed = (node) => {
                             processedNodesForVisualization.add(node.partNumber);
                             node.children.forEach(markSubtreeProcessed);
@@ -133,14 +167,11 @@
                     }
                 });
 
-                // 2. Find any other natural roots that haven't been processed yet
                 const childPartNumbers = new Set(materials.filter(m => m.parentPartNumber).map(m => m.partNumber));
                 
                 Array.from(nodeMap.values()).forEach(node => {
                     if (!processedNodesForVisualization.has(node.partNumber) && !childPartNumbers.has(node.partNumber)) {
-                        // This is a natural root not covered by an `isMainProduct` tree.
                         rootsToVisualize.push(node);
-                        // Mark its subtree as processed
                         const markSubtreeProcessed = (subNode) => {
                             processedNodesForVisualization.add(subNode.partNumber);
                             subNode.children.forEach(markSubtreeProcessed);
@@ -155,7 +186,6 @@
                 return rootsToVisualize;
             }
 
-
             const svgWidth = document.getElementById('chart').clientWidth;
             const svgHeight = document.getElementById('chart').clientHeight;
 
@@ -167,213 +197,249 @@
             const zoom = d3.zoom()
                 .scaleExtent([0.1, 10]) 
                 .on("zoom", (event) => {
-                    // Apply zoom/pan to the main SVG group containing all trees
-                    // We will create a top-level group to apply zoom to
                     mainChartGroup.attr("transform", event.transform);
                 });
 
+            // SVG'ye zoom davranışını uygula
             svg.call(zoom); 
 
-            // Create a main group for all charts to be zoomable together
+            // Grafik içeriğini tutacak ana grup (zoom ve pan bu gruba uygulanacak)
             const mainChartGroup = svg.append("g");
-
-
             const colorScale = d3.scaleOrdinal(d3.schemeCategory10);
 
-            function drawMultipleCharts(rootsArray) {
-                // Determine layout for multiple trees
-                // For simplicity, let's arrange them horizontally
-                const numTrees = rootsArray.length;
-                if (numTrees === 0) return;
+            let allHierarchyRoots = [];
+            let currentTreeIndex = 0;
 
-                const paddingBetweenTrees = 100; // Pixels
-                const totalContentWidth = svgWidth - paddingBetweenTrees * (numTrees - 1);
-                const chartWidthPerTree = totalContentWidth / numTrees;
-                const chartHeightPerTree = svgHeight; // Each tree can use full height
+            function renderCurrentTree() {
+                // Önceki ağacı temizle
+                mainChartGroup.html(""); 
 
-                rootsArray.forEach((data, index) => {
-                    // Create a group for each individual tree
-                    const treeGroup = mainChartGroup.append("g")
-                        .attr("class", `tree-group tree-${index}`);
-                    
-                    // Position each tree horizontally
-                    const offsetX = index * (chartWidthPerTree + paddingBetweenTrees) + chartWidthPerTree / 2;
-                    const offsetY = chartHeightPerTree / 2;
-                    treeGroup.attr("transform", `translate(${offsetX},${offsetY})`);
+                if (allHierarchyRoots.length === 0) {
+                    const chartDiv = document.getElementById('chart');
+                    chartDiv.innerHTML = '<p class="text-gray-600">Görselleştirilecek geçerli BOM hiyerarşisi bulunamadı.</p>';
+                    updatePaginationControls();
+                    return;
+                }
+
+                const data = allHierarchyRoots[currentTreeIndex];
+
+                // Ağacın boyutunu ayarla
+                const radius = (Math.min(svgWidth, svgHeight) / 2 - 20) * 0.9; // Tek ağaç için ayarlandı
+
+                // D3 ağaç düzenini oluştur
+                const tree = d3.tree()
+                    .size([2 * Math.PI, radius])
+                    .separation((a, b) => (a.parent == b.parent ? 60 : 120) / a.depth); 
+
+                const root = d3.hierarchy(data, d => d.children);
+                tree(root);
+
+                // Zoom'u başlangıç durumuna sıfırla
+                svg.call(zoom.transform, d3.zoomIdentity); 
+
+                // Ağacı merkeze konumlandır
+                mainChartGroup.attr("transform", `translate(${svgWidth / 2},${svgHeight / 2})`);
 
 
-                    // Adjust radius based on available space for each tree
-                    const radius = (Math.min(chartWidthPerTree, chartHeightPerTree) / 2 - 20) * 3.75; 
+                function polarToCartesian(angle, radius) {
+                    const x = radius * Math.sin(angle);
+                    const y = radius * -Math.cos(angle);
+                    return [x, y];
+                }
 
-                    const tree = d3.tree()
-                        .size([2 * Math.PI, radius])
-                        .separation((a, b) => (a.parent == b.parent ? 60 : 120) / a.depth); 
+                const numLevelsForScaling = 10; 
 
-                    const root = d3.hierarchy(data, d => d.children);
-                    tree(root);
+                const calculateNodeRadius = (d) => {
+                    const effectiveDepth = d.depth; 
+                    const baseCircleRadius = 92.5; 
+                    const minCircleRadius = 2.5; 
+                    const totalRadiusRange = baseCircleRadius - minCircleRadius; 
+                    return Math.max(minCircleRadius, baseCircleRadius - (effectiveDepth * (totalRadiusRange / numLevelsForScaling)));
+                };
 
-                    function polarToCartesian(angle, radius) {
-                        const x = radius * Math.sin(angle);
-                        const y = radius * -Math.cos(angle);
-                        return [x, y];
-                    }
+                const link = mainChartGroup.selectAll(".link") 
+                    .data(root.links())
+                    .enter().append("path")
+                    .attr("class", "link")
+                    .attr("d", d => {
+                        const [sx, sy] = polarToCartesian(d.source.x, d.source.y);
+                        const [tx, ty] = polarToCartesian(d.target.x, d.target.y);
 
-                    const numLevelsForScaling = 10; 
+                        const r_s = calculateNodeRadius(d.source);
+                        const r_t = calculateNodeRadius(d.target);
 
-                    const calculateNodeRadius = (d) => {
-                        const effectiveDepth = d.depth; 
-                        const baseCircleRadius = 92.5; 
-                        const minCircleRadius = 2.5; 
-                        const totalRadiusRange = baseCircleRadius - minCircleRadius; 
-                        return Math.max(minCircleRadius, baseCircleRadius - (effectiveDepth * (totalRadiusRange / numLevelsForScaling)));
-                    };
+                        const vx = tx - sx;
+                        const vy = ty - sy;
+                        const dist = Math.sqrt(vx * vx + vy * vy);
 
-                    const link = treeGroup.selectAll(".link") 
-                        .data(root.links())
-                        .enter().append("path")
-                        .attr("class", "link")
-                        .attr("d", d => {
-                            const [sx, sy] = polarToCartesian(d.source.x, d.source.y);
-                            const [tx, ty] = polarToCartesian(d.target.x, d.target.y);
+                        const nvx = vx / dist;
+                        const nvy = vy / dist;
 
-                            const r_s = calculateNodeRadius(d.source);
-                            const r_t = calculateNodeRadius(d.target);
+                        const sx_edge = sx + nvx * r_s;
+                        const sy_edge = sy + nvy * r_s;
+                        const tx_edge = tx - nvx * r_t;
+                        const ty_edge = ty - nvy * r_t;
 
-                            const vx = tx - sx;
-                            const vy = ty - sy;
-                            const dist = Math.sqrt(vx * vx + vy * vy);
-
-                            const nvx = vx / dist;
-                            const nvy = vy / dist;
-
-                            const sx_edge = sx + nvx * r_s;
-                            const sy_edge = sy + nvy * r_s;
-                            const tx_edge = tx - nvx * r_t;
-                            const ty_edge = ty - nvy * r_t;
-
-                            return `M ${sx_edge} ${sy_edge} L ${tx_edge} ${ty_edge}`; 
-                        });
-
-                    const linkLabels = treeGroup.selectAll(".link-label-group")
-                        .data(root.links())
-                        .enter().append("g")
-                        .attr("class", "link-label-group")
-                        .attr("transform", d => {
-                            const [sx, sy] = polarToCartesian(d.source.x, d.source.y);
-                            const [tx, ty] = polarToCartesian(d.target.x, d.target.y);
-                            const midX = (sx + tx) / 2;
-                            const midY = (sy + ty) / 2;
-                            let angle = d.target.x * 180 / Math.PI - 90;
-                            if (angle > 90) angle = angle - 180;
-                            if (angle < -90) angle = angle + 180;
-
-                            return `translate(${midX},${midY}) rotate(${angle})`;
-                        });
-
-                    linkLabels.append("rect") 
-                        .attr("class", "link-label-background")
-                        .attr("x", -60) 
-                        .attr("y", -20)  
-                        .attr("width", 120) 
-                        .attr("height", 40) 
-                        .attr("rx", 3) 
-                        .attr("ry", 3); 
-
-                    linkLabels.append("text")
-                        .attr("class", "link-label")
-                        .attr("dy", "0.31em")
-                        .text(d => d.target.data.assemblyType || 'N/A'); 
-
-                    const baseMainFontSize = 14; 
-                    const minMainFontSize = 4;    
-
-                    const baseSubFontSize = 10;   
-                    const minSubFontSize = 3;     
-
-                    const node = treeGroup.selectAll(".node") 
-                        .data(root.descendants())
-                        .enter().append("g")
-                        .attr("class", d => "node" + (d.children ? " node--internal" : " node--leaf"))
-                        .attr("transform", d => `
-                            rotate(${d.x * 180 / Math.PI - 90})
-                            translate(${d.y},0)
-                        `);
-
-                    node.append("circle")
-                        .attr("class", "outer-circle")
-                        .attr("r", calculateNodeRadius)
-                        .style("stroke", d => colorScale(d.depth)) 
-                        .style("fill", "#FFFFFF"); 
-
-                    node.each(function(d) {
-                        const currentRadius = parseFloat(d3.select(this).select(".outer-circle").attr("r")); 
-                        
-                        const effectiveDepth = d.depth;
-                        const mainFontSize = Math.max(minMainFontSize, baseMainFontSize - (effectiveDepth * ((baseMainFontSize - minMainFontSize) / numLevelsForScaling)));
-                        const subFontSize = Math.max(minSubFontSize, baseSubFontSize - (effectiveDepth * ((baseSubFontSize - minSubFontSize) / numLevelsForScaling)));
-
-                        let contentLines = [];
-                        let totalContentHeight = 0;
-
-                        contentLines.push({ text: d.data.description, class: "main-text", fontSize: mainFontSize });
-                        totalContentHeight += mainFontSize;
-
-                        contentLines.push({ text: `No: ${d.data.partNumber}`, class: "sub-text", fontSize: subFontSize });
-                        totalContentHeight += subFontSize;
-
-                        let productionLocationText = '';
-                        let productionLocationClass = '';
-                        if (d.data.productionLocation === 'ASHA') {
-                            productionLocationText = 'MAKE';
-                            productionLocationClass = 'production-location-text green-text'; 
-                        } else if (d.data.productionLocation === 'Supplier') {
-                            productionLocationText = 'BUY';
-                            productionLocationClass = 'production-location-text red-text'; 
-                        }
-                        if (productionLocationText) {
-                            contentLines.push({ text: productionLocationText, class: productionLocationClass, fontSize: subFontSize });
-                            totalContentHeight += subFontSize;
-                        }
-
-                        if (d.data.rawMaterial && d.data.rawMaterial !== '') {
-                            contentLines.push({ text: `Hammadde: ${d.data.rawMaterial}`, class: "raw-material-text", fontSize: subFontSize });
-                            totalContentHeight += subFontSize;
-                        }
-                        
-                        let currentY = -totalContentHeight / 2;
-
-                        contentLines.forEach(line => {
-                            d3.select(this).append("text")
-                                .attr("class", line.class)
-                                .attr("x", 0)
-                                .attr("y", currentY + (line.fontSize / 2))
-                                .attr("text-anchor", "middle")
-                                .attr("transform", `rotate(${-(d.x * 180 / Math.PI - 90)})`)
-                                .style("font-size", `${line.fontSize}px`)
-                                .text(line.text);
-                            currentY += line.fontSize;
-                        });
+                        return `M ${sx_edge} ${sy_edge} L ${tx_edge} ${ty_edge}`; 
                     });
 
-                    node.append("title")
-                        .text(d => {
-                            let tooltipText = `Parça Adı: ${d.data.description}\nParça No: ${d.data.partNumber}`;
-                            if (d.data.isMainProduct) tooltipText += "\nAna Ürün"; 
-                            if (d.data.productionLocation) tooltipText += `\nÜretim Konumu: ${d.data.productionLocation}`;
-                            if (d.data.rawMaterial) tooltipText += `\nHammadde: ${d.data.rawMaterial}`;
-                            if (d.data.productionMethod) tooltipText += `\nÜretim Yöntemi: ${d.data.productionMethod}`;
-                            if (d.data.assemblyType) tooltipText += `\nMontaj Şekli: ${d.data.assemblyType}`;
-                            return tooltipText;
-                        });
+                const linkLabels = mainChartGroup.selectAll(".link-label-group")
+                    .data(root.links())
+                    .enter().append("g")
+                    .attr("class", "link-label-group")
+                    .attr("transform", d => {
+                        const [sx, sy] = polarToCartesian(d.source.x, d.source.y);
+                        const [tx, ty] = polarToCartesian(d.target.x, d.target.y);
+                        const midX = (sx + tx) / 2;
+                        const midY = (sy + ty) / 2;
+                        let angle = d.target.x * 180 / Math.PI - 90;
+                        if (angle > 90) angle = angle - 180;
+                        if (angle < -90) angle = angle + 180;
+
+                        return `translate(${midX},${midY}) rotate(${angle})`;
+                    });
+
+                linkLabels.append("rect") 
+                    .attr("class", "link-label-background")
+                    .attr("x", -60) 
+                    .attr("y", -20)  
+                    .attr("width", 120) 
+                    .attr("height", 40) 
+                    .attr("rx", 3) 
+                    .attr("ry", 3); 
+
+                linkLabels.append("text")
+                    .attr("class", "link-label")
+                    .attr("dy", "0.31em")
+                    .text(d => d.target.data.assemblyType || 'N/A'); 
+
+                const baseMainFontSize = 14; 
+                const minMainFontSize = 4;    
+
+                const baseSubFontSize = 10;   
+                const minSubFontSize = 3;     
+
+                const node = mainChartGroup.selectAll(".node") 
+                    .data(root.descendants())
+                    .enter().append("g")
+                    .attr("class", d => "node" + (d.children ? " node--internal" : " node--leaf"))
+                    .attr("transform", d => `
+                        rotate(${d.x * 180 / Math.PI - 90})
+                        translate(${d.y},0)
+                    `);
+
+                node.append("circle")
+                    .attr("class", "outer-circle")
+                    .attr("r", calculateNodeRadius)
+                    .style("stroke", d => colorScale(d.depth)) 
+                    .style("fill", "#FFFFFF"); 
+
+                node.each(function(d) {
+                    const currentRadius = parseFloat(d3.select(this).select(".outer-circle").attr("r")); 
+                    
+                    const effectiveDepth = d.depth;
+                    const mainFontSize = Math.max(minMainFontSize, baseMainFontSize - (effectiveDepth * ((baseMainFontSize - minMainFontSize) / numLevelsForScaling)));
+                    const subFontSize = Math.max(minSubFontSize, baseSubFontSize - (effectiveDepth * ((baseSubFontSize - minSubFontSize) / numLevelsForScaling)));
+
+                    let contentLines = [];
+                    let totalContentHeight = 0;
+
+                    contentLines.push({ text: d.data.description, class: "main-text", fontSize: mainFontSize });
+                    totalContentHeight += mainFontSize;
+
+                    contentLines.push({ text: `No: ${d.data.partNumber}`, class: "sub-text", fontSize: subFontSize });
+                    totalContentHeight += subFontSize;
+
+                    let productionLocationText = '';
+                    let productionLocationClass = '';
+                    if (d.data.productionLocation === 'ASHA') {
+                        productionLocationText = 'MAKE';
+                        productionLocationClass = 'production-location-text green-text'; 
+                    } else if (d.data.productionLocation === 'Supplier') {
+                        productionLocationText = 'BUY';
+                        productionLocationClass = 'production-location-text red-text'; 
+                    }
+                    if (productionLocationText) {
+                        contentLines.push({ text: productionLocationText, class: productionLocationClass, fontSize: subFontSize });
+                        totalContentHeight += subFontSize;
+                    }
+
+                    if (d.data.rawMaterial && d.data.rawMaterial !== '') {
+                        contentLines.push({ text: `Hammadde: ${d.data.rawMaterial}`, class: "raw-material-text", fontSize: subFontSize });
+                        totalContentHeight += subFontSize;
+                    }
+                    
+                    let currentY = -totalContentHeight / 2;
+
+                    contentLines.forEach(line => {
+                        d3.select(this).append("text")
+                            .attr("class", line.class)
+                            .attr("x", 0)
+                            .attr("y", currentY + (line.fontSize / 2))
+                            .attr("text-anchor", "middle")
+                            .attr("transform", `rotate(${-(d.x * 180 / Math.PI - 90)})`)
+                            .style("font-size", `${line.fontSize}px`)
+                            .text(line.text);
+                        currentY += line.fontSize;
+                    });
                 });
+
+                node.append("title")
+                    .text(d => {
+                        let tooltipText = `Parça Adı: ${d.data.description}\nParça No: ${d.data.partNumber}`;
+                        if (d.data.isMainProduct) tooltipText += "\nAna Ürün"; 
+                        if (d.data.productionLocation) tooltipText += `\nÜretim Konumu: ${d.data.productionLocation}`;
+                        if (d.data.rawMaterial) tooltipText += `\nHammadde: ${d.data.rawMaterial}`;
+                        if (d.data.productionMethod) tooltipText += `\nÜretim Yöntemi: ${d.data.productionMethod}`;
+                        if (d.data.assemblyType) tooltipText += `\nMontaj Şekli: ${d.data.assemblyType}`;
+                        return tooltipText;
+                    });
+                
+                // Sayfalama kontrollerini güncelle
+                updatePaginationControls(); 
             }
 
-            const hierarchicalDataRoots = buildMultipleD3Hierarchies(bomMaterials);
-            if (hierarchicalDataRoots.length > 0) {
-                drawMultipleCharts(hierarchicalDataRoots);
+            function updatePaginationControls() {
+                const prevBtn = document.getElementById('prevBtn');
+                const nextBtn = document.getElementById('nextBtn');
+                const pageInfo = document.getElementById('pageInfo');
+
+                prevBtn.disabled = currentTreeIndex === 0;
+                nextBtn.disabled = currentTreeIndex === allHierarchyRoots.length - 1;
+                pageInfo.textContent = `${currentTreeIndex + 1} / ${allHierarchyRoots.length}`;
+
+                // Eğer tek bir ağaç varsa, sayfalama kontrollerini gizle
+                if (allHierarchyRoots.length <= 1) {
+                    document.querySelector('.pagination-controls').style.display = 'none';
+                } else {
+                    document.querySelector('.pagination-controls').style.display = 'flex'; // Göster
+                }
+            }
+
+            document.getElementById('prevBtn').addEventListener('click', () => {
+                if (currentTreeIndex > 0) {
+                    currentTreeIndex--;
+                    renderCurrentTree();
+                }
+            });
+
+            document.getElementById('nextBtn').addEventListener('click', () => {
+                if (currentTreeIndex < allHierarchyRoots.length - 1) {
+                    currentTreeIndex++;
+                    renderCurrentTree();
+                }
+            });
+
+            // Tüm hiyerarşi köklerini oluştur
+            allHierarchyRoots = buildMultipleD3Hierarchies(bomMaterials);
+            
+            // Eğer kökler varsa, ilk ağacı çiz
+            if (allHierarchyRoots.length > 0) {
+                renderCurrentTree(); 
             } else {
                 const chartDiv = document.getElementById('chart');
                 chartDiv.innerHTML = '<p class="text-gray-600">Görselleştirilecek geçerli BOM hiyerarşisi bulunamadı.</p>';
+                updatePaginationControls(); // Kontrolleri güncelle (gizle)
             }
         });
     </script>
