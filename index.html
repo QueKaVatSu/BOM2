@@ -194,13 +194,14 @@
             z-index: 0;
             display: flex;
             flex-direction: column;
+            justify-content: space-between; /* Menü ve çıkış butonunu ayırır */
         }
 
         .sidebar-menu {
             list-style: none;
             padding: 0 20px;
             margin: 0;
-            flex-grow: 1;
+            flex-grow: 1; /* Menü öğelerinin boş alanı doldurmasını sağlar */
         }
 
         .sidebar-menu li {
@@ -222,6 +223,25 @@
             background-color: rgba(255, 255, 255, 0.2);
             border-left-color: white;
             color: white;
+        }
+
+        /* Çıkış Butonu Stilleri */
+        #exitButton {
+            background-color: #EF4444; /* Kırmızı */
+            color: white;
+            font-weight: 600;
+            padding: 10px 20px;
+            border-radius: 8px; /* Daha köşeli bir görünüm için */
+            text-align: center;
+            margin: 20px; /* Alttan ve yanlardan boşluk bırakır */
+            display: block;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        #exitButton:hover {
+            background-color: #DC2626; /* Koyu Kırmızı */
         }
 
         /* İçerik alanı (iframe) stilleri */
@@ -402,8 +422,8 @@
                 <li><a href="#" data-page="bom_page.html">BOM</a></li>
                 <li><a href="#" data-page="feature_tree.html">Unsur Ağacı</a></li>
                 <li><a href="#" data-page="visual_bom.html">Visual BOM</a></li>
-                <li><a href="#" id="exitButton">Çıkış</a></li> </ul>
-        </div>
+            </ul>
+            <a href="#" id="exitButton">Çıkış</a> </div>
     </div>
 
     <div id="contentFrameContainer" class="content-frame-container">
