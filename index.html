@@ -160,45 +160,36 @@
         .sidebar {
             position: fixed;
             top: 0;
-            left: -200px; /* Başlangıçta gizli */
-            width: 200px; /* Genişlik 200px olarak ayarlandı */
+            left: -250px; /* Başlangıçta gizli */
+            width: 250px;
             height: 100%;
-            background-color: #f7fafc; /* Hafif bir arka plan rengi */
-            box-shadow: 3px 0 10px rgba(0,0,0,0.1); /* Daha belirgin gölge */
-            transition: left 0.3s ease, box-shadow 0.3s ease; /* Gölge animasyonu eklendi */
+            background-color: transparent;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.5);
+            transition: left 0.3s ease; /* Kayarak açılma animasyonu */
             z-index: 1000;
             display: flex;
             flex-direction: column;
-            border-right: 1px solid #e2e8f0; /* Hafif sağ kenarlık */
         }
 
         .sidebar.open {
-            left: 0;
+            left: 0; /* Açıldığında görünür */
         }
 
-        /* Sidebar Logo Konteyneri ve Logo Stilleri */
         .sidebar-logo-container {
             padding: 20px;
             text-align: center;
             background-color: white;
             z-index: 1;
-            border-bottom: 1px solid #e2e8f0; /* Logo altı çizgi */
-            display: flex; /* Logoyu ortalamak için flex kullanıldı */
-            justify-content: center;
-            align-items: center;
-            min-height: 80px; /* Logo alanı için minimum yükseklik */
         }
 
         .sidebar-logo {
-            max-width: 150px; /* Logo boyutu biraz küçültüldü */
+            max-width: 180px;
             height: auto;
         }
 
-
         .sidebar-bottom-section {
             flex-grow: 1;
-            /* Gradiyan arka plan eklendi */
-            background: linear-gradient(to bottom, #00004d, #000066); /* Koyu Pers Mavisi'nden daha koyu bir tona */
+            background-color: #00008B; /* Pers Mavisi */
             padding-top: 20px;
             z-index: 0;
             display: flex;
@@ -207,59 +198,48 @@
 
         .sidebar-menu {
             list-style: none;
-            padding: 0 15px; /* Yan boşluklar biraz daraltıldı */
+            padding: 0 20px;
             margin: 0;
             flex-grow: 1;
         }
 
         .sidebar-menu li {
-            margin-bottom: 8px; /* Öğeler arası boşluk biraz azaltıldı */
+            margin-bottom: 10px;
         }
 
         .sidebar-menu a {
-            display: flex;
-            align-items: center;
-            padding: 12px 10px; /* Dikey padding azaltıldı, yatay padding ayarlandı */
+            display: block;
+            padding: 15px 0;
             color: white;
             text-decoration: none;
             font-weight: 500;
-            font-size: 0.95rem; /* Font boyutu biraz küçültüldü */
-            transition: background-color 0.3s ease, color 0.3s ease, border-left-color 0.3s ease, transform 0.2s ease; /* Yeni animasyonlar eklendi */
+            transition: background-color 0.2s ease, color 0.2s ease, border-left-color 0.2s ease;
             border-left: 5px solid transparent;
-            border-radius: 5px; /* Hafif yuvarlak köşeler */
         }
 
-        .sidebar-menu a:hover {
-            background-color: rgba(255, 255, 255, 0.15); /* Hover rengi daha belirgin */
-            border-left-color: white;
-            transform: translateX(5px); /* Hover'da hafif kayma efekti */
-            color: white;
-        }
-
+        .sidebar-menu a:hover,
         .sidebar-menu a.active {
-            background-color: rgba(255, 255, 255, 0.25); /* Aktif rengi daha belirgin */
+            background-color: rgba(255, 255, 255, 0.2);
             border-left-color: white;
             color: white;
-            font-weight: 600; /* Aktif öğenin fontu daha kalın */
-            box-shadow: inset 3px 0 8px rgba(0, 0, 0, 0.2); /* İç gölge eklendi */
         }
 
         /* İçerik alanı (iframe) stilleri */
         .content-frame-container {
             position: absolute;
             top: 0;
-            left: 0;
+            left: 0; /* Başlangıçta tam ekran, sidebar açılınca kayacak */
             width: 100%;
             height: 100%;
             z-index: 999;
             background-color: #ffffff;
-            transition: left 0.3s ease, width 0.3s ease;
-            display: none;
+            transition: left 0.3s ease, width 0.3s ease; /* Kayma animasyonu */
+            display: none; /* Varsayılan olarak gizli */
         }
 
         .content-frame-container.shifted {
-            left: 200px; /* Sidebar açıldığında kayacak */
-            width: calc(100% - 200px); /* Sidebar açıldığında daralacak */
+            left: 250px; /* Sidebar açıldığında kayacak */
+            width: calc(100% - 250px); /* Sidebar açıldığında daralacak */
         }
 
         .content-frame-container iframe {
@@ -314,23 +294,21 @@
                 margin-top: 0.75rem;
             }
             .right-half-initial {
-                flex: 0 0 40vh;
-                display: block;
+                flex: 0 0 40vh; /* Küçük ekranlarda gif'e belirli bir yükseklik ver */
+                display: block; /* Küçük ekranlarda da görünür */
             }
 
+            /* Sidebar ve içeriğin küçük ekranlarda da yanyana görünmesi için güncellendi */
             .sidebar {
-                width: 100%;
-                left: -100%;
+                width: 250px; /* Sidebar width remains constant */
+                left: -250px; /* Hidden by default */
                 padding-top: 0;
-                box-shadow: none; /* Küçük ekranlarda gölgeyi kaldır */
-                border-right: none; /* Küçük ekranlarda kenarlığı kaldır */
             }
             .sidebar.open {
-                left: 0;
+                left: 0; /* Sidebar becomes visible */
             }
-            /* Küçük ekranlarda logo konteyneri tekrar gösterilecek */
             .sidebar-logo-container {
-                display: flex; /* Geri göster */
+                display: none; /* Küçük ekranlarda sidebar logosunu gizle */
             }
             .sidebar-bottom-section {
                 padding-top: 0;
@@ -340,31 +318,27 @@
                 padding: 0 10px;
                 margin: 0;
                 flex-grow: 1;
-                display: flex;
-                justify-content: space-around;
-                flex-wrap: wrap;
+                display: flex; /* Yatay menü için flex */
+                justify-content: space-around; /* Menü öğelerini eşit dağıt */
+                flex-wrap: wrap; /* Gerekirse alt satıra geç */
             }
             .sidebar-menu li {
-                margin-bottom: 0;
+                margin-bottom: 0; /* Yatay menüde margin-bottom'ı kaldır */
             }
             .sidebar-menu a {
                 padding: 10px 5px;
                 text-align: center;
-                border-left: none;
-                border-bottom: 3px solid transparent;
-                border-radius: 0; /* Küçük ekranlarda yuvarlak köşeleri kaldır */
-                transform: none; /* Küçük ekranlarda kayma efektini kaldır */
-                box-shadow: none; /* Küçük ekranlarda iç gölgeyi kaldır */
+                border-left: none; /* Kenar çizgiyi kaldır */
+                border-bottom: 3px solid transparent; /* Alt çizgi ekle */
             }
             .sidebar-menu a:hover,
             .sidebar-menu a.active {
-                border-left-color: transparent;
-                border-bottom-color: white;
-                background-color: rgba(255, 255, 255, 0.2); /* Hover/active rengi yine de kalsın */
+                border-left-color: transparent; /* Kenar çizgiyi şeffaf yap */
+                border-bottom-color: white; /* Alt çizginin rengini değiştir */
             }
             .content-frame-container.shifted {
-                left: 0;
-                width: 100%;
+                left: 250px; /* Küçük ekranlarda da iframe kayacak */
+                width: calc(100% - 250px); /* Küçük ekranlarda da iframe daralacak */
             }
         }
     </style>
@@ -416,8 +390,7 @@
                 </form>
             </div>
         </div>
-        <div id="rightHalfInitial" class="right-half-initial"></div>
-    </div>
+        <div id="rightHalfInitial" class="right-half-initial"></div> </div>
 
     <div id="sidebar" class="sidebar">
         <div class="sidebar-logo-container">
@@ -427,8 +400,8 @@
             <ul class="sidebar-menu">
                 <li><a href="#" data-page="volume_table.html" class="active">Volume Tablosu</a></li>
                 <li><a href="#" data-page="bom_page.html">BOM</a></li>
+                <li><a href="#" data-page="feature_tree.html">Unsur Ağacı</a></li>
                 <li><a href="#" data-page="visual_bom.html">Visual BOM</a></li>
-                <li><a href="#" data-page="summary_page.html">Özet Sayfası</a></li>
             </ul>
         </div>
     </div>
@@ -456,8 +429,8 @@
         const sidebarLinks = document.querySelectorAll('.sidebar-menu a');
         const mainFormContainer = document.getElementById('mainFormContainer');
         const rightHalfInitial = document.getElementById('rightHalfInitial');
-        
-        const sidebarWidth = 200; // Genişlik 200px olarak güncellendi
+
+        const sidebarWidth = 250;
 
         // Sayfa yüklendiğinde yıl değerini otomatik olarak ayarla
         projectStartYearInput.value = new Date().getFullYear();
@@ -525,10 +498,8 @@
             sidebar.classList.add('open');
             // İçerik çerçevesini göster ve kaydır
             contentFrameContainer.style.display = 'block';
-            if (window.innerWidth > 768) {
-                contentFrameContainer.classList.add('shifted');
-            }
-            
+            contentFrameContainer.classList.add('shifted'); // Artık her zaman shifted
+
             // İlk menü öğesini aktif yap ve sayfayı yükle
             sidebarLinks.forEach(link => link.classList.remove('active'));
             sidebarLinks && sidebarLinks.length > 0 && sidebarLinks[0].classList.add('active');
@@ -556,17 +527,11 @@
 
         // Pencere yeniden boyutlandırıldığında iframe ve sidebar konumlandırmasını ayarla
         window.addEventListener('resize', function() {
-            if (sidebar.classList.contains('open')) { // Sidebar açıksa
-                if (window.innerWidth > 768) {
-                    contentFrameContainer.style.left = sidebarWidth + 'px';
-                    contentFrameContainer.style.width = `calc(100% - ${sidebarWidth}px)`;
-                } else {
-                    contentFrameContainer.style.left = '0';
-                    contentFrameContainer.style.width = '100%';
-                }
-            } else { // Sidebar kapalıysa (yani form ekranındaysa)
-                contentFrameContainer.style.left = '0';
-                contentFrameContainer.style.width = '100%';
+            // Bu fonksiyon sadece 'shifted' sınıfını yönetmeli, CSS konumlandırmayı halledecektir.
+            if (sidebar.classList.contains('open')) {
+                contentFrameContainer.classList.add('shifted');
+            } else {
+                contentFrameContainer.classList.remove('shifted');
             }
         });
 
@@ -579,21 +544,17 @@
                 rightHalfInitial.classList.add('hidden');
                 sidebar.classList.add('open');
                 contentFrameContainer.style.display = 'block';
-                if (window.innerWidth > 768) {
-                    contentFrameContainer.classList.add('shifted');
-                }
+                contentFrameContainer.classList.add('shifted'); // Her zaman shifted
                 loadPage('volume_table.html'); // Varsayılan sayfayı yükle
                 sidebarLinks.forEach(link => link.classList.remove('active'));
                 sidebarLinks && sidebarLinks.length > 0 && sidebarLinks[0].classList.add('active');
             } else {
-                // Eğer proje yoksa, hoş geldin sayfasını yükle
-                mainFormContainer.style.display = 'none'; // İlk form container gizli kalacak
-                rightHalfInitial.classList.add('hidden'); // Başlangıç GIF'i gizli kalacak
-                sidebar.classList.remove('open'); // Sidebar kapalı kalacak
-                contentFrameContainer.style.display = 'block'; // iframe gösterilecek
-                contentFrameContainer.style.left = '0'; // iframe tam ekranda kalacak
-                contentFrameContainer.style.width = '100%'; // iframe tam ekranda kalacak
-                mainContentFrame.src = 'welcome_page.html'; // Hoş geldin sayfasını yükle
+                // Eğer proje yoksa, form ekranını göster
+                mainFormContainer.style.display = 'flex'; // Formu görünür yap
+                rightHalfInitial.classList.remove('hidden'); // GIF'i görünür yap
+                sidebar.classList.remove('open'); // Sidebar'ı kapalı tut
+                contentFrameContainer.style.display = 'none'; // iframe'i gizle
+                // welcome_page.html yüklemesi kaldırıldı, kullanıcı formu dolduracak
             }
         });
 
