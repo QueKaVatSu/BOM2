@@ -224,13 +224,14 @@
     <script>
         const customerLogos = {
             'byd': 'logos/byd.png',
-            'ford': 'logos/ford.png',
+            'ford': 'logos/ford.mng', // Bu dosya adını kontrol edin (.mng yerine .png olabilir)
             'stellantis': 'logos/stellantis.png',
             'renault': 'logos/renault.png',
             'tesla': 'logos/tesla.png',
             'mercedes-benz': 'logos/mercedes-benz.png',
-            'hyundai': 'logos/hyundai.png', // Yeni eklenen
-            'tofas': 'logos/tofas.png'    // Yeni eklenen
+            'hyundai': 'logos/hyundai.png',
+            'tofas': 'logos/tofas.png',
+            'tofaş': 'logos/tofas.png'
         };
         const customerNameInput = document.getElementById('customerName');
         const customerLogoImg = document.getElementById('customerLogo');
@@ -287,7 +288,9 @@
                 startYear: parseInt(projectStartYear), // Sayısal değere dönüştürür
                 customer: customerName,
                 description: projectDescription,
-                materials: [] // Malzeme listesi başlangıçta boş
+                materials: [], // Malzeme listesi başlangıçta boş
+                lastSavedBy: 'Admin (Oluşturuldu)', // İlk oluşturulduğunda eklendi
+                revisionDate: new Date().toLocaleString() // İlk oluşturulduğunda eklendi
             };
 
             // Mevcut projeleri localStorage'dan alır veya boş bir dizi oluşturur
@@ -295,12 +298,17 @@
             projects.push(newProject); // Yeni projeyi listeye ekler
             localStorage.setItem('projects', JSON.stringify(projects)); // Projeleri localStorage'a kaydeder
 
-            // Ana sayfayı yeniden yükle
-            if (window.parent) {
-                window.parent.location.reload(); 
+            // Yeni oluşturulan projeyi aktif proje olarak işaretle
+            localStorage.setItem('currentProjectId', newProject.id); // EKLEME
+
+            // Ana sayfaya yönlendirme yapmaya çalışır
+            if (window.parent && window.parent.loadPage) {
+                // Proje ID'si ile bom_page.html'e yönlendir
+                window.parent.loadPage('bom_page.html?projectId=' + newProject.id); // DÜZELTME
             } else {
-                alert('Proje oluşturuldu ancak ana sayfa yenilenemedi. Tarayıcı konsolunu kontrol edin.');
-                console.error("Parent window is not accessible for reload.");
+                // Yönlendirme yapılamazsa kullanıcıyı bilgilendirir
+                alert('Proje oluşturuldu ancak ana sayfaya yönlendirme yapılamadı. Tarayıcı konsolunu kontrol edin.');
+                console.error("window.parent.loadPage is not defined. Ensure index.html defines loadPage globally.");
             }
         });
     </script>
