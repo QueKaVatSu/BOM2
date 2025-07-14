@@ -417,7 +417,9 @@
             'stellantis': 'logos/stellantis.png',
             'renault': 'logos/renault.png',
             'tesla': 'logos/tesla.png',
-            'mercedes-benz': 'logos/mercedes-benz.png'
+            'mercedes-benz': 'logos/mercedes-benz.png',
+            'hyundai': 'logos/hyundai.png',
+            'tofas': 'logos/tofas.png'
         };
 
         const customerNameInput = document.getElementById('customerName');
@@ -458,10 +460,11 @@
                 customerLogoImg.classList.add('visible');
             } else {
                 customerLogoImg.classList.remove('visible');
+                // Logo tamamen gizlenmeden önce kısa bir gecikme ekleyerek animasyonu tamamlamasına izin ver
                 setTimeout(() => {
                     customerLogoImg.style.display = 'none';
                     customerLogoImg.src = '';
-                }, 300);
+                }, 300); // CSS geçiş süresiyle eşleşmeli
             }
         });
 
