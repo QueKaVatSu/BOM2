@@ -11,7 +11,7 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f3f4f6; /* Gri arka plan */
+            background-color: #ffffff; /* Arka plan rengi sabit beyaz yapıldı */
         }
         #modelViewer {
             display: none;
@@ -79,29 +79,29 @@
         }
         /* BUY filtresi checkbox'ı (Supplier) */
         .checkbox.buy.checked {
-            background-color: #FFCCCB; /* Açık Kırmızı */
-            border-color: #FFCCCB;
+            background-color: rgba(255, 204, 203, 0.7); /* Açık Kırmızı (Daha soft ve transparan) */
+            border-color: rgba(255, 204, 203, 0.7);
         }
         /* MAKE filtresi checkbox'ı (ASHA) */
         .checkbox.make.checked {
-            background-color: #90EE90; /* Açık Yeşil */
-            border-color: #90EE90;
+            background-color: rgba(144, 238, 144, 0.7); /* Açık Yeşil (Daha soft ve transparan) */
+            border-color: rgba(144, 238, 144, 0.7);
         }
         /* Yeni Raw Material checkbox stili */
         .checkbox.raw-material {
             border-color: #00008B; /* Pers Mavisi */
         }
         .checkbox.raw-material.checked {
-            background-color: #00008B; /* Pers Mavisi */
-            border-color: #00008B;
+            background-color: rgba(0, 0, 139, 0.7); /* Pers Mavisi (Daha soft ve transparan) */
+            border-color: rgba(0, 0, 139, 0.7);
         }
 
         .table-cell-padding {
-            padding: 12px 16px;
+            padding: 8px 12px; /* Satır yükseklikleri azaltıldı */
         }
         /* Yeni sınıf: Ana ürün satırları için açık pers mavisi arka plan */
         .bg-main-product-row {
-            background-color: #E6F0FA; /* Açık pers mavisi tonu */
+            background-color: rgba(230, 240, 250, 0.7); /* Açık pers mavisi tonu (Daha soft ve transparan) */
         }
         /* YENİ EKLENEN CSS: Girintili hücreler için */
         .indent-cell {
@@ -110,18 +110,42 @@
 
         /* Tablo satır renkleri güncellendi */
         .bg-supplier-row { /* BUY (Tedarikçi) için kırmızı */
-            background-color: #FEE2E2; /* Açık kırmızı */
+            background-color: rgba(254, 226, 226, 0.5); /* Açık kırmızı (Daha soft ve transparan) */
         }
         .bg-asha-row { /* MAKE (ASHA) için yeşil */
-            background-color: #D1FAE5; /* Açık yeşil */
+            background-color: rgba(209, 250, 229, 0.5); /* Açık yeşil (Daha soft ve transparan) */
+        }
+
+        /* Başlık ve filtre kutularının arka planı sabit beyaz ve kutulu görünüm kaldırıldı */
+        .container.mx-auto.bg-white.rounded-lg.shadow-xl.p-8.mb-8 {
+            background-color: #ffffff; /* Sabit beyaz */
+            box-shadow: none; /* Gölge kaldırıldı */
+            border-radius: 0; /* Köşe yuvarlaması kaldırıldı */
+            padding: 0; /* İç boşluk kaldırıldı, aşağıdaki div'lere bırakıldı */
+        }
+
+        .mb-10.p-6.bg-gray-50.rounded-lg.border.border-gray-200 {
+            background-color: #ffffff; /* Sabit beyaz */
+            border: none; /* Kenarlık kaldırıldı */
+            border-radius: 0; /* Köşe yuvarlaması kaldırıldı */
+            padding: 24px; /* Mevcut padding bırakıldı */
+            box-shadow: none; /* Gölge kaldırıldı */
+        }
+
+        .flex.flex-col.md\:flex-row.items-center.justify-between.mb-8.p-6.bg-gray-50.rounded-lg.border.border-gray-200 {
+            background-color: #ffffff; /* Sabit beyaz */
+            border: none; /* Kenarlık kaldırıldı */
+            border-radius: 0; /* Köşe yuvarlaması kaldırıldı */
+            padding: 24px; /* Mevcut padding bırakıldı */
+            box-shadow: none; /* Gölge kaldırıldı */
         }
     </style>
 </head>
-<body class="bg-gray-100 p-8 min-h-screen flex flex-col items-center">
+<body class="bg-white p-8 min-h-screen flex flex-col items-center">
     <div class="container mx-auto bg-white rounded-lg shadow-xl p-8 mb-8">
         <h1 class="text-3xl font-extrabold text-left text-gray-800 mb-8">Malzeme Listesi (BOM) Yöneticisi</h1>
 
-        <div class="mb-10 p-6 bg-gray-50 rounded-lg border border-gray-200">
+        <div class="mb-10 p-6 bg-white rounded-lg border border-gray-200">
             <h2 class="text-xl font-semibold text-gray-700 mb-5">Yeni Malzeme Ekle</h2>
             <form id="materialForm">
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
@@ -197,7 +221,7 @@
             </form>
         </div>
 
-        <div class="flex flex-col md:flex-row items-center justify-between mb-8 p-6 bg-gray-50 rounded-lg border border-gray-200">
+        <div class="flex flex-col md:flex-row items-center justify-between mb-8 p-6 bg-white rounded-lg border border-gray-200">
             <div class="flex items-center space-x-6 mb-4 md:mb-0">
                 <div class="flex items-center cursor-pointer" onclick="toggleFilter('BUY')">
                     <div class="checkbox buy" id="supplierCheckbox"></div>
@@ -218,36 +242,52 @@
             </div>
         </div>
 
-        <div class="mb-10 overflow-x-auto shadow-lg rounded-lg">
-            <table class="min-w-full bg-white border border-gray-300 rounded-lg">
-                <thead class="bg-gray-200" id="bomTableHeader">
+        <div class="overflow-x-auto w-full mb-8">
+            <table class="min-w-full bg-white border border-gray-300 rounded-lg shadow-sm" id="bomTable">
+                <thead>
                     <tr>
-                        <th class="border px-2 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"></th><th class="border px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Parça No</th>
-                        <th class="border px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Parça İsmi</th>
-                        <th class="border px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Seviye</th>
-                        <th class="border px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Ebeveyn Parça No</th>
-                        <th class="border px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Miktar</th>
-                        <th class="border px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Üretim Yöntemi</th>
-                        <th class="border px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Montaj Şekli</th>
-                        <th class="border px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Hammadde</th>
-                        <th class="border px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">Ağırlık (KG)</th>
-                        <th class="border px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Fotoğraf</th>
-                        <th class="border px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Teknik Çizim</th>
-                        <th class="border px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">3D Verisi</th>
-                        <th class="border px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">İşlemler</th>
+                        <th class="border px-4 py-2 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Ana Ürün</th>
+                        <th class="border px-4 py-2 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Parça Numarası</th>
+                        <th class="border px-4 py-2 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Açıklama</th>
+                        <th class="border px-4 py-2 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Miktar</th>
+                        <th class="border px-4 py-2 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Hammadde / Tedarikçi</th>
+                        <th class="border px-4 py-2 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Üretim Konumu</th>
+                        <th class="border px-4 py-2 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Üretim Yöntemi</th>
+                        <th class="border px-4 py-2 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Montaj Şekli</th>
+                        <th class="border px-4 py-2 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Seviye</th>
+                        <th class="border px-4 py-2 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Ebeveyn Parça No</th>
+                        <th class="border px-4 py-2 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Ağırlık (KG)</th>
+                        <th class="border px-4 py-2 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Fotoğraf</th>
+                        <th class="border px-4 py-2 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Teknik Çizim</th>
+                        <th class="border px-4 py-2 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">3D Verisi</th>
+                        <th class="border px-4 py-2 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">İşlemler</th>
                     </tr>
                 </thead>
-                <tbody id="materialList">
+                <tbody id="bomTableBody">
                     </tbody>
             </table>
         </div>
 
-        
-    </div>
+        <div id="rawMaterialSummaryContainer" class="hidden w-full mb-8">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Hammadde Kullanım Özeti (Yıllık)</h2>
+            <div class="overflow-x-auto">
+                <table class="min-w-full bg-white border border-gray-300 rounded-lg shadow-sm">
+                    <thead>
+                        <tr>
+                            <th class="border px-4 py-2 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Hammadde</th>
+                            </tr>
+                    </thead>
+                    <tbody id="rawMaterialSummaryTableBody">
+                        </tbody>
+                </table>
+            </div>
+        </div>
 
-    <div id="modelViewer">
-        <span class="close" onclick="closeModelViewer()">&times;</span>
-        <canvas id="modelCanvas"></canvas>
+        <div id="modelViewer">
+            <span class="close" onclick="closeModelViewer()">&times;</span>
+            <canvas id="modelCanvas"></canvas>
+        </div>
+
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
@@ -274,157 +314,378 @@
 
         // Kütüphane öğeleri (sabit veriler)
         const libraryItems = [
-            { partNumber: 'C001', description: 'M6 x 20mm Cıvata', quantity: 100, vendor: 'Vendor A', productionLocation: 'Supplier', weight: 0.01, level: 1, rawMaterial: 'Çelik', productionMethod: 'Talaşlı İmalat', assemblyType: 'Cıvatalı', category: 'Cıvatalar' },
-            { partNumber: 'C002', description: 'M8 x 25mm Cıvata', quantity: 200, vendor: 'Vendor B', productionLocation: 'Supplier', weight: 0.02, level: 1, rawMaterial: 'Çelik', productionMethod: 'Talaşlı İmalat', assemblyType: 'Cıvatalı', category: 'Cıvatalar' },
-            { partNumber: 'C003', description: 'Plastik Kapak', quantity: 150, vendor: 'Vendor C', productionLocation: 'ASHA', weight: 0.03, level: 2, rawMaterial: 'PP', productionMethod: 'Enjeksiyon Kalıplama', assemblyType: 'Geçmeli', category: 'Plastik Ürünler' },
-            { partNumber: 'C004', description: 'M12 x 35mm Cıvata', quantity: 80, vendor: 'Vendor D', productionLocation: 'Supplier', weight: 0.04, level: 1, rawMaterial: 'Paslanmaz Çelik', productionMethod: 'Talaşlı İmalat', assemblyType: 'Cıvatalı', category: 'Cıvatalar' },
-            { partNumber: 'C005', description: 'Metal Braket', quantity: 50, vendor: 'Vendor E', productionLocation: 'ASHA', weight: 0.05, level: 3, rawMaterial: 'Alüminyum', productionMethod: 'Sac Metal Bükme', assemblyType: 'Kaynaklı', category: 'Metal Parçalar' },
-            { partNumber: 'C006', description: 'Sensör Kablosu', quantity: 30, vendor: 'Vendor F', productionLocation: 'Supplier', weight: 0.06, level: 2, rawMaterial: 'Bakır', productionMethod: 'Ekstrüzyon', assemblyType: 'Sıkıştırma', category: 'Kablolar ve Konnektörler' },
-            { partNumber: 'C007', description: 'Devre Kartı', quantity: 20, vendor: 'Vendor G', productionLocation: 'ASHA', weight: 0.07, level: 4, rawMaterial: 'Fiberglas', productionMethod: 'PCB Üretimi', assemblyType: 'Lehimli', category: 'Elektronik Bileşenler' },
-            { partNumber: 'C008', description: 'Kauçuk Conta', quantity: 10, vendor: 'Vendor H', productionLocation: 'Supplier', weight: 0.08, level: 1, rawMaterial: 'Kauçuk', productionMethod: 'Vulkanizasyon', assemblyType: 'Yapıştırma', category: 'Contalar ve Sızdırmazlık Elemanları' },
-            { partNumber: 'C009', description: 'LED Lamba', quantity: 5, vendor: 'Vendor I', productionLocation: 'ASHA', weight: 0.09, level: 2, rawMaterial: 'Plastik', productionMethod: 'Montaj', assemblyType: 'Geçmeli', category: 'Aydınlatma' },
-            { partNumber: 'C010', description: 'Pil Paketi', quantity: 2, vendor: 'Vendor J', productionLocation: 'Supplier', weight: 0.10, level: 3, rawMaterial: 'Lityum', productionMethod: 'Montaj', assemblyType: 'Yapıştırma', category: 'Güç Kaynakları' },
+            // Existing items
+            { partNumber: 'ASM-001', description: 'Ana Montaj Ürünü A', quantity: 1, vendor: 'ASHA', productionLocation: 'ASHA', weight: 3.5, level: 1, rawMaterial: '', isMainProduct: true, parentPartNumber: null, productionMethod: 'Montaj', assemblyType: 'Cıvatalı', category: 'Ana Montajlar' },
+            { partNumber: 'SUB-001', description: 'Alt Montaj 1 (ASM-001)', quantity: 1, vendor: 'ASHA', productionLocation: 'ASHA', weight: 1.2, level: 2, rawMaterial: '', isMainProduct: false, parentPartNumber: 'ASM-001', productionMethod: 'Montaj', assemblyType: 'Geçmeli', category: 'Alt Montajlar' },
+            { partNumber: 'PART-001', description: 'Parça 1 (SUB-001)', quantity: 4, vendor: 'Supplier X', productionLocation: 'Supplier', weight: 0.1, level: 3, rawMaterial: 'Çelik', isMainProduct: false, parentPartNumber: 'SUB-001', productionMethod: 'Talaşlı İmalat', assemblyType: 'Cıvatalı', category: 'Parçalar' },
+            { partNumber: 'PART-002', description: 'Parça 2 (SUB-001)', quantity: 1, vendor: 'ASHA', productionLocation: 'ASHA', weight: 0.05, level: 3, rawMaterial: 'Plastik', isMainProduct: false, parentPartNumber: 'SUB-001', productionMethod: 'Enjeksiyon', assemblyType: 'Geçmeli', category: 'Parçalar' },
+            { partNumber: 'ASM-002', description: 'Ana Montaj Ürünü B', quantity: 1, vendor: 'Supplier Y', productionLocation: 'Supplier', weight: 2.0, level: 1, rawMaterial: '', isMainProduct: true, parentPartNumber: null, productionMethod: 'İşleme', assemblyType: 'Kaynaklı', category: 'Ana Montajlar' },
+            { partNumber: 'SUB-002', description: 'Alt Montaj 2 (ASM-002)', quantity: 1, vendor: 'Supplier Z', productionLocation: 'Supplier', weight: 0.7, level: 2, rawMaterial: '', isMainProduct: false, parentPartNumber: 'ASM-002', productionMethod: 'Büküm', assemblyType: 'Perçinli', category: 'Alt Montajlar' },
+            { partNumber: 'PART-003', description: 'Parça 3 (SUB-002)', quantity: 2, vendor: 'Supplier A', productionLocation: 'Supplier', weight: 0.2, level: 3, rawMaterial: 'Alüminyum', isMainProduct: false, parentPartNumber: 'SUB-002', productionMethod: 'Pres', assemblyType: 'Cıvatalı', category: 'Parçalar' },
+            { partNumber: 'PART-004', description: 'Parça 4 (SUB-002)', quantity: 3, vendor: 'ASHA', productionLocation: 'ASHA', weight: 0.03, level: 3, rawMaterial: 'Kaucuk', isMainProduct: false, parentPartNumber: 'SUB-002', productionMethod: 'Kalıplama', assemblyType: 'Geçmeli', category: 'Parçalar' },
+            { partNumber: 'PART-005', description: 'Bağımsız Parça 1', quantity: 1, vendor: 'Supplier B', productionLocation: 'Supplier', weight: 0.5, level: 1, rawMaterial: 'Pirinç', isMainProduct: false, parentPartNumber: null, productionMethod: 'Talaşlı İmalat', assemblyType: 'Dişli', category: 'Parçalar' },
+            { partNumber: 'PART-006', description: 'Bağımsız Parça 2', quantity: 1, vendor: 'ASHA', productionLocation: 'ASHA', weight: 0.8, level: 1, rawMaterial: 'Seramik', isMainProduct: false, parentPartNumber: null, productionMethod: 'Sinterleme', assemblyType: 'Yapıştırma', category: 'Parçalar' },
+            { partNumber: 'ASM-003', description: 'Ana Montaj Ürünü C', quantity: 1, vendor: 'ASHA', productionLocation: 'ASHA', weight: 5.0, level: 1, rawMaterial: '', isMainProduct: true, parentPartNumber: null, productionMethod: 'Montaj', assemblyType: 'Lehimli', category: 'Ana Montajlar' },
+            { partNumber: 'SUB-003', description: 'Alt Montaj 3 (ASM-003)', quantity: 1, vendor: 'ASHA', productionLocation: 'ASHA', weight: 2.5, level: 2, rawMaterial: '', isMainProduct: false, parentPartNumber: 'ASM-003', productionMethod: 'Montaj', assemblyType: 'Civatalı', category: 'Alt Montajlar' },
+            { partNumber: 'PART-007', description: 'Parça 7 (SUB-003)', quantity: 1, vendor: 'Supplier C', productionLocation: 'Supplier', weight: 0.15, level: 3, rawMaterial: 'Bakır', isMainProduct: false, parentPartNumber: 'SUB-003', productionMethod: 'Kesme', assemblyType: 'Sıkıştırma', category: 'Parçalar' },
+            { partNumber: 'PART-008', description: 'Parça 8 (SUB-003)', quantity: 2, vendor: 'ASHA', productionLocation: 'ASHA', weight: 0.08, level: 3, rawMaterial: 'Cam', isMainProduct: false, parentPartNumber: 'SUB-003', productionMethod: 'Kalıplama', assemblyType: 'Yapıştırma', category: 'Parçalar' },
+            // Add more diverse examples
+            { partNumber: 'C001', description: 'Motor Bloğu', quantity: 1, vendor: 'Vendor A', productionLocation: 'ASHA', weight: 15.0, level: 1, rawMaterial: 'Dökme Demir', productionMethod: 'Döküm', assemblyType: 'Cıvatalı', category: 'Motor Bileşenleri' },
+            { partNumber: 'C002', description: 'Krank Mili', quantity: 1, vendor: 'Vendor B', productionLocation: 'Supplier', weight: 5.0, level: 2, rawMaterial: 'Çelik Alaşım', productionMethod: 'Dövme', assemblyType: 'Pres Geçme', category: 'Motor Bileşenleri' },
+            { partNumber: 'C003', description: 'Silindir Kapağı', quantity: 1, vendor: 'Vendor A', productionLocation: 'ASHA', weight: 7.0, level: 1, rawMaterial: 'Alüminyum', productionMethod: 'Enjeksiyon Döküm', assemblyType: 'Cıvatalı', category: 'Motor Bileşenleri' },
+            { partNumber: 'C004', description: 'Piston Seti', quantity: 4, vendor: 'Vendor C', productionLocation: 'Supplier', weight: 0.5, level: 3, rawMaterial: 'Alüminyum Alaşım', productionMethod: 'Talaşlı İmalat', assemblyType: 'Piston Kolu Montajı', category: 'Motor Bileşenleri' },
+            { partNumber: 'C005', description: 'Şanzıman Gövdesi', quantity: 1, vendor: 'Vendor D', productionLocation: 'ASHA', weight: 10.0, level: 1, rawMaterial: 'Alüminyum', productionMethod: 'Basınçlı Döküm', assemblyType: 'Cıvatalı', category: 'Şanzıman Bileşenleri' },
+            { partNumber: 'C006', description: 'Dişli Seti', quantity: 1, vendor: 'Vendor E', productionLocation: 'Supplier', weight: 3.0, level: 2, rawMaterial: 'Çelik', productionMethod: 'Dişli Kesme', assemblyType: 'Mil Geçme', category: 'Şanzıman Bileşenleri' },
+            { partNumber: 'C007', description: 'Fren Diski', quantity: 2, vendor: 'Vendor F', productionLocation: 'Supplier', weight: 2.5, level: 1, rawMaterial: 'Dökme Demir', productionMethod: 'Döküm', assemblyType: 'Cıvatalı', category: 'Fren Sistemi' },
+            { partNumber: 'C008', description: 'Fren Balatası', quantity: 4, vendor: 'Vendor G', productionLocation: 'Supplier', weight: 0.3, level: 2, rawMaterial: 'Sürtünme Malzemesi', productionMethod: 'Sıkıştırma Kalıplama', assemblyType: 'Kelepçeli', category: 'Fren Sistemi' },
+            { partNumber: 'C009', description: 'Egzoz Manifoldu', quantity: 1, vendor: 'Vendor H', productionLocation: 'ASHA', weight: 4.0, level: 1, rawMaterial: 'Paslanmaz Çelik', productionMethod: 'Kaynak', assemblyType: 'Cıvatalı', category: 'Egzoz Sistemi' },
+            { partNumber: 'C010', description: 'Katalitik Konvertör', quantity: 1, vendor: 'Vendor I', productionLocation: 'Supplier', weight: 1.5, level: 2, rawMaterial: 'Platin', productionMethod: 'Montaj', assemblyType: 'Yapıştırma', category: 'Egzoz Sistemi' },
             // Additional products
             { partNumber: 'C011', description: 'Kablo Klipsi', quantity: 120, vendor: 'Vendor K', productionLocation: 'ASHA', weight: 0.01, level: 1, rawMaterial: 'ABS', productionMethod: 'Enjeksiyon Kalıplama', assemblyType: 'Geçmeli', category: 'Kablolar ve Konnektörler' },
             { partNumber: 'C012', description: 'Mikro Anahtar', quantity: 90, vendor: 'Vendor L', productionLocation: 'Supplier', weight: 0.02, level: 1, rawMaterial: 'Plastik', productionMethod: 'Montaj', assemblyType: 'Lehimli', category: 'Elektronik Bileşenler' },
-            { partNumber: 'C013', description: 'Fan Motoru', quantity: 75, vendor: 'Vendor M', productionLocation: 'ASHA', weight: 0.03, level: 2, rawMaterial: 'Bakır', productionMethod: 'Sarım', assemblyType: 'Cıvatalı', category: 'Motorlar ve Fanlar' },
-            { partNumber: 'C014', description: 'Soğutucu', quantity: 60, vendor: 'Vendor N', productionLocation: 'Supplier', weight: 0.04, level: 1, rawMaterial: 'Alüminyum', productionMethod: 'Ekstrüzyon', assemblyType: 'Yapıştırma', category: 'Isı Yönetimi' },
-            { partNumber: 'C015', description: 'Termal Sensör', quantity: 40, vendor: 'Vendor O', productionLocation: 'ASHA', weight: 0.05, level: 3, rawMaterial: 'Seramik', productionMethod: 'Sinterleme', assemblyType: 'Lehimli', category: 'Sensörler' },
-            { partNumber: 'C016', description: 'Bağlantı Elemanı', quantity: 25, vendor: 'Vendor P', productionLocation: 'Supplier', weight: 0.06, level: 2, rawMaterial: 'Nikel', productionMethod: 'Presleme', assemblyType: 'Perçinli', category: 'Bağlantı Elemanları' },
-            { partNumber: 'C017', description: 'Güç Adaptörü', quantity: 15, vendor: 'Vendor Q', productionLocation: 'ASHA', weight: 0.07, level: 4, rawMaterial: 'Plastik', productionMethod: 'Montaj', assemblyType: 'Geçmeli', category: 'Güç Kaynakları' },
-            { partNumber: 'C018', description: 'Lastik Ayak', quantity: 8, vendor: 'Vendor R', productionLocation: 'Supplier', weight: 0.08, level: 1, rawMaterial: 'Kauçuk', productionMethod: 'Kalıplama', assemblyType: 'Yapıştırma', category: 'Ayaklar ve Pedler' },
-            { partNumber: 'C019', description: 'Etiket Baskı', quantity: 4, vendor: 'Vendor S', productionLocation: 'ASHA', weight: 0.09, level: 2, rawMaterial: 'Kağıt', productionMethod: 'Baskı', assemblyType: 'Yapıştırma', category: 'Etiketler' },
-            { partNumber: 'C020', description: 'Entegre Devre', quantity: 1, vendor: 'Vendor T', productionLocation: 'Supplier', weight: 0.10, level: 3, rawMaterial: 'Silikon', productionMethod: 'Yarı İletken Üretimi', assemblyType: 'Lehimli', category: 'Elektronik Bileşenler' },
-            { partNumber: 'C021', description: 'Rulman', quantity: 50, vendor: 'Vendor U', productionLocation: 'Supplier', weight: 0.02, level: 2, rawMaterial: 'Çelik', productionMethod: 'Talaşlı İmalat', assemblyType: 'Pres Geçme', category: 'Rulmanlar' },
-            { partNumber: 'C022', description: 'Mil', quantity: 30, vendor: 'Vendor V', productionLocation: 'ASHA', weight: 0.15, level: 2, rawMaterial: 'Çelik', productionMethod: 'Torna', assemblyType: 'Cıvatalı', category: 'Miller' },
-            { partNumber: 'C023', description: 'Yay', quantity: 200, vendor: 'Vendor W', productionLocation: 'Supplier', weight: 0.005, level: 1, rawMaterial: 'Çelik', productionMethod: 'Tel Bükme', assemblyType: 'Geçmeli', category: 'Yaylar' },
+            { partNumber: 'C013', description: 'Fan Motoru', quantity: 75, vendor: 'Vendor M', productionLocation: 'ASHA', weight: 0.03, level: 2, rawMaterial: 'Bakır', productionMethod: 'Sarım', assemblyType: 'Cıvatalı', category: 'Fan Sistemleri' },
+            { partNumber: 'C014', description: 'Radyatör Hortumu', quantity: 30, vendor: 'Vendor N', productionLocation: 'Supplier', weight: 0.1, level: 1, rawMaterial: 'Kauçuk', productionMethod: 'Ekstrüzyon', assemblyType: 'Kelepçeli', category: 'Soğutma Sistemi' },
+            { partNumber: 'C015', description: 'Yakıt Pompası', quantity: 15, vendor: 'Vendor O', productionLocation: 'ASHA', weight: 0.4, level: 1, rawMaterial: 'Çelik', productionMethod: 'Montaj', assemblyType: 'Cıvatalı', category: 'Yakıt Sistemi' },
+            { partNumber: 'C016', description: 'Akü Kutusu', quantity: 10, vendor: 'Vendor P', productionLocation: 'Supplier', weight: 1.2, level: 1, rawMaterial: 'Polipropilen', productionMethod: 'Enjeksiyon', assemblyType: 'Geçmeli', category: 'Elektrik Sistemi' },
+            { partNumber: 'C017', description: 'Amortisör', quantity: 4, vendor: 'Vendor Q', productionLocation: 'ASHA', weight: 3.0, level: 1, rawMaterial: 'Çelik', productionMethod: 'Kaynak', assemblyType: 'Cıvatalı', category: 'Süspansiyon Sistemi' },
+            { partNumber: 'C018', description: 'Direksiyon Kutusu', quantity: 2, vendor: 'Vendor R', productionLocation: 'Supplier', weight: 8.0, level: 1, rawMaterial: 'Alüminyum', productionMethod: 'İşleme', assemblyType: 'Cıvatalı', category: 'Direksiyon Sistemi' },
+            { partNumber: 'C019', description: 'Aynalı Cam', quantity: 20, vendor: 'Vendor S', productionLocation: 'ASHA', weight: 0.7, level: 1, rawMaterial: 'Cam', productionMethod: 'Kesme', assemblyType: 'Yapıştırma', category: 'Gövde Bileşenleri' },
+            { partNumber: 'C020', description: 'Kapı Menteşesi', quantity: 40, vendor: 'Vendor T', productionLocation: 'Supplier', weight: 0.08, level: 1, rawMaterial: 'Çelik', productionMethod: 'Dövme', assemblyType: 'Cıvatalı', category: 'Gövde Bileşenleri' },
+            { partNumber: 'C021', description: 'Anahtar Takımı', quantity: 5, vendor: 'Vendor U', productionLocation: 'ASHA', weight: 0.1, level: 1, rawMaterial: 'Plastik', productionMethod: 'Montaj', assemblyType: 'Geçmeli', category: 'İç Donanım' },
+            { partNumber: 'C022', description: 'Emniyet Kemeri', quantity: 25, vendor: 'Vendor V', productionLocation: 'Supplier', weight: 0.6, level: 1, rawMaterial: 'Polyester', productionMethod: 'Dokuma', assemblyType: 'Dikişli', category: 'Güvenlik Sistemleri' },
+            { partNumber: 'C023', description: 'Yaylı Pim', quantity: 150, vendor: 'Vendor W', productionLocation: 'ASHA', weight: 0.005, level: 1, rawMaterial: 'Çelik', productionMethod: 'Tel Bükme', assemblyType: 'Geçmeli', category: 'Yaylar' },
             { partNumber: 'C024', description: 'Conta', quantity: 100, vendor: 'Vendor X', productionLocation: 'ASHA', weight: 0.01, level: 1, rawMaterial: 'Kauçuk', productionMethod: 'Kalıplama', assemblyType: 'Sıkıştırma', category: 'Contalar ve Sızdırmazlık Elemanları' },
             { partNumber: 'C025', description: 'Somun', quantity: 500, vendor: 'Vendor Y', productionLocation: 'Supplier', weight: 0.002, level: 1, rawMaterial: 'Çelik', productionMethod: 'Soğuk Dövme', assemblyType: 'Cıvatalı', category: 'Cıvatalar' },
             { partNumber: 'C026', description: 'Dişli', quantity: 10, vendor: 'Vendor Z', productionLocation: 'ASHA', weight: 0.2, level: 3, rawMaterial: 'Bronz', productionMethod: 'Dişli Kesme', assemblyType: 'Mil Geçme', category: 'Dişliler' },
-            { partNumber: 'C027', description: 'Kablo Rakoru', quantity: 75, vendor: 'Vendor AA', productionLocation: 'Supplier', weight: 0.03, level: 1, rawMaterial: 'Plastik', productionMethod: 'Enjeksiyon', assemblyType: 'Geçmeli', category: 'Kablolar ve Konnektörler' },
-            { partNumber: 'C028', description: 'Filtre', quantity: 40, vendor: 'Vendor BB', productionLocation: 'ASHA', weight: 0.1, level: 2, rawMaterial: 'Kağıt', productionMethod: 'Montaj', assemblyType: 'Yapıştırma', category: 'Filtreler' },
-            { partNumber: 'C029', description: 'Pompa Gövdesi', quantity: 5, vendor: 'Vendor CC', productionLocation: 'Supplier', weight: 1.5, level: 3, rawMaterial: 'Dökme Demir', productionMethod: 'Döküm', assemblyType: 'Cıvatalı', category: 'Pompa Parçaları' },
-            { partNumber: 'C030', description: 'Valf', quantity: 8, vendor: 'Vendor DD', productionLocation: 'ASHA', weight: 0.3, level: 3, rawMaterial: 'Pirinç', productionMethod: 'Talaşlı İmalat', assemblyType: 'Dişli', category: 'Valfler' }
+            { partNumber: 'C027', description: 'Kablo Rakoru', quantity: 200, vendor: 'Vendor AA', productionLocation: 'Supplier', weight: 0.015, level: 1, rawMaterial: 'Naylon', productionMethod: 'Enjeksiyon', assemblyType: 'Geçmeli', category: 'Kablolar ve Konnektörler' },
+            { partNumber: 'C028', description: 'LED Lamba', quantity: 50, vendor: 'Vendor BB', productionLocation: 'ASHA', weight: 0.003, level: 1, rawMaterial: 'Silikon', productionMethod: 'Montaj', assemblyType: 'Lehimli', category: 'Aydınlatma' },
+            { partNumber: 'C029', description: 'Termostat', quantity: 5, vendor: 'Vendor CC', productionLocation: 'Supplier', weight: 0.07, level: 1, rawMaterial: 'Bimetal', productionMethod: 'Montaj', assemblyType: 'Cıvatalı', category: 'Termal Yönetim' },
+            { partNumber: 'C030', description: 'Sensör Braketi', quantity: 80, vendor: 'Vendor DD', productionLocation: 'ASHA', weight: 0.04, level: 1, rawMaterial: 'Çelik', productionMethod: 'Lazer Kesim', assemblyType: 'Kaynaklı', category: 'Sensörler' }
         ];
 
-        // Anlık olarak tabloda gösterilecek filtrelenmiş malzemeler
-        let filteredMaterials = []; 
-        let showSupplier = false; 
-        let showAsha = false;    
-        let showRawMaterial = false; // Yeni filtre durumu
+        let showSupplier = false;
+        let showAsha = false;
+        let showRawMaterial = false;
 
-        // Yeni malzeme ekleme fonksiyonu
+        // three.js için global değişkenler
+        let scene, camera, renderer, controls;
+
+        // Sayfa yüklendiğinde malzemeleri göster
+        document.addEventListener('DOMContentLoaded', () => {
+            populateLibraryDatalist();
+            populateParentPartNumberSelect();
+            applyFilters(); // Başlangıçta tüm malzemeleri göster (filtre uygulanmamış haliyle)
+        });
+
+        function populateLibraryDatalist() {
+            const datalist = document.getElementById('libraryOptions');
+            datalist.innerHTML = ''; // Mevcut seçenekleri temizle
+
+            // Kütüphane öğelerini kategoriye göre gruplandır
+            const groupedItems = libraryItems.reduce((acc, item) => {
+                const category = item.category || 'Diğer'; // Eğer kategori yoksa 'Diğer' olarak gruplandır
+                if (!acc[category]) {
+                    acc[category] = [];
+                }
+                acc[category].push(item);
+                return acc;
+            }, {});
+
+            // Grupları ve içindeki öğeleri datalist'e ekle
+            Object.keys(groupedItems).sort().forEach(category => {
+                const optgroup = document.createElement('optgroup');
+                optgroup.label = category;
+                groupedItems[category].sort((a, b) => a.description.localeCompare(b.description)).forEach(item => {
+                    const option = document.createElement('option');
+                    option.value = `${item.description} (${item.partNumber})`;
+                    option.dataset.partNumber = item.partNumber; // Parça numarasını data attribute olarak sakla
+                    optgroup.appendChild(option);
+                });
+                datalist.appendChild(optgroup);
+            });
+        }
+
+        function selectFromLibrary() {
+            const libraryInput = document.getElementById('libraryInput');
+            const selectedOption = document.querySelector(`#libraryOptions option[value='${libraryInput.value}']`);
+
+            if (selectedOption) {
+                const partNumber = selectedOption.dataset.partNumber;
+                const selectedItem = libraryItems.find(item => item.partNumber === partNumber);
+
+                if (selectedItem) {
+                    document.getElementById('partNumber').value = selectedItem.partNumber || '';
+                    document.getElementById('description').value = selectedItem.description || '';
+                    document.getElementById('quantity').value = selectedItem.quantity || '';
+                    document.getElementById('vendor').value = selectedItem.vendor || '';
+                    document.getElementById('weight').value = selectedItem.weight || '';
+                    document.getElementById('productionLocation').value = selectedItem.productionLocation || '';
+                    document.getElementById('productionMethod').value = selectedItem.productionMethod || '';
+                    document.getElementById('assemblyType').value = selectedItem.assemblyType || '';
+                    // Seviye otomatik hesaplanacağı için buradan set etmiyoruz, kullanıcı set edebilir.
+                    // document.getElementById('level').value = selectedItem.level || 1;
+
+                    // Eğer seçilen malzeme ana ürünse, ebeveyn parça numarasını "Yok" yap
+                    if (selectedItem.isMainProduct) {
+                        document.getElementById('parentPartNumber').value = "";
+                    }
+                }
+            }
+        }
+
         function addMaterial() {
             const partNumber = document.getElementById('partNumber').value;
             const description = document.getElementById('description').value;
             const quantity = document.getElementById('quantity').value;
-            const vendor = document.getElementById('vendor').value; // Bu artık 'Hammadde / Tedarikçi'
+            const vendor = document.getElementById('vendor').value;
             const weight = document.getElementById('weight').value;
-            // const level = document.getElementById('level').value; // Bu satırı artık formdan direkt almayacağız
+            // const level = document.getElementById('level').value; // Artık otomatik belirlenecek
             const productionLocation = document.getElementById('productionLocation').value;
-            const productionMethod = document.getElementById('productionMethod').value; // Yeni: Üretim Yöntemi
-            const assemblyType = document.getElementById('assemblyType').value;     // Yeni: Montaj Şekli
+            const rawMaterial = document.getElementById('vendor').value; // Hammadde için vendor alanını kullan
+            const productionMethod = document.getElementById('productionMethod').value;
+            const assemblyType = document.getElementById('assemblyType').value;
             const photo = document.getElementById('photo').files[0];
             const technicalDrawing = document.getElementById('technicalDrawing').files[0];
             const threeDData = document.getElementById('threeDData').files[0];
             const parentPartNumber = document.getElementById('parentPartNumber').value;
 
-
-            if (!productionLocation) {
-                alert('Lütfen bir üretim konumu seçin.');
+            if (!partNumber || !description || !quantity || !productionLocation) {
+                alert('Lütfen parça numarası, açıklama, miktar ve üretim konumu alanlarını doldurun.');
                 return;
             }
 
-            // Hammadde alanı üretim konumuna göre atanıyor
-            let rawMaterial = ''; 
-            if (productionLocation === 'ASHA') {
-                rawMaterial = vendor; 
-            } else {
-                rawMaterial = ''; 
+            // Parça numarasının benzersizliğini kontrol et
+            if (materials.some(material => material.partNumber === partNumber)) {
+                alert('Bu parça numarası zaten mevcut. Lütfen benzersiz bir parça numarası girin.');
+                return;
             }
 
-            // **YENİ EKLENEN KOD: Level'ı otomatik olarak ata**
+            // Seviyeyi hesapla
             let calculatedLevel;
-            if (parentPartNumber === "" || parentPartNumber === null) {
-                calculatedLevel = 1; // Ana ürünse seviye 1
+            if (parentPartNumber === "") { // Ana ürünse seviye 1
+                calculatedLevel = 1;
             } else {
                 const parentMaterial = materials.find(m => m.partNumber === parentPartNumber);
                 calculatedLevel = parentMaterial ? parentMaterial.level + 1 : 1; // Ebeveyn bulunamazsa varsayılan 1
             }
 
-            const newMaterial = { 
-                partNumber: partNumber || '', 
-                description: description || '', 
-                quantity: quantity ? parseInt(quantity) : 0, 
-                vendor: vendor || '', 
-                weight: weight ? parseFloat(weight) : 0.000, 
+            const newMaterial = {
+                partNumber: partNumber || '',
+                description: description || '',
+                quantity: quantity ? parseInt(quantity) : 0,
+                vendor: vendor || '',
+                weight: weight ? parseFloat(weight) : 0.000,
                 // level: level ? parseInt(level) : 1, // Eski level ataması
                 level: calculatedLevel, // Yeni level ataması
-                productionLocation: productionLocation, 
-                rawMaterial: rawMaterial, 
-                isMainProduct: false, 
+                productionLocation: productionLocation,
+                rawMaterial: rawMaterial,
+                isMainProduct: false,
                 productionMethod: productionMethod || '', // Yeni özellik
-                assemblyType: assemblyType || '',     // Yeni özellik
-                photoURL: photo ? URL.createObjectURL(photo) : '', 
-                technicalDrawingURL: technicalDrawing ? URL.createObjectURL(technicalDrawing) : '', 
+                assemblyType: assemblyType || '', // Yeni özellik
+                photoURL: photo ? URL.createObjectURL(photo) : '',
+                technicalDrawingURL: technicalDrawing ? URL.createObjectURL(technicalDrawing) : '',
                 threeDDataURL: threeDData ? URL.createObjectURL(threeDData) : '',
-                parentPartNumber: parentPartNumber === "" ? null : parentPartNumber 
+                parentPartNumber: parentPartNumber === "" ? null : parentPartNumber
             };
 
-            materials.push(newMaterial); 
+            materials.push(newMaterial);
             localStorage.setItem('bomMaterials', JSON.stringify(materials));
-            document.getElementById('materialForm').reset(); 
+            document.getElementById('materialForm').reset();
             applyFilters();
-            populateParentPartNumberSelect(); 
+            populateParentPartNumberSelect();
         }
 
-        // Kütüphaneden seçim yapma ve formu doldurma fonksiyonu
+        // Kütüphaneden seçim yapma fonksiyonu
         function selectFromLibrary() {
-            const selectedValue = document.getElementById('libraryInput').value;
-            let item = null;
+            const libraryInput = document.getElementById('libraryInput');
+            const selectedOption = document.querySelector(`#libraryOptions option[value='${libraryInput.value}']`);
 
-            const match = selectedValue.match(/^(.+?) - (.+)$/);
+            if (selectedOption) {
+                const partNumber = selectedOption.dataset.partNumber;
+                const selectedItem = libraryItems.find(item => item.partNumber === partNumber);
 
-            if (match) {
-                const partNum = match[1];
-                const desc = match[2];
-                item = libraryItems.find(i => i.partNumber === partNum && i.description === desc);
-            } else {
-                item = libraryItems.find(i => i.partNumber === selectedValue || i.description === selectedValue);
-            }
+                if (selectedItem) {
+                    document.getElementById('partNumber').value = selectedItem.partNumber || '';
+                    document.getElementById('description').value = selectedItem.description || '';
+                    document.getElementById('quantity').value = selectedItem.quantity || '';
+                    document.getElementById('vendor').value = selectedItem.vendor || '';
+                    document.getElementById('weight').value = selectedItem.weight || '';
+                    document.getElementById('productionLocation').value = selectedItem.productionLocation || '';
+                    document.getElementById('productionMethod').value = selectedItem.productionMethod || '';
+                    document.getElementById('assemblyType').value = selectedItem.assemblyType || '';
+                    // Seviye otomatik hesaplanacağı için buradan set etmiyoruz, kullanıcı set edebilir.
+                    // document.getElementById('level').value = selectedItem.level || 1;
 
-            if (item) {
-                document.getElementById('partNumber').value = item.partNumber || '';
-                document.getElementById('description').value = item.description || '';
-                document.getElementById('quantity').value = item.quantity || '';
-                document.getElementById('vendor').value = item.vendor || '';
-                document.getElementById('weight').value = item.weight || '';
-                // document.getElementById('level').value = item.level || 1; // Level formdan otomatik belirlenecek, kütüphaneden gelmeyecek
-                document.getElementById('productionLocation').value = item.productionLocation || '';
-                document.getElementById('productionMethod').value = item.productionMethod || ''; // Yeni
-                document.getElementById('assemblyType').value = item.assemblyType || '';     // Yeni
-                // Ebeveyn seçimini kütüphane öğesi için ayarlamayız, bu kullanıcı seçimi olmalı
-                // document.getElementById('parentPartNumber').value = item.parentPartNumber || ''; 
-            } else {
-                // Eşleşme yoksa tüm alanları temizle
-                document.getElementById('partNumber').value = '';
-                document.getElementById('description').value = '';
-                document.getElementById('quantity').value = '';
-                document.getElementById('vendor').value = '';
-                document.getElementById('weight').value = '';
-                document.getElementById('level').value = 1; // Otomatik belirleneceği için burası varsayılan kalabilir
-                document.getElementById('productionLocation').value = '';
-                document.getElementById('productionMethod').value = ''; // Yeni
-                document.getElementById('assemblyType').value = '';     // Yeni
-                document.getElementById('parentPartNumber').value = ''; 
+                    // Eğer seçilen malzeme ana ürünse, ebeveyn parça numarasını "Yok" yap
+                    if (selectedItem.isMainProduct) {
+                        document.getElementById('parentPartNumber').value = "";
+                    }
+                }
             }
         }
-        
-        // Malzeme satırı oluşturan yardımcı fonksiyon (eski versiyon, artık kullanılmıyor)
-        // function createMaterialRow(material) { ... } // Bu fonksiyon kaldırılabilir veya yorum satırı yapılabilir
 
-        // Yeni eklenen fonksiyon: Malzeme seviyesini güncelle
-        function updateMaterialLevel(partNumber, newLevel) {
+
+        function populateParentPartNumberSelect() {
+            const select = document.getElementById('parentPartNumber');
+            select.innerHTML = '<option value="">Yok (Ana Ürün)</option>'; // İlk seçenek
+            // Mevcut malzemeleri Parça Numarasına göre sırala
+            const sortedMaterials = [...materials].sort((a, b) => a.partNumber.localeCompare(b.partNumber));
+            sortedMaterials.forEach(material => {
+                const option = document.createElement('option');
+                option.value = material.partNumber;
+                option.textContent = `${material.partNumber} - ${material.description}`;
+                select.appendChild(option);
+            });
+        }
+
+        function getChildren(partNumber, allMaterials) {
+            return allMaterials.filter(m => m.parentPartNumber === partNumber);
+        }
+
+        function buildHierarchy(partNumber, allMaterials, currentDepth = 0) {
+            const material = allMaterials.find(m => m.partNumber === partNumber);
+            if (!material) return null;
+
+            const children = getChildren(partNumber, allMaterials)
+                .map(child => buildHierarchy(child.partNumber, allMaterials, currentDepth + 1))
+                .filter(child => child !== null); // null olanları filtrele
+
+            return { ...material, children, depth: currentDepth };
+        }
+
+
+        function displayMaterials(filteredMaterials) {
+            const bomTableBody = document.getElementById('bomTableBody');
+            bomTableBody.innerHTML = '';
+            const rawMaterialSummaryContainer = document.getElementById('rawMaterialSummaryContainer');
+            rawMaterialSummaryContainer.classList.add('hidden'); // Her zaman gizli olarak başlat
+
+            if (showRawMaterial) {
+                displayRawMaterialSummary(filteredMaterials);
+                return;
+            }
+
+            // Ana ürünleri (parentPartNumber'ı null olanlar) bul
+            const mainProducts = filteredMaterials.filter(material => material.parentPartNumber === null);
+
+            // Görüntülenecek sıralı malzemeleri tutacak dizi
+            let orderedMaterials = [];
+
+            // Ana ürünleri ve alt öğelerini seviyelerine göre sırala
+            function sortAndFlatten(items, depth) {
+                items.sort((a, b) => a.partNumber.localeCompare(b.partNumber)); // Kendi seviyelerinde Parça Numarasına göre sırala
+                items.forEach(item => {
+                    orderedMaterials.push({ ...item, depth: depth });
+                    const children = filteredMaterials.filter(m => m.parentPartNumber === item.partNumber);
+                    if (children.length > 0) {
+                        sortAndFlatten(children, depth + 1);
+                    }
+                });
+            }
+
+            sortAndFlatten(mainProducts, 0); // En üst seviyeden başla
+
+            orderedMaterials.forEach(material => {
+                const row = document.createElement('tr');
+                // Renk sınıflarını productionLocation'a göre dinamik olarak ayarladık
+                const productionLocationClass = material.productionLocation === 'ASHA' ? 'bg-asha-row' : 'bg-supplier-row';
+                const mainProductBgClass = material.isMainProduct ? 'bg-main-product-row' : '';
+                row.className = `${productionLocationClass} ${mainProductBgClass}`;
+                row.dataset.partNumber = material.partNumber;
+
+                // Girinti miktarını hesapla (1cm = 16px gibi, veya rem kullanabiliriz)
+                const indentAmount = material.depth * 16; // Her derinlik seviyesi için 16px (yaklaşık 1cm) boşluk
+                const indentStyle = `padding-left: ${indentAmount + 12}px;`; // İlk sütunun varsayılan padding'i 12px, buna ekle
+
+                row.innerHTML = `
+                    <td class="border px-2 py-2 text-center table-cell-padding">
+                        <div class="main-product-checkbox ${material.isMainProduct ? 'checked' : ''}" onclick="toggleMainProduct('${material.partNumber}')"></div>
+                    </td>
+                    <td class="border px-4 py-2 table-cell-padding" style="${indentStyle}">${material.partNumber || '-'}</td>
+                    <td class="border px-4 py-2 table-cell-padding">${material.description || '-'}</td>
+                    <td class="border px-4 py-2 text-center table-cell-padding">
+                        <input type="number" value="${material.quantity}" onchange="updateQuantity('${material.partNumber}', this.value)" class="w-20 text-center border rounded px-1 py-0.5">
+                    </td>
+                    <td class="border px-4 py-2 table-cell-padding">${material.vendor || '-'}</td>
+                    <td class="border px-4 py-2 text-center table-cell-padding">${material.productionLocation || '-'}</td>
+                    <td class="border px-4 py-2 text-center table-cell-padding">${material.productionMethod || '-'}</td>
+                    <td class="border px-4 py-2 text-center table-cell-padding">${material.assemblyType || '-'}</td>
+                    <td class="border px-4 py-2 text-center table-cell-padding">
+                        <input type="number" value="${material.level}" onchange="updateLevel('${material.partNumber}', this.value)" class="w-16 text-center border rounded px-1 py-0.5" min="1" max="4">
+                    </td>
+                    <td class="border px-4 py-2 text-center table-cell-padding">
+                        <select onchange="updateParentPartNumber('${material.partNumber}', this.value)" class="border rounded px-1 py-0.5 text-sm w-32">
+                            <option value="" ${material.parentPartNumber === null ? 'selected' : ''}>Yok (Ana Ürün)</option>
+                            ${materials.filter(m => m.partNumber !== material.partNumber && !isDescendant(material.partNumber, m.partNumber)).map(m => `
+                                <option value="${m.partNumber}" ${material.parentPartNumber === m.partNumber ? 'selected' : ''}>
+                                    ${m.partNumber} - ${m.description}
+                                </option>
+                            `).join('')}
+                        </select>
+                    </td>
+                    <td class="border px-4 py-2 text-center table-cell-padding">
+                        <input type="number" step="0.001" value="${material.weight}" onchange="updateWeight('${material.partNumber}', this.value)" class="w-20 text-center border rounded px-1 py-0.5">
+                    </td>
+                    <td class="border px-4 py-2 text-center table-cell-padding">
+                        ${material.photoURL ? `<a href="${material.photoURL}" target="_blank" class="text-blue-600 hover:underline">Görüntüle</a>` : '-'}
+                    </td>
+                    <td class="border px-4 py-2 text-center table-cell-padding">
+                        ${material.technicalDrawingURL ? `<a href="${material.technicalDrawingURL}" target="_blank" class="text-blue-600 hover:underline">Görüntüle</a>` : '-'}
+                    </td>
+                    <td class="border px-4 py-2 text-center table-cell-padding">
+                        ${material.threeDDataURL ? `<button onclick="openModelViewer('${material.threeDDataURL}')" class="text-blue-600 hover:underline">3D Gör</button>` : '-'}
+                    </td>
+                    <td class="border px-4 py-2 text-center table-cell-padding">
+                        <button onclick="removeMaterial('${material.partNumber}')" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm transition duration-300 ease-in-out">Sil</button>
+                    </td>
+                `;
+                bomTableBody.appendChild(row);
+            });
+        }
+
+
+        // isMainProduct durumunu değiştir
+        function toggleMainProduct(partNumber) {
+            const material = materials.find(m => m.partNumber === partNumber);
+            if (material) {
+                material.isMainProduct = !material.isMainProduct;
+                localStorage.setItem('bomMaterials', JSON.stringify(materials));
+                applyFilters(); // Tabloyu yeniden render et
+            }
+        }
+
+        // Miktar güncelle
+        function updateQuantity(partNumber, newQuantity) {
+            const material = materials.find(m => m.partNumber === partNumber);
+            if (material) {
+                const parsedQuantity = parseInt(newQuantity);
+                if (!isNaN(parsedQuantity) && parsedQuantity >= 0) {
+                    material.quantity = parsedQuantity;
+                    localStorage.setItem('bomMaterials', JSON.stringify(materials));
+                } else {
+                    alert('Lütfen geçerli bir miktar girin.');
+                    applyFilters(); // Hatalı girişi düzeltmek için tabloyu yeniden render et
+                }
+            }
+        }
+
+        // Ağırlık güncelle
+        function updateWeight(partNumber, newWeight) {
+            const material = materials.find(m => m.partNumber === partNumber);
+            if (material) {
+                const parsedWeight = parseFloat(newWeight);
+                if (!isNaN(parsedWeight) && parsedWeight >= 0) {
+                    material.weight = parsedWeight;
+                    localStorage.setItem('bomMaterials', JSON.stringify(materials));
+                } else {
+                    alert('Lütfen geçerli bir ağırlık girin.');
+                    applyFilters(); // Hatalı girişi düzeltmek için tabloyu yeniden render et
+                }
+            }
+        }
+
+        // Seviye güncelle
+        function updateLevel(partNumber, newLevel) {
             const material = materials.find(m => m.partNumber === partNumber);
             if (material) {
                 const parsedLevel = parseInt(newLevel);
@@ -457,226 +718,22 @@
             materials = materials.filter(material => !itemsToRemove.includes(material.partNumber));
             localStorage.setItem('bomMaterials', JSON.stringify(materials));
             applyFilters();
-            populateParentPartNumberSelect(); 
+            populateParentPartNumberSelect();
         }
 
-        // Ana ürün durumunu değiştirme fonksiyonu
-        function toggleMainProduct(partNumber) {
-            const material = materials.find(m => m.partNumber === partNumber);
-            if (material) {
-                material.isMainProduct = !material.isMainProduct;
-                localStorage.setItem('bomMaterials', JSON.stringify(materials));
-                applyFilters(); // Re-render to reflect the change
-            }
-        }
-        
-        // GÜNCELLENEN KOD: Malzeme listesini (tabloyu) render etme fonksiyonu
-        function renderMaterials() {
-            const materialList = document.getElementById('materialList');
-            const bomTableHeader = document.getElementById('bomTableHeader').querySelector('tr');
-            materialList.innerHTML = ''; 
-
-            // Update table headers based on showRawMaterial filter
-            if (showRawMaterial) {
-                let yearsHtml = '';
-                for (let i = 0; i < projectLifeYears; i++) {
-                    yearsHtml += `<th class="border px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">${projectStartYear + i} KG</th>`;
-                }
-                bomTableHeader.innerHTML = `
-                    <th class="border px-2 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"></th>
-                    <th class="border px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Ham Madde Adı</th>
-                    ${yearsHtml}
-                `;
-            } else {
-                bomTableHeader.innerHTML = `
-                    <th class="border px-2 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"></th>
-                    <th class="border px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Parça No</th>
-                    <th class="border px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Parça İsmi</th>
-                    <th class="border px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Seviye</th>
-                    <th class="border px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Ebeveyn Parça No</th>
-                    <th class="border px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Miktar</th>
-                    <th class="border px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Üretim Yöntemi</th>
-                    <th class="border px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Montaj Şekli</th>
-                    <th class="border px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Hammadde</th>
-                    <th class="border px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">Ağırlık (KG)</th>
-                    <th class="border px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Fotoğraf</th>
-                    <th class="border px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Teknik Çizim</th>
-                    <th class="border px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">3D Verisi</th>
-                    <th class="border px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">İşlemler</th>
-                `;
-            }
-
-            // Raw Material görünümü için özel işleme
-            if (showRawMaterial) {
-                const rawMaterialSummary = {}; 
-                materials.forEach(item => {
-                    if (item.rawMaterial && !rawMaterialSummary[item.rawMaterial]) {
-                        rawMaterialSummary[item.rawMaterial] = {
-                            name: item.rawMaterial,
-                            yearlyUsage: Array(projectLifeYears).fill(0) 
-                        };
-                    }
-                });
-
-                materials.forEach(item => {
-                    if (item.rawMaterial && item.isMainProduct && annualVolumesFromTable[item.description]) {
-                        const volumes = annualVolumesFromTable[item.description]; 
-                        for (let i = 0; i < projectLifeYears; i++) {
-                            const annualVolume = volumes[i] !== undefined ? volumes[i] : 0;
-                            if (annualVolume > 0) {
-                                rawMaterialSummary[item.rawMaterial].yearlyUsage[i] +=
-                                    (item.quantity || 0) * (item.weight || 0) * annualVolume;
-                            }
-                        }
-                    }
-                });
-
-                Object.values(rawMaterialSummary).forEach(summaryItem => {
-                    const row = document.createElement('tr');
-                    let yearlyCellsHtml = '';
-                    summaryItem.yearlyUsage.forEach(usage => {
-                        yearlyCellsHtml += `<td class="border px-4 py-3 text-right">${usage.toFixed(3)} KG</td>`;
-                    });
-
-                    row.innerHTML = `
-                        <td class="border px-2 py-3"></td>
-                        <td class="border px-4 py-3">${summaryItem.name}</td>
-                        ${yearlyCellsHtml}
-                    `;
-                    materialList.appendChild(row);
-                });
-            } else {
-                // Hiyerarşik yapıyı oluştur ve render et
-                const hierarchicalMaterials = buildHierarchy(filteredMaterials);
-                renderHierarchicalMaterials(hierarchicalMaterials, materialList, 0);
-            }
-
-            initSortableMainList(materialList); 
-        }
-
-        // YENİ EKLENEN FONKSİYON: Düz listeyi hiyerarşik yapıya dönüştürür
-        function buildHierarchy(flatMaterials) {
-            const materialMap = new Map();
-            const roots = [];
-
-            // Tüm malzemeleri bir haritaya yerleştir ve her malzemeye bir 'children' dizisi ekle
-            flatMaterials.forEach(material => {
-                materialMap.set(material.partNumber, { ...material, children: [] });
-            });
-
-            // Ebeveyn-çocuk ilişkilerini kur
-            materialMap.forEach(material => {
-                if (material.parentPartNumber && materialMap.has(material.parentPartNumber)) {
-                    materialMap.get(material.parentPartNumber).children.push(material);
-                } else {
-                    // Ebeveyni olmayanlar kök öğelerdir
-                    roots.push(material);
-                }
-            });
-            
-            // Çocukları Parça Numarasına göre sırala
-            materialMap.forEach(material => {
-                material.children.sort((a, b) => a.partNumber.localeCompare(b.partNumber));
-            });
-
-            // Kök öğeleri Parça Numarasına göre sırala
-            roots.sort((a, b) => a.partNumber.localeCompare(b.partNumber));
-
-            return roots;
-        }
-
-        // YENİ EKLENEN FONKSİYON: Hiyerarşik malzemeleri rekürsif olarak render eder
-        function renderHierarchicalMaterials(materialsToRender, parentElement, depth) {
-            materialsToRender.forEach(material => {
-                const row = createMaterialRowWithParent(material, depth); // depth parametresini geçir
-                parentElement.appendChild(row);
-                if (material.children && material.children.length > 0) {
-                    renderHierarchicalMaterials(material.children, parentElement, depth + 1);
-                }
-            });
-        }
-        
-        // GÜNCELLENEN FONKSİYON: Ebeveyn Parça No'yu da içeren malzeme satırı oluşturma (depth parametresi eklendi)
-        function createMaterialRowWithParent(material, depth = 0) { // depth varsayılan olarak 0
-            const row = document.createElement('tr');
-            // Renk sınıflarını productionLocation'a göre dinamik olarak ayarladık
-            const productionLocationClass = material.productionLocation === 'ASHA' ? 'bg-asha-row' : 'bg-supplier-row';
-            const mainProductBgClass = material.isMainProduct ? 'bg-main-product-row' : '';
-            
-            row.className = `${productionLocationClass} ${mainProductBgClass}`;
-            row.dataset.partNumber = material.partNumber;
-
-            // Girinti miktarını hesapla (1cm = 16px gibi, veya rem kullanabiliriz)
-            const indentAmount = depth * 16; // Her derinlik seviyesi için 16px (yaklaşık 1cm) boşluk
-            const indentStyle = `padding-left: ${indentAmount + 16}px;`; // İlk sütunun varsayılan padding'i 16px, buna ekle
-
-
-            row.innerHTML = `
-                <td class="border px-2 py-3 text-center">
-                    <div class="main-product-checkbox ${material.isMainProduct ? 'checked' : ''}" onclick="toggleMainProduct('${material.partNumber}')"></div>
-                </td>
-                <td class="border px-4 py-3" style="${indentStyle}">${material.partNumber || '-'}</td>
-                <td class="border px-4 py-3">${material.description || '-'}</td>
-                <td class="border px-4 py-3 text-center">
-                    <input type="number" 
-                           value="${material.level}" 
-                           min="1" 
-                           max="4" 
-                           class="w-16 text-center border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-                           onchange="updateMaterialLevel('${material.partNumber}', this.value)">
-                </td>
-                <td class="border px-4 py-3 text-center">
-                    <select class="w-24 text-center border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-                            onchange="updateMaterialParent('${material.partNumber}', this.value)">
-                        <option value="">Yok</option>
-                        ${materials.filter(m => m.partNumber !== material.partNumber).map(m => `
-                            <option value="${m.partNumber}" ${material.parentPartNumber === m.partNumber ? 'selected' : ''}>
-                                ${m.partNumber} - ${m.description}
-                            </option>
-                        `).join('')}
-                    </select>
-                </td>
-                <td class="border px-4 py-3 text-center">${material.quantity || '-'}</td>
-                <td class="border px-4 py-3">${material.productionMethod || '-'}</td>
-                <td class="border px-4 py-3">${material.assemblyType || '-'}</td>
-                <td class="border px-4 py-3">${material.rawMaterial || '-'}</td>
-                <td class="border px-4 py-3 text-right">${material.weight !== undefined ? material.weight.toFixed(3) + ' KG' : '-'}</td>
-                <td class="border px-4 py-3 text-center">
-                    ${material.photoURL ? `<img src="${material.photoURL}" alt="Photo" class="w-16 h-16 object-cover mx-auto rounded-md">` : 'Yok'}
-                </td>
-                <td class="border px-4 py-3 text-center">
-                    ${material.technicalDrawingURL ? `<a href="${material.technicalDrawingURL}" target="_blank" class="text-blue-600 hover:underline">Teknik Çizim</a>` : 'Yok'}
-                </td>
-                <td class="border px-4 py-3 text-center">
-                    ${material.threeDDataURL ? `<button class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded-md text-sm" onclick="view3DModel('${material.threeDDataURL}')">3D Görüntüle</button>` : 'Yok'}
-                </td>
-                <td class="border px-4 py-3 text-center">
-                    <button class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-md text-sm" onclick="removeMaterial('${material.partNumber}')">Kaldır</button>
-                </td>
-            `;
-            return row;
-        }
-
-        // YENİ EKLENEN FONKSİYON: Malzeme ebeveynini güncelle
-        function updateMaterialParent(childPartNumber, newParentPartNumber) {
+        // Ebeveyn Parça Numarasını güncelle
+        function updateParentPartNumber(childPartNumber, newParentPartNumber) {
             const childMaterial = materials.find(m => m.partNumber === childPartNumber);
             if (childMaterial) {
-                // Kendi kendine ebeveyn olmasını engelle
-                if (childPartNumber === newParentPartNumber) {
-                    alert("Bir malzeme kendi kendine ebeveyn olamaz.");
-                    applyFilters(); // Hatalı seçimi geri almak için tabloyu yeniden render et
-                    return;
-                }
-                
-                // Döngüsel referans kontrolü: Yeni ebeveyn, çocuğun bir çocuğu mu?
-                let currentParentChecker = newParentPartNumber;
+                // Döngüsel referans kontrolü
+                let currentParentChecker = newParentPartNumber === "" ? null : newParentPartNumber;
                 while (currentParentChecker) {
-                    const parentObj = materials.find(m => m.partNumber === currentParentChecker);
-                    if (parentObj && parentObj.parentPartNumber === childPartNumber) {
+                    if (currentParentChecker === childPartNumber) {
                         alert("Döngüsel referans hatası: Seçilen ebeveyn, bu malzemenin mevcut alt öğesidir veya alt öğesinin alt öğesidir. Lütfen geçerli bir ebeveyn seçin.");
                         applyFilters(); // Hatalı seçimi geri almak için tabloyu yeniden render et
                         return;
                     }
+                    const parentObj = materials.find(m => m.partNumber === currentParentChecker);
                     currentParentChecker = parentObj ? parentObj.parentPartNumber : null;
                 }
 
@@ -698,57 +755,96 @@
         }
 
         // YENİ EKLENEN FONKSİYON: Alt öğelerin seviyelerini rekürsif olarak güncelle
-        function updateDescendantLevels(material, currentLevel) {
-            material.level = currentLevel;
+        function updateDescendantLevels(material, newLevel) {
+            material.level = newLevel; // Mevcut malzemenin seviyesini güncelle
+
             const children = materials.filter(m => m.parentPartNumber === material.partNumber);
             children.forEach(child => {
-                updateDescendantLevels(child, currentLevel + 1);
+                updateDescendantLevels(child, newLevel + 1); // Çocukların seviyelerini güncelle
             });
         }
 
 
-        // 3D Görüntüleyici ile ilgili değişkenler
-        let scene, camera, renderer, controls, animationFrameId;
+        // Genel filtreleme ve arama uygula
+        function applyFilters() {
+            let filtered = [...materials];
 
-        function view3DModel(url) {
+            // Arama filtresi
+            const searchText = document.getElementById('searchInput').value.toLowerCase();
+            if (searchText) {
+                filtered = filtered.filter(material =>
+                    (material.partNumber && material.partNumber.toLowerCase().includes(searchText)) ||
+                    (material.description && material.description.toLowerCase().includes(searchText)) ||
+                    (material.vendor && material.vendor.toLowerCase().includes(searchText)) ||
+                    (material.rawMaterial && material.rawMaterial.toLowerCase().includes(searchText)) ||
+                    (material.productionMethod && material.productionMethod.toLowerCase().includes(searchText)) ||
+                    (material.assemblyType && material.assemblyType.toLowerCase().includes(searchText))
+                );
+            }
+
+            // Production Location filtreleri
+            if (showSupplier) {
+                filtered = filtered.filter(material => material.productionLocation === 'Supplier');
+            }
+            if (showAsha) {
+                filtered = filtered.filter(material => material.productionLocation === 'ASHA');
+            }
+
+            // Raw Material filtresi, diğer filtrelerle birlikte çalışabilir.
+            // Ancak şu anki mantıkta toggleFilter'da RAW_MATERIAL seçilince diğerleri kapanıyor.
+            // Bu kısım ihtiyaca göre ayarlanabilir.
+
+            displayMaterials(filtered);
+            populateParentPartNumberSelect();
+        }
+
+        // 3D Model Görüntüleyici
+        function openModelViewer(modelPath) {
             document.getElementById('modelViewer').style.display = 'block';
             const canvas = document.getElementById('modelCanvas');
-            
-            scene = new THREE.Scene();
-            scene.background = new THREE.Color(0x333333); // Koyu gri arka plan
 
+            // Sahne, kamera, renderer oluştur
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0xcccccc); // Gri arka plan
             camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
             renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
 
-            // Işıklandırma
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-            scene.add(ambientLight);
-            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-            directionalLight.position.set(0, 1, 1).normalize();
-            scene.add(directionalLight);
-
-            controls = new OrbitControls(camera, renderer.domElement);
+            // Orbit Kontrolleri ekle
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
             controls.enableDamping = true;
             controls.dampingFactor = 0.25;
             controls.screenSpacePanning = false;
-            controls.minDistance = 0.5;
-            controls.maxDistance = 100;
+            controls.maxPolarAngle = Math.PI / 2;
 
-            const loader = new THREE.STLLoader();
-            loader.load(url, function (geometry) {
-                const material = new THREE.MeshNormalMaterial();
+            // Işık ekle
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+            scene.add(ambientLight);
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
+            directionalLight.position.set(0, 1, 1);
+            scene.add(directionalLight);
+
+            // Modeli yükle
+            const loader = new THREE.STLLoader(); // Model türüne göre loader'ı değiştir
+            loader.load(modelPath, function (geometry) {
+                const material = new THREE.MeshPhongMaterial({ color: 0xAAAAAA, specular: 0x111111, shininess: 200 });
                 const mesh = new THREE.Mesh(geometry, material);
                 scene.add(mesh);
 
-                const bbox = new THREE.Box3().setFromObject(mesh);
-                const center = bbox.getCenter(new THREE.Vector3());
-                const size = bbox.getSize(new THREE.Vector3());
+                // Modeli ortala ve kamerayı ayarla
+                geometry.computeBoundingBox();
+                const boundingBox = geometry.boundingBox;
+                const center = new THREE.Vector3();
+                boundingBox.getCenter(center);
+                mesh.position.sub(center); // Modeli merkeze taşı
 
-                camera.position.copy(center);
-                camera.position.x += size.x * 1.5;
-                camera.position.y += size.y * 1.5;
-                camera.position.z += size.z * 1.5;
+                const size = new THREE.Vector3();
+                boundingBox.getSize(size);
+                const maxDim = Math.max(size.x, size.y, size.z);
+                const fov = camera.fov * (Math.PI / 180);
+                let cameraZ = Math.abs(maxDim / 2 / Math.tan(fov / 2));
+                cameraZ *= 1.5; // Modeli biraz daha uzaktan görmek için
+                camera.position.set(center.x, center.y, center.z + cameraZ);
                 camera.lookAt(center);
 
                 controls.target.copy(center);
@@ -756,26 +852,21 @@
 
                 animate();
             }, undefined, function (error) {
-                console.error('3D model yüklenirken hata oluştu:', error);
-                alert('3D model yüklenemedi. Desteklenen bir format olduğundan emin olun (.stl, .step, .obj, .gltf).');
+                console.error(error);
+                alert('3D model yüklenirken bir hata oluştu: ' + error.message);
                 closeModelViewer();
             });
         }
 
         function animate() {
-            animationFrameId = requestAnimationFrame(animate);
+            if (!renderer) return; // Renderer yoksa animasyonu durdur
+            requestAnimationFrame(animate);
             controls.update();
             renderer.render(scene, camera);
         }
 
         function closeModelViewer() {
-            if (animationFrameId) {
-                cancelAnimationFrame(animationFrameId);
-            }
-            if (renderer) {
-                renderer.dispose();
-                renderer = null;
-            }
+            // Belleği temizle
             if (scene) {
                 scene.traverse(object => {
                     if (object.geometry) object.geometry.dispose();
@@ -797,7 +888,7 @@
         });
 
         // Filtre kutucuklarının durumunu değiştirir
-        function toggleFilter(filterType) { 
+        function toggleFilter(filterType) {
             const supplierCheckbox = document.getElementById('supplierCheckbox');
             const ashaCheckbox = document.getElementById('ashaCheckbox');
             const rawMaterialCheckbox = document.getElementById('rawMaterialCheckbox');
@@ -817,126 +908,65 @@
 
                 if (filterType === 'BUY') {
                     showSupplier = !showSupplier;
-                    supplierCheckbox.classList.toggle('checked');
+                    supplierCheckbox.classList.toggle('checked', showSupplier);
+                    if (showSupplier && showAsha) { // Eğer BUY seçiliyse MAKE'i kaldır
+                        showAsha = false;
+                        ashaCheckbox.classList.remove('checked');
+                    }
                 } else if (filterType === 'MAKE') {
                     showAsha = !showAsha;
-                    ashaCheckbox.classList.toggle('checked');
+                    ashaCheckbox.classList.toggle('checked', showAsha);
+                    if (showAsha && showSupplier) { // Eğer MAKE seçiliyse BUY'ı kaldır
+                        showSupplier = false;
+                        supplierCheckbox.classList.remove('checked');
+                    }
                 }
             }
-            applyFilters(); 
-        }
-
-        // Malzemeleri aktif filtre durumlarına ve arama terimine göre filtreler
-        function applyFilters() {
-            let tempFilteredMaterials = [...materials]; 
-
-            if (showRawMaterial) {
-                tempFilteredMaterials = tempFilteredMaterials.filter(material => material.rawMaterial);
-            } else {
-                if (showSupplier && showAsha) {
-                    // Her ikisi de seçiliyse tüm MAKE ve BUY öğelerini göster (yani filtreleme yapma)
-                } else if (showSupplier) {
-                    tempFilteredMaterials = tempFilteredMaterials.filter(material => material.productionLocation === 'Supplier');
-                } else if (showAsha) {
-                    tempFilteredMaterials = tempFilteredMaterials.filter(material => material.productionLocation === 'ASHA');
-                }
-            }
-
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            if (searchTerm !== '') {
-                tempFilteredMaterials = tempFilteredMaterials.filter(material => 
-                    (material.partNumber && material.partNumber.toLowerCase().includes(searchTerm)) || 
-                    (material.description && material.description.toLowerCase().includes(searchTerm)) ||
-                    (material.rawMaterial && material.rawMaterial.toLowerCase().includes(searchTerm))
-                );
-            }
-            
-            filteredMaterials = tempFilteredMaterials;
-            renderMaterials(); 
-        }
-
-        function searchMaterials() {
             applyFilters();
         }
-        
-        // Ana tbody için Sortable (sadece yeniden sıralama)
-        let mainSortable;
-        function initSortableMainList(element) {
-            if (showRawMaterial) {
-                if (mainSortable) mainSortable.destroy();
-                return;
-            }
 
-            if (mainSortable) {
-                mainSortable.destroy();
-            }
-            // Hiyerarşik görünümde sürükle-bırak desteğini geçici olarak devre dışı bırakın
-            // Çünkü Sortable.js hiyerarşik yapıları doğrudan desteklemez ve karmaşık hale gelebilir.
-            // if (mainSortable) mainSortable.destroy();
-            // mainSortable = Sortable.create(element, { ... });
-        }
+        function displayRawMaterialSummary(filteredMaterials) {
+            const rawMaterialSummaryTableBody = document.getElementById('rawMaterialSummaryTableBody');
+            rawMaterialSummaryTableBody.innerHTML = '';
+            const rawMaterialSummaryContainer = document.getElementById('rawMaterialSummaryContainer');
+            rawMaterialSummaryContainer.classList.remove('hidden');
 
-        // YENİ EKLENEN FONKSİYON: Ebeveyn Parça Numarası seçim listesini doldur
-        function populateParentPartNumberSelect() {
-            const parentSelect = document.getElementById('parentPartNumber');
-            parentSelect.innerHTML = '<option value="">Yok (Ana Ürün)</option>'; 
-
-            materials.forEach(material => {
-                if (material.partNumber) { 
-                    const option = document.createElement('option');
-                    option.value = material.partNumber;
-                    option.textContent = `${material.partNumber} - ${material.description}`;
-                    parentSelect.appendChild(option);
+            const rawMaterialSummary = {};
+            // Tüm benzersiz hammaddeleri topla
+            materials.forEach(item => {
+                if (item.rawMaterial && !rawMaterialSummary[item.rawMaterial]) {
+                    rawMaterialSummary[item.rawMaterial] = { name: item.rawMaterial, yearlyUsage: Array(projectLifeYears).fill(0) };
                 }
             });
-        }
 
-        // Sayfa yüklendiğinde çalışacak kodlar
-        document.addEventListener('DOMContentLoaded', () => {
-            const libraryDatalist = document.getElementById('libraryOptions');
-            libraryDatalist.innerHTML = ''; // Mevcut seçenekleri temizle
-
-            // Kategorilere göre öğeleri gruplandır
-            const groupedItems = libraryItems.reduce((acc, item) => {
-                const category = item.category || 'Diğer'; // Eğer kategori yoksa 'Diğer' olarak gruplandır
-                if (!acc[category]) {
-                    acc[category] = [];
+            // Yıllık kullanımı hesapla
+            materials.forEach(item => {
+                if (item.rawMaterial && item.isMainProduct && annualVolumesFromTable[item.description]) {
+                    const volumes = annualVolumesFromTable[item.description];
+                    for (let i = 0; i < projectLifeYears; i++) {
+                        const usage = (volumes[i] || 0) * item.quantity * item.weight;
+                        rawMaterialSummary[item.rawMaterial].yearlyUsage[i] += usage;
+                    }
                 }
-                acc[category].push(item);
-                return acc;
-            }, {});
+            });
 
-            // Grupları ve içindeki öğeleri datalist'e ekle
-            Object.keys(groupedItems).sort().forEach(category => {
-                const optgroup = document.createElement('optgroup');
-                optgroup.label = category;
-                groupedItems[category].forEach(item => {
-                    const option = document.createElement('option');
-                    option.value = `${item.partNumber} - ${item.description}`;
-                    optgroup.appendChild(option);
+            // Başlık satırını oluştur
+            const tableHead = document.querySelector('#rawMaterialSummaryContainer table thead tr');
+            tableHead.innerHTML = '<th class="border px-4 py-2 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Hammadde</th>';
+            for (let i = 0; i < projectLifeYears; i++) {
+                tableHead.innerHTML += `<th class="border px-4 py-2 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">${projectStartYear + i}</th>`;
+            }
+
+            // Tabloyi doldur
+            for (const rmName in rawMaterialSummary) {
+                const row = document.createElement('tr');
+                row.innerHTML = `<td class="border px-4 py-2">${rmName}</td>`;
+                rawMaterialSummary[rmName].yearlyUsage.forEach(usage => {
+                    row.innerHTML += `<td class="border px-4 py-2 text-center">${usage.toFixed(2)} kg</td>`;
                 });
-                libraryDatalist.appendChild(optgroup);
-            });
-            
-            // DEMO VERİSİ (İsteğe bağlı: Başlangıçta bazı örnek malzemelerle başlamak için)
-            // Bu kısmı sadece ilk kez çalıştırdığınızda malzemelerinizin olması için kullanabilirsiniz.
-            // Eğer localStorage'da zaten malzemeniz varsa, bu kod çalışmayacaktır.
-            if (materials.length === 0) {
-                 materials.push({ partNumber: 'ASY-001', description: 'Ana Montaj Ürünü A', quantity: 1, vendor: 'ASHA', productionLocation: 'ASHA', weight: 1.5, level: 1, rawMaterial: '', isMainProduct: true, parentPartNumber: null, productionMethod: 'Montaj', assemblyType: 'Cıvatalı' });
-                 materials.push({ partNumber: 'SUB-001', description: 'Alt Montaj 1 (ASY-001)', quantity: 2, vendor: 'ASHA', productionLocation: 'ASHA', weight: 0.5, level: 2, rawMaterial: '', isMainProduct: false, parentPartNumber: 'ASY-001', productionMethod: 'Montaj', assemblyType: 'Kaynaklı' });
-                 materials.push({ partNumber: 'PART-001', description: 'Parça 1 (SUB-001)', quantity: 4, vendor: 'Supplier X', productionLocation: 'Supplier', weight: 0.1, level: 3, rawMaterial: 'Çelik', isMainProduct: false, parentPartNumber: 'SUB-001', productionMethod: 'Talaşlı İmalat', assemblyType: 'Cıvatalı' });
-                 materials.push({ partNumber: 'PART-002', description: 'Parça 2 (SUB-001)', quantity: 1, vendor: 'ASHA', productionLocation: 'ASHA', weight: 0.05, level: 3, rawMaterial: 'Plastik', isMainMethod: false, parentPartNumber: 'SUB-001', productionMethod: 'Enjeksiyon', assemblyType: 'Geçmeli' });
-                 materials.push({ partNumber: 'ASY-002', description: 'Ana Montaj Ürünü B', quantity: 1, vendor: 'Supplier Y', productionLocation: 'Supplier', weight: 2.0, level: 1, rawMaterial: '', isMainProduct: true, parentPartNumber: null, productionMethod: 'İşleme', assemblyType: 'Kaynaklı' });
-                 materials.push({ partNumber: 'SUB-002', description: 'Alt Montaj 2 (ASY-002)', quantity: 1, vendor: 'Supplier Z', productionLocation: 'Supplier', weight: 0.7, level: 2, rawMaterial: '', isMainProduct: false, parentPartNumber: 'ASY-002', productionMethod: 'Büküm', assemblyType: 'Perçinli' });
-                 localStorage.setItem('bomMaterials', JSON.stringify(materials));
+                rawMaterialSummaryTableBody.appendChild(row);
             }
-
-
-            populateParentPartNumberSelect(); 
-            applyFilters(); 
-        });
-
-        Sortable.mount(new Sortable.MultiDrag(), new Sortable.Swap());
+        }
     </script>
 </body>
 </html>
