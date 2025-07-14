@@ -225,24 +225,41 @@
             color: white;
         }
 
-        /* Çıkış Butonu Stilleri */
-        #exitButton {
-            background-color: #EF4444; /* Kırmızı */
+        /* Yeni: Sidebar altındaki butonlar için kapsayıcı ve stil */
+        .sidebar-action-buttons {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px; /* Butonlar arasında boşluk */
+        }
+
+        .action-button-sidebar {
+            background-color: #EF4444; /* Kırmızı, çıkış için */
             color: white;
             font-weight: 600;
             padding: 10px 20px;
-            border-radius: 8px; /* Daha köşeli bir görünüm için */
+            border-radius: 8px;
             text-align: center;
-            margin: 20px; /* Alttan ve yanlardan boşluk bırakır */
             display: block;
             border: none;
             cursor: pointer;
             transition: background-color 0.3s ease;
+            text-decoration: none; /* Link olarak kullanıldığı için */
         }
-
+        /* Kaydet butonu için farklı renk */
+        #saveButton {
+            background-color: #22C55E; /* Yeşil */
+        }
+        #saveButton:hover {
+            background-color: #16A34A; /* Koyu Yeşil */
+        }
+        #exitButton {
+            background-color: #EF4444; /* Kırmızı */
+        }
         #exitButton:hover {
             background-color: #DC2626; /* Koyu Kırmızı */
         }
+
 
         /* İçerik alanı (iframe) stilleri */
         .content-frame-container {
@@ -422,7 +439,11 @@
                 <li><a href="#" data-page="bom_page.html">BOM</a></li>
                 <li><a href="#" data-page="visual_bom.html">Visual BOM</a></li>
             </ul>
-            <a href="#" id="exitButton">Çıkış</a> </div>
+            <div class="sidebar-action-buttons">
+                <a href="#" id="saveButton" class="action-button-sidebar">Kaydet</a>
+                <a href="#" id="exitButton" class="action-button-sidebar">Çıkış</a>
+            </div>
+        </div>
     </div>
 
     <div id="contentFrameContainer" class="content-frame-container">
@@ -432,14 +453,14 @@
     <script>
         const customerLogos = {
             'byd': 'logos/byd.png',
-            'ford': 'logos/ford.mng',
+            'ford': 'logos/ford.mng', // Bu dosya adını kontrol edin (.mng yerine .png olabilir)
             'stellantis': 'logos/stellantis.png',
             'renault': 'logos/renault.png',
             'tesla': 'logos/tesla.png',
             'mercedes-benz': 'logos/mercedes-benz.png',
             'hyundai': 'logos/hyundai.png',
-            'tofas': 'logos/tofas.png', // 'tofas' eklendi
-            'tofaş': 'logos/tofas.png'  // 'tofaş' eklendi
+            'tofas': 'logos/tofas.png',
+            'tofaş': 'logos/tofas.png'
         };
 
         const customerNameInput = document.getElementById('customerName');
@@ -451,7 +472,8 @@
         const sidebarLinks = document.querySelectorAll('.sidebar-menu a');
         const mainFormContainer = document.getElementById('mainFormContainer');
         const rightHalfInitial = document.getElementById('rightHalfInitial');
-        const exitButton = document.getElementById('exitButton'); // Yeni çıkış butonu referansı
+        const exitButton = document.getElementById('exitButton');
+        const saveButton = document.getElementById('saveButton'); // Kaydet butonu referansı
 
         const sidebarWidth = 250;
 
@@ -506,12 +528,15 @@
                 startYear: parseInt(projectStartYear),
                 customer: customerName,
                 description: projectDescription,
-                materials: []
+                materials: [], // Malzeme listesi başlangıçta boş
+                lastSavedBy: 'Admin (Oluşturuldu)', // İlk oluşturulduğunda
+                revisionDate: new Date().toLocaleString() // İlk oluşturulduğunda
             };
 
             let projects = JSON.parse(localStorage.getItem('projects') || '[]');
             projects.push(newProject);
             localStorage.setItem('projects', JSON.stringify(projects));
+            localStorage.setItem('currentProjectId', newProject.id); // Yeni oluşturulan projeyi aktif olarak işaretle
 
             // Ana formu gizle
             mainFormContainer.style.display = 'none';
@@ -526,8 +551,12 @@
 
             // İlk menü öğesini aktif yap ve sayfayı yükle
             sidebarLinks.forEach(link => link.classList.remove('active'));
-            sidebarLinks && sidebarLinks.length > 0 && sidebarLinks[0].classList.add('active');
-            loadPage('volume_table.html');
+            if (sidebarLinks.length > 0) {
+                sidebarLinks[0].classList.add('active');
+                loadPage(sidebarLinks[0].getAttribute('data-page') + '?projectId=' + newProject.id); // Proje ID'si ile yükle
+            } else {
+                loadPage('volume_table.html?projectId=' + newProject.id); // Varsayılanı yükle
+            }
         });
 
         // Sidebar menü bağlantıları için tıklama olayları
@@ -540,28 +569,88 @@
                 this.classList.add('active');
 
                 const page = this.getAttribute('data-page');
-                if (page) { // Eğer data-page özniteliği varsa sayfayı yükle
-                    loadPage(page);
+                const currentProjectId = localStorage.getItem('currentProjectId');
+
+                if (page) {
+                    let urlToLoad = page;
+                    if (currentProjectId) {
+                        urlToLoad += '?projectId=' + currentProjectId;
+                    }
+                    loadPage(urlToLoad);
                 }
             });
         });
 
+        // Kaydet butonu için tıklama olayı
+        saveButton.addEventListener('click', function(event) {
+            event.preventDefault();
+
+            const currentProjectId = localStorage.getItem('currentProjectId');
+            if (!currentProjectId) {
+                alert('Kaydedilecek aktif bir proje bulunamadı. Lütfen önce bir proje seçin veya oluşturun.');
+                return;
+            }
+
+            let projects = JSON.parse(localStorage.getItem('projects') || '[]');
+            const projectIndex = projects.findIndex(p => p.id == currentProjectId); // project ID string olabilir
+
+            if (projectIndex !== -1) {
+                // BOM verilerinin bom_page.html tarafından ilgili projenin içine kaydedildiği varsayılır.
+                // Burada sadece proje meta verileri güncelleniyor.
+                projects[projectIndex].lastSavedBy = "Admin"; // Şimdilik varsayılan kullanıcı
+                projects[projectIndex].revisionDate = new Date().toLocaleString(); // Mevcut tarih ve saat
+
+                localStorage.setItem('projects', JSON.stringify(projects));
+                alert('Proje bilgileri ve BOM verileri başarıyla güncellendi!'); // Kullanıcıya geri bildirim
+
+                // Kayıt sonrası kayıtlı projeler sayfasına yönlendir
+                loadPage('view_saved_projects.html');
+            } else {
+                alert('Aktif proje bulunamadı veya eşleşmiyor.');
+            }
+        });
+
         // Çıkış butonu için tıklama olayı
         exitButton.addEventListener('click', function(event) {
-            event.preventDefault(); // Varsayılan bağlantı davranışını engelle
-            localStorage.removeItem('projects'); // Projeleri localStorage'dan sil
+            event.preventDefault();
+            localStorage.removeItem('projects'); // Tüm projeleri localStorage'dan sil
+            localStorage.removeItem('currentProjectId'); // Aktif proje ID'sini de sil
             window.location.href = 'index.html'; // Sayfayı yeniden yükleyerek hoş geldin ekranına dön
         });
 
 
         // iframe'e sayfa yükleme işlevi
-        window.loadPage = function(pageName) {
-            mainContentFrame.src = pageName;
+        window.loadPage = function(pageUrl) {
+            mainContentFrame.src = pageUrl;
+            sidebar.classList.add('open');
+            contentFrameContainer.classList.add('shifted');
+            mainFormContainer.style.display = 'none'; // Formu gizle
+            rightHalfInitial.classList.add('hidden'); // GIF'i gizla
+
+            // URL'den projectId'yi al ve localStorage'a kaydet
+            const url = new URL(pageUrl, window.location.origin);
+            const urlParams = new URLSearchParams(url.search);
+            const projectId = urlParams.get('projectId');
+            if (projectId) {
+                localStorage.setItem('currentProjectId', projectId);
+            } else {
+                // welcome_page.html veya create_project_form.html gibi sayfalar için proje ID'sini temizle
+                localStorage.removeItem('currentProjectId');
+            }
+
+            // Sidebar linklerini aktif/pasif yapma
+            sidebarLinks.forEach(link => {
+                const linkPage = link.getAttribute('data-page');
+                if (linkPage && pageUrl.includes(linkPage)) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
         };
 
         // Pencere yeniden boyutlandırıldığında iframe ve sidebar konumlandırmasını ayarla
         window.addEventListener('resize', function() {
-            // Bu fonksiyon sadece 'shifted' sınıfını yönetmeli, CSS konumlandırmayı halledecektir.
             if (sidebar.classList.contains('open')) {
                 contentFrameContainer.classList.add('shifted');
             } else {
@@ -572,24 +661,41 @@
         // Sayfa ilk yüklendiğinde veya yenilendiğinde başlangıç durumunu ayarla
         window.addEventListener('load', function() {
             let projects = JSON.parse(localStorage.getItem('projects') || '[]');
-            if (projects.length > 0) {
-                // Eğer projeler varsa, doğrudan Volume Tablosu'nu yükle
+            const currentProjectId = localStorage.getItem('currentProjectId');
+
+            if (projects.length > 0 && currentProjectId) {
+                // Eğer projeler varsa ve aktif bir proje ID'si varsa, doğrudan Volume Tablosu'nu yükle
                 mainFormContainer.style.display = 'none';
                 rightHalfInitial.classList.add('hidden');
                 sidebar.classList.add('open');
                 contentFrameContainer.style.display = 'block';
-                contentFrameContainer.classList.add('shifted'); // Her zaman shifted
-                loadPage('volume_table.html'); // Varsayılan sayfayı yükle
-                sidebarLinks.forEach(link => link.classList.remove('active'));
-                sidebarLinks && sidebarLinks.length > 0 && sidebarLinks[0].classList.add('active');
+                contentFrameContainer.classList.add('shifted');
+                
+                // Aktif projeyi bul ve o projenin ilk sayfasını yükle
+                const activeProject = projects.find(p => p.id == currentProjectId);
+                if (activeProject) {
+                    loadPage('volume_table.html?projectId=' + currentProjectId); // Varsayılan olarak Volume Tablosu
+                    sidebarLinks.forEach(link => link.classList.remove('active'));
+                    sidebarLinks && sidebarLinks.length > 0 && sidebarLinks[0].classList.add('active');
+                } else {
+                    // currentProjectId bulunamadıysa, welcome sayfasına yönlendir
+                    localStorage.removeItem('currentProjectId');
+                    mainFormContainer.style.display = 'none';
+                    rightHalfInitial.classList.add('hidden');
+                    sidebar.classList.remove('open');
+                    contentFrameContainer.style.display = 'block';
+                    contentFrameContainer.classList.remove('shifted');
+                    mainContentFrame.src = 'welcome_page.html';
+                }
+
             } else {
-                // Eğer proje yoksa, ana formu ve GIF'i gizle, iframe'i göster ve welcome_page.html'i yükle
-                mainFormContainer.style.display = 'none'; // Formu gizle
-                rightHalfInitial.classList.add('hidden'); // GIF'i gizle
-                sidebar.classList.remove('open'); // Sidebar'ı kapalı tut
-                contentFrameContainer.style.display = 'block'; // iframe'i göster
-                contentFrameContainer.classList.remove('shifted'); // iframe'in kaydırılmadığından (tam ekran olduğundan) emin ol
-                mainContentFrame.src = 'welcome_page.html'; // Hoş geldin sayfasını yükle
+                // Eğer proje yoksa veya aktif proje ID'si yoksa, hoş geldin sayfasını yükle
+                mainFormContainer.style.display = 'none';
+                rightHalfInitial.classList.add('hidden');
+                sidebar.classList.remove('open');
+                contentFrameContainer.style.display = 'block';
+                contentFrameContainer.classList.remove('shifted');
+                mainContentFrame.src = 'welcome_page.html';
             }
         });
 
