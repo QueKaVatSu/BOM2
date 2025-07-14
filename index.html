@@ -402,7 +402,7 @@
                 <li><a href="#" data-page="bom_page.html">BOM</a></li>
                 <li><a href="#" data-page="feature_tree.html">Unsur Ağacı</a></li>
                 <li><a href="#" data-page="visual_bom.html">Visual BOM</a></li>
-            </ul>
+                <li><a href="#" id="exitButton">Çıkış</a></li> </ul>
         </div>
     </div>
 
@@ -417,7 +417,9 @@
             'stellantis': 'logos/stellantis.png',
             'renault': 'logos/renault.png',
             'tesla': 'logos/tesla.png',
-            'mercedes-benz': 'logos/mercedes-benz.png'
+            'mercedes-benz': 'logos/mercedes-benz.png',
+            'hyundai': 'logos/hyundai.png',
+            'tofas': 'logos/tofas.png'
         };
 
         const customerNameInput = document.getElementById('customerName');
@@ -429,6 +431,7 @@
         const sidebarLinks = document.querySelectorAll('.sidebar-menu a');
         const mainFormContainer = document.getElementById('mainFormContainer');
         const rightHalfInitial = document.getElementById('rightHalfInitial');
+        const exitButton = document.getElementById('exitButton'); // Yeni çıkış butonu referansı
 
         const sidebarWidth = 250;
 
@@ -458,10 +461,11 @@
                 customerLogoImg.classList.add('visible');
             } else {
                 customerLogoImg.classList.remove('visible');
+                // Logo tamamen gizlenmeden önce kısa bir gecikme ekleyerek animasyonu tamamlamasına izin ver
                 setTimeout(() => {
                     customerLogoImg.style.display = 'none';
                     customerLogoImg.src = '';
-                }, 300);
+                }, 300); // CSS geçiş süresiyle eşleşmeli
             }
         });
 
@@ -516,9 +520,19 @@
                 this.classList.add('active');
 
                 const page = this.getAttribute('data-page');
-                loadPage(page);
+                if (page) { // Eğer data-page özniteliği varsa sayfayı yükle
+                    loadPage(page);
+                }
             });
         });
+
+        // Çıkış butonu için tıklama olayı
+        exitButton.addEventListener('click', function(event) {
+            event.preventDefault(); // Varsayılan bağlantı davranışını engelle
+            localStorage.removeItem('projects'); // Projeleri localStorage'dan sil
+            window.location.href = 'index.html'; // Sayfayı yeniden yükleyerek hoş geldin ekranına dön
+        });
+
 
         // iframe'e sayfa yükleme işlevi
         window.loadPage = function(pageName) {
@@ -549,15 +563,10 @@
                 sidebarLinks.forEach(link => link.classList.remove('active'));
                 sidebarLinks && sidebarLinks.length > 0 && sidebarLinks[0].classList.add('active');
             } else {
-                // Eğer proje yoksa, form ekranını göster
-                mainFormContainer.style.display = 'flex'; // Formu görünür yap
-                rightHalfInitial.classList.remove('hidden'); // GIF'i görünür yap
                 // Eğer proje yoksa, ana formu ve GIF'i gizle, iframe'i göster ve welcome_page.html'i yükle
                 mainFormContainer.style.display = 'none'; // Formu gizle
                 rightHalfInitial.classList.add('hidden'); // GIF'i gizle
                 sidebar.classList.remove('open'); // Sidebar'ı kapalı tut
-                contentFrameContainer.style.display = 'none'; // iframe'i gizle
-                // welcome_page.html yüklemesi kaldırıldı, kullanıcı formu dolduracak
                 contentFrameContainer.style.display = 'block'; // iframe'i göster
                 contentFrameContainer.classList.remove('shifted'); // iframe'in kaydırılmadığından (tam ekran olduğundan) emin ol
                 mainContentFrame.src = 'welcome_page.html'; // Hoş geldin sayfasını yükle
